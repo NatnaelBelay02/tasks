@@ -2,7 +2,7 @@
   "cases": [
     {"id": "pjm5", "levels": [-0.8, 2.5]},
     {"id": "ww6", "levels": [-0.8, 0.85]},
-    {"id": "wscc9", "levels": [0.0, 0.75]},
+    {"id": "wscc9", "levels": [-0.7, 1.6]},
     {"id": "gs4", "levels": [-0.6, 2.3]}
   ]
 }
