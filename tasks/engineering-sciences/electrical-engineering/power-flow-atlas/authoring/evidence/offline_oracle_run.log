@@ -1,5 +1,25 @@
-# offline oracle run (unshare -n: no network namespace), 2026-10-16T18:05:28Z, 4 CPUs
+# offline oracle run (unshare -n: no network namespace), 2026-10-16T18:05:57Z, 4 CPUs
 # julia version 1.13.0, HomotopyContinuation 2.22.4
 network check: unreachable (offline)
-bash: line 1: /usr/bin/time: No such file or directory
-exit=127
+case pjm5
+  generic solution count 48 (48 after transfer)
+  lambda -0.800: 10 solutions
+  lambda 2.500: 2 solutions
+  SNB at lambda 3.78126593, 3 events
+case ww6
+  generic solution count 200 (200 after transfer)
+  lambda -0.800: 10 solutions
+  lambda 0.850: 2 solutions
+  SNB at lambda 0.89308006, 3 events
+case wscc9
+  generic solution count 768 (768 after transfer)
+  lambda -0.700: 42 solutions
+  lambda 1.600: 2 solutions
+  LIB at lambda 2.04152653, 3 events
+case gs4
+  generic solution count 16 (16 after transfer)
+  lambda -0.600: 6 solutions
+  lambda 2.300: 0 solutions
+  SNB at lambda 2.22254924, 1 events
+wall_seconds=1847
+exit=0
