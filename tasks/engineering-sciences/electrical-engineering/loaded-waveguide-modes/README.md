@@ -108,21 +108,21 @@ The test frequencies lie above the electron cyclotron resonance and away from th
 - **The power split must be computed from the fields** (every mode, 1e-6).
   - It needs the full transverse field, including the algebraic $ e_x $, $ h_x $ of the hybrid modes, the null vector of the $ 2\times2 $ wall condition, and $ \operatorname{Re}\,(e_x h_y^* - e_y h_x^*) $ integrated layer by layer.
   - The textbook shortcuts fail: the TE expression $ -e_y h_x^* $ for every mode; dropping the conjugate; the fractions of the reverse mode taken at $ +\gamma_r $; $ |P_i|/\sum|P_k| $, which loses the sign of the backward power in a plasma layer; and power proportional to the layer width.
-  - In the plasma guides the fractions are large and of both signs (backward power in the plasma, forward power in the dielectrics), e.g. {{EX_POWER}}.
+  - In the plasma guides the fractions are large and of both signs (backward power in the plasma, forward power in the dielectrics), e.g. G08 at 4.4 GHz, LSM1: $ p = (-0.177, -0.733, 2.821, -0.733, -0.177) $ (air, quartz, plasma, quartz, air); 73 of the 411 modes have a fraction below $ -10^{-3} $.
 - **Gyrotropic guides are nonreciprocal** (G13–G18, 48 of the 144 direction-spectra).
   - With the Polder tensor, the y-independent TE problem has $ E'' + (k_0^2\varepsilon\mu_e + \gamma^2)E = 0 $ in each layer, $ \mu_e = (\mu^2 - \kappa^2)/\mu $. The continuous field is $ H_z \propto (E' - j(\kappa/\mu)\gamma E)/\mu_e $.
   - The term linear in $ \gamma $ makes the dispersion relation depend on $ \gamma $ itself, not on $ \gamma^2 $: the forward and reverse modes differ.
   - G13 at 8 GHz has its slab mode at $ \beta = 452.5 $ rad/m forward (8.0 dB/m) against 344.1 rad/m reverse (19.0 dB/m). G16 at 5 GHz has 228.0 against 157.0 rad/m. G14 (twin slabs, opposite bias) differs by 1–16 rad/m.
   - The resonance isolator G15 at 11 GHz has a forward mode at 166 dB/m and no reverse mode under the limit. At 11.5 GHz the two directions have different mode sets.
   - Assuming reciprocity, or getting the sign of $ \kappa $ or of $ g $ relative to the propagation direction wrong (it swaps the two directions), fails these guides. So does a search in $ q = -\gamma^2 $, which cannot represent the asymmetry.
-  - The hybrid families are more nonreciprocal than LSE$ _0 $: {{EX_NONRECIP}}.
-  - **One-way surface magnetoplasmons** (G18). {{EX_ONEWAY}}
+  - The hybrid families are more nonreciprocal than LSE$ _0 $: G13 at 12 GHz has HYB1 at 474.7 and 712.7 rad/m forward against 456.1 and 642.7 rad/m reverse; G17 at 7.5 GHz has HYB1 at 192.5 rad/m (130.6 dB/m) forward against 138.6 rad/m (121.6 dB/m) reverse, with power splits of opposite character ($ +1.85 $ in the RO3010 and $ -1.46 $ in the plasma forward, $ -0.16 $ and $ -1.04 $ reverse).
+  - **One-way surface magnetoplasmons** (G18). At 4.5 GHz, below the upper-hybrid resonance of the discharge, HYB1 (432.2 rad/m, 156.6 dB/m) and HYB2 (486.5 rad/m, 188.7 dB/m) exist only forward: no reverse mode of these families is under the limit. Both carry backward power in the plasma ($ p = -1.29 $ and $ -0.88 $). This is the lossy, bounded version of the one-way surface magnetoplasmon [18].
 - **The modes are complex.** With lossy layers the dispersion functions have no zeros on the real axis, so scanning for sign changes finds nothing. The search is over a region of the complex plane: the parabola $ \operatorname{Re} q \ge k_n^2 - A^2 + (\operatorname{Im} q)^2 / 4A^2 $, or for ferrite guides the strip $ |\operatorname{Re}\gamma| \le A $.
 - **Backward waves** (G07, G08, G09, G11). Below the surface-plasma resonance of a plasma column the LSM surface wave carries power and phase in opposite directions [7, 8]. With $ \alpha > 0 $ it has $ \beta < 0 $: G08 at 4.4 GHz has LSM1 at $ -539 $ rad/m (132 dB/m) and LSM2 at $ -415 $ rad/m (172 dB/m).
 - **Evanescent modes inside the limit** (G03, G06, G08, G09, G10). Just below a cutoff a mode decays with $ \beta \approx 0 $ but can still be under 200 dB/m: G06 at 4.15 GHz has LSE0 at 168 dB/m.
 - **Slow surface waves** (G12 at 5 and 5.15 GHz, $ \operatorname{Re} q \approx 41 $–$ 47\,k_0^2 $). A search bounded by the dielectric permittivities misses them.
 - **Loss is not a perturbation here.** A lossless analysis followed by first-order loss perturbation fails every guide, and near cutoffs it changes the mode set.
-- **Bookkeeping.** There are {{NMODES}} reported modes in 144 direction-spectra, with up to {{MAXFAM}} families and {{MAXMODES}} modes per spectrum, and empty spectra. LSM$ _0 $ and HYB$ _0 $ do not exist, but LSE$ _0 $ does; each mode carries one power fraction per layer ({{NFRAC}} numbers in all).
+- **Bookkeeping.** There are 411 reported modes (64 of them hybrid) in 144 direction-spectra, with up to 4 families and 8 modes per spectrum, and empty spectra. LSM$ _0 $ and HYB$ _0 $ do not exist, but LSE$ _0 $ does; each mode carries one power fraction per layer (1843 numbers in all).
 
 **The answers are those of the lossy guide, not of an ideal one.** Halving all losses (dielectric, plasma) changes 4 of the 48 isotropic spectra, and doubling them changes 7. Only the most attenuated backward and surface waves cross the limit, as their attenuation scales with the loss. The backward waves of G08 at 4.8 GHz (61 dB/m) and G11 (37–45 dB/m) persist.
 
@@ -149,7 +149,7 @@ A single wrong item in any of the 18 guides fails the task.
 
 **Power split (every guide).** At the polished $ \gamma $ the null vector of the $ 2 \times 2 $ wall condition gives $ \psi(0) $; $ \psi $ is carried through each layer by $ \exp(M t) $ in mpmath (40 digits), $ e_x $ and $ h_x $ follow algebraically, and $ \operatorname{Re}(e_x h_y^* - e_y h_x^*) $ is integrated by 24-point Gauss–Legendre quadrature per layer.
 
-All 18 guides take about {{ORACLE_TIME}} on one core.
+All 18 guides take about 130 s on one core, most of it in the six gyrotropic guides; the output is deterministic.
 
 ## Verification
 
@@ -171,7 +171,7 @@ All 18 guides take about {{ORACLE_TIME}} on one core.
 - **The nonreciprocity is far above the tolerance.** The smallest forward–reverse difference, in G14 at 12 GHz, is 0.4 rad/m out of 626, $ 6 \times 10^{-4} $ relative, which is 6000 tolerances.
 - **Pairing is unambiguous.** Modes of a family and direction are at least $ 10^{-4}|\gamma| $ apart (certified, stated in the instruction).
 - **Membership never depends on rounding.** No mode is within 2 % of the limit (certified, stated); limits of 200 and 220 dB/m give the same answer.
-- **The power tolerance.** The certified fractions are enclosed to better than $ 10^{-9} $, and both correct solvers reproduce them to {{POWER_AGREE}}. Every fraction scaled by $ 1 + 3\times10^{-7} $ passes; one fraction off by $ 3\times10^{-6}\sum|p^*| $ fails. Scaling by $ \sum|p^*| $ keeps the test meaningful where the fractions are large and of opposite sign; the instruction guarantees $ \sum|P_i| \le 30|P| $ (largest certified value {{MAXCOND}}).
+- **The power tolerance.** The certified fractions are enclosed to better than $ 10^{-9} $, and both correct solvers reproduce them to $ 3\times10^{-14} $ (relative to $ \sum|p^*| $). Every fraction scaled by $ 1 + 3\times10^{-7} $ passes; one fraction off by $ 3\times10^{-6}\sum|p^*| $ fails. Scaling by $ \sum|p^*| $ keeps the test meaningful where the fractions are large and of opposite sign; the instruction guarantees $ \sum|P_i| \le 30|P| $ (largest certified value 4.6).
 
 **Where the guides come from** (`tests/truth_generator/gen_guides.py`). The script writes `guides.json` exactly as shipped; the agent copy `environment/data/guides.json` is identical to `tests/data/guides.json`. Its docstring repeats the sources above.
 
@@ -189,12 +189,13 @@ All 18 guides take about {{ORACLE_TIME}} on one core.
   - $ B $ ($ 14 $–$ 64\,k_0 $) is proved by the recursion for $ \sigma = \kappa E/E' $: $ \sigma \mapsto (\sigma + T)/(1 + \sigma T) $ across a layer, and $ \sigma \mapsto \sigma/(a + b\sigma) $ across an interface, with $ a = \mu_{eR}\kappa_L/(\mu_{eL}\kappa_R) $ and the nonreciprocal term $ b = j(\tau_R - \tau_L\mu_{eR}/\mu_{eL})\gamma/\kappa_R $.
   - It is evaluated with $ \kappa = \pm(\gamma/j)\sqrt{1 + k_0^2\varepsilon\mu_e/\gamma^2} $ for tight enclosures. $ D = 0 $ only if $ \sigma(a) = 0 $.
 - **Hybrid families** (`hybacb.py`).
-  - The same branch-and-bound in the $ \gamma $ plane over $ |\operatorname{Re}\gamma| \le 1.02A $, $ |\operatorname{Im}\gamma| \le 4k_0\sqrt m + 2k_y + 400 $, family by family until two consecutive families have no zero in the region past $ k_y^2 > k_0^2 m + A_1^2 $.
+  - Exhaustive mode: the same branch-and-bound in the $ \gamma $ plane over $ |\operatorname{Re}\gamma| \le 1.02A $, $ |\operatorname{Im}\gamma| \le 4k_0\sqrt m + 2k_y + 400 $, family by family until two consecutive families have no zero in the region past $ k_y^2 > k_0^2 m + A_1^2 $.
   - $ D_n $ is evaluated on the **second compound** (exterior square) of the layer matrices [19]: the 6-vector $ \psi_1 \wedge \psi_2 $ started from $ h_y \wedge h_z $ is carried through the layers and $ D_n $ is its $ e_y \wedge e_z $ component. The two growing states are never formed separately, so their near-parallelism costs nothing.
   - Isotropic layers: $ \wedge^2(C I + S M) = C^2 I + CS\,M^{[2]} + S^2 \wedge^2 M $, with the $ \cosh^2(\kappa d) $ scaling where the layer is certainly evanescent. Gyrotropic layers: $ \exp(M^{[2]}d) $ and its $ \gamma $-derivative by a $ 12 \times 12 $ block exponential taken in the (numerical, exactly inverted) eigenbasis of $ M^{[2]} $ at the box centre, and the mean-value form $ E(c) + E'(\text{box})(\gamma - c) $. All matrices are balanced by exact powers of two [20].
-  - Without these steps a box at $ |\gamma| \approx 30k_0 $ in G13 at 8 GHz, $ n = 3 $, overestimates $ D' $ by a factor of 500, and the run did not finish in an hour; with them it takes {{BOXES_G13_3}} boxes.
+  - Without these steps a box at $ |\gamma| \approx 30k_0 $ in G13 at 8 GHz, $ n = 3 $, overestimates $ D' $ by a factor of 500, and the search had passed 400 000 boxes after 20 minutes; with them it takes 12 630 boxes.
+  - The exhaustive search is still slow for the stiff multi-layer cases (tens of thousands of boxes per family). The shipped values of the hybrid families are therefore produced with `--candidates`: every mode reported by the oracle and by `alt_solver.py` (which must agree on every family, every count, and every $ \gamma $ to $ 10^{-9} $) is certified individually by a Krawczyk box around it (existence and uniqueness of a simple zero), refined to $ 10^{-55} $, and checked against the guarantees below. The exhaustive search was run for 20 families (G13 at 8 and 12 GHz, G14 at 8.5 GHz, G15 at 9 GHz for $ n = 1..11 $, G16 at 5 GHz, G18 at 4.5 GHz including its one-way HYB1) and finds exactly the certified modes in each (`truth_diagnostics.json`, `exhaustive_hybrid_checks`).
 - **Power split** (`power.py`). The null vector of the certified wall condition, then $ P_i = \operatorname{Re}\int (e_x\, \overline{h_y(\bar t)} - e_y\, \overline{h_x(\bar t)})\,dt $ by `acb.integral` (rigorous Gauss–Legendre with error bounds on the entire integrand) to relative accuracy $ 2^{-90} $.
-- **Guarantees.** The generator stops unless, for every mode, $ \operatorname{Re}\gamma $ is certainly nonzero and $ |\alpha - A| > 0.02A $, modes of a family and direction are at least $ 10^{-4}|\gamma| $ apart, $ \sum|P_i|/|P| < 30 $, and every fraction is enclosed to $ 10^{-9} $. All 144 direction-spectra pass, {{TRUTH_STATS}}. `truth_diagnostics.json` records every run.
+- **Guarantees.** The generator stops unless, for every mode, $ \operatorname{Re}\gamma $ is certainly nonzero and $ |\alpha - A| > 0.02A $, modes of a family and direction are at least $ 10^{-4}|\gamma| $ apart, $ \sum|P_i|/|P| < 30 $, and every fraction is enclosed to $ 10^{-9} $. All 144 direction-spectra pass, in 174 s of certified computation (159 187 boxes for the exhaustive families, up to 27 686 per run, plus the hybrid certificates). `truth_diagnostics.json` records every run.
 
 **Score of an independent correct submission.** `tests/truth_generator/alt_solver.py` shares no code or method with the oracle or the generator.
 - **Isotropic guides.** Multi-domain Chebyshev collocation [13] of $ v'' + k_0^2\varepsilon v = qv $.
@@ -254,7 +255,7 @@ While it was being developed, it missed the even–odd LSM1 pair of G03 at 18 GH
   - What the passing run shows: every v3.0 answer was a zero of a scalar dispersion function that a careful agent can derive from textbook LSE/LSM and ferrite-slab theory, and the answer was only the list of zeros. v4.0 therefore adds the hybrid families (a coupled four-component problem with both off-diagonal tensor terms, no textbook closed form) and the magnetised-plasma guides, and asks for a field quantity, the power split, that is wrong unless the fields themselves are right.
 - **Calibration runs on v4.0:** pending.
 
-**Harbor runs** (v4.0): {{HARBOR}}
+**Harbor runs** (v4.0): pending; the authoring sandbox cannot run Docker. Run directly, `solution/solve.py` followed by `tests/test_modes.py` passes 4 of 4 tests, and no output file fails (the "no file (nop)" ablation).
 
 ## References
 

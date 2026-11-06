@@ -2,6 +2,11 @@
  "G01": [
   {
    "f": "9000000000",
+   "family": "LSE0",
+   "max_power_condition": 1.0
+  },
+  {
+   "f": "9000000000",
    "kind": "LSE",
    "Q_over_k0sq": 2.9403221058452207,
    "zeros": 1,
@@ -14,7 +19,12 @@
    "Q_over_k0sq": 5.880004233598476,
    "zeros": 2,
    "boxes": 371,
-   "seconds": 0.3
+   "seconds": 0.2
+  },
+  {
+   "f": "13000000000",
+   "family": "LSE0",
+   "max_power_condition": 1.0
   },
   {
    "f": "13000000000",
@@ -22,7 +32,12 @@
    "Q_over_k0sq": 2.9403074708488925,
    "zeros": 2,
    "boxes": 313,
-   "seconds": 0.3
+   "seconds": 0.2
+  },
+  {
+   "f": "13000000000",
+   "family": "LSM1",
+   "max_power_condition": 1.0
   },
   {
    "f": "13000000000",
@@ -30,7 +45,17 @@
    "Q_over_k0sq": 5.880004233598476,
    "zeros": 3,
    "boxes": 442,
-   "seconds": 0.4
+   "seconds": 0.3
+  },
+  {
+   "f": "16000000000",
+   "family": "LSE0",
+   "max_power_condition": 1.0
+  },
+  {
+   "f": "16000000000",
+   "family": "LSE1",
+   "max_power_condition": 1.0
   },
   {
    "f": "16000000000",
@@ -42,6 +67,11 @@
   },
   {
    "f": "16000000000",
+   "family": "LSM1",
+   "max_power_condition": 1.0
+  },
+  {
+   "f": "16000000000",
    "kind": "LSM",
    "Q_over_k0sq": 5.880004233598478,
    "zeros": 3,
@@ -50,11 +80,26 @@
   },
   {
    "f": "18000000000",
+   "family": "LSE0",
+   "max_power_condition": 1.0
+  },
+  {
+   "f": "18000000000",
+   "family": "LSE1",
+   "max_power_condition": 1.0
+  },
+  {
+   "f": "18000000000",
    "kind": "LSE",
    "Q_over_k0sq": 2.9403010264613054,
    "zeros": 3,
    "boxes": 543,
-   "seconds": 0.4
+   "seconds": 0.3
+  },
+  {
+   "f": "18000000000",
+   "family": "LSM1",
+   "max_power_condition": 1.0
   },
   {
    "f": "18000000000",
@@ -62,10 +107,20 @@
    "Q_over_k0sq": 5.880004233598476,
    "zeros": 4,
    "boxes": 611,
-   "seconds": 0.4
+   "seconds": 0.3
   }
  ],
  "G02": [
+  {
+   "f": "8000000000",
+   "family": "LSE0",
+   "max_power_condition": 1.0
+  },
+  {
+   "f": "8000000000",
+   "family": "LSE1",
+   "max_power_condition": 1.0
+  },
   {
    "f": "8000000000",
    "kind": "LSE",
@@ -80,7 +135,22 @@
    "Q_over_k0sq": 20.40004936794027,
    "zeros": 2,
    "boxes": 330,
-   "seconds": 0.5
+   "seconds": 0.3
+  },
+  {
+   "f": "13000000000",
+   "family": "LSE0",
+   "max_power_condition": 1.0
+  },
+  {
+   "f": "13000000000",
+   "family": "LSE1",
+   "max_power_condition": 1.0
+  },
+  {
+   "f": "13000000000",
+   "family": "LSE2",
+   "max_power_condition": 1.0
   },
   {
    "f": "13000000000",
@@ -92,11 +162,31 @@
   },
   {
    "f": "13000000000",
+   "family": "LSM1",
+   "max_power_condition": 1.0
+  },
+  {
+   "f": "13000000000",
    "kind": "LSM",
    "Q_over_k0sq": 20.400049367940266,
    "zeros": 3,
    "boxes": 674,
-   "seconds": 0.7
+   "seconds": 0.5
+  },
+  {
+   "f": "15000000000",
+   "family": "LSE0",
+   "max_power_condition": 1.0
+  },
+  {
+   "f": "15000000000",
+   "family": "LSE1",
+   "max_power_condition": 1.0
+  },
+  {
+   "f": "15000000000",
+   "family": "LSE2",
+   "max_power_condition": 1.0
   },
   {
    "f": "15000000000",
@@ -108,11 +198,31 @@
   },
   {
    "f": "15000000000",
+   "family": "LSM1",
+   "max_power_condition": 1.0
+  },
+  {
+   "f": "15000000000",
    "kind": "LSM",
    "Q_over_k0sq": 20.40004936794027,
    "zeros": 3,
    "boxes": 716,
-   "seconds": 0.8
+   "seconds": 0.6
+  },
+  {
+   "f": "16000000000",
+   "family": "LSE0",
+   "max_power_condition": 1.0
+  },
+  {
+   "f": "16000000000",
+   "family": "LSE1",
+   "max_power_condition": 1.0
+  },
+  {
+   "f": "16000000000",
+   "family": "LSE2",
+   "max_power_condition": 1.0
   },
   {
    "f": "16000000000",
@@ -120,7 +230,12 @@
    "Q_over_k0sq": 10.201028892865091,
    "zeros": 3,
    "boxes": 514,
-   "seconds": 0.7
+   "seconds": 0.6
+  },
+  {
+   "f": "16000000000",
+   "family": "LSM1",
+   "max_power_condition": 1.0
   },
   {
    "f": "16000000000",
@@ -128,17 +243,22 @@
    "Q_over_k0sq": 20.40004936794027,
    "zeros": 4,
    "boxes": 790,
-   "seconds": 1.2
+   "seconds": 0.9
   }
  ],
  "G03": [
+  {
+   "f": "12750000000",
+   "family": "LSE0",
+   "max_power_condition": 1.0
+  },
   {
    "f": "12750000000",
    "kind": "LSE",
    "Q_over_k0sq": 6.150629004296581,
    "zeros": 2,
    "boxes": 326,
-   "seconds": 0.4
+   "seconds": 0.3
   },
   {
    "f": "12750000000",
@@ -146,7 +266,12 @@
    "Q_over_k0sq": 18.450036899963102,
    "zeros": 3,
    "boxes": 1378,
-   "seconds": 1.7
+   "seconds": 1.0
+  },
+  {
+   "f": "13500000000",
+   "family": "LSE0",
+   "max_power_condition": 1.0
   },
   {
    "f": "13500000000",
@@ -154,7 +279,12 @@
    "Q_over_k0sq": 6.150627491486766,
    "zeros": 2,
    "boxes": 410,
-   "seconds": 0.6
+   "seconds": 0.4
+  },
+  {
+   "f": "13500000000",
+   "family": "LSM1",
+   "max_power_condition": 1.0
   },
   {
    "f": "13500000000",
@@ -162,7 +292,17 @@
    "Q_over_k0sq": 18.4500368999631,
    "zeros": 3,
    "boxes": 3043,
-   "seconds": 3.2
+   "seconds": 2.1
+  },
+  {
+   "f": "16000000000",
+   "family": "LSE0",
+   "max_power_condition": 1.0
+  },
+  {
+   "f": "16000000000",
+   "family": "LSE1",
+   "max_power_condition": 1.0
   },
   {
    "f": "16000000000",
@@ -170,7 +310,12 @@
    "Q_over_k0sq": 6.150623892865092,
    "zeros": 2,
    "boxes": 461,
-   "seconds": 0.6
+   "seconds": 0.5
+  },
+  {
+   "f": "16000000000",
+   "family": "LSM1",
+   "max_power_condition": 1.0
   },
   {
    "f": "16000000000",
@@ -178,7 +323,17 @@
    "Q_over_k0sq": 12.300024599975403,
    "zeros": 3,
    "boxes": 2309,
-   "seconds": 2.6
+   "seconds": 1.7
+  },
+  {
+   "f": "18000000000",
+   "family": "LSE0",
+   "max_power_condition": 1.0
+  },
+  {
+   "f": "18000000000",
+   "family": "LSE1",
+   "max_power_condition": 1.0
   },
   {
    "f": "18000000000",
@@ -186,7 +341,12 @@
    "Q_over_k0sq": 6.150622026461305,
    "zeros": 2,
    "boxes": 615,
-   "seconds": 0.8
+   "seconds": 0.6
+  },
+  {
+   "f": "18000000000",
+   "family": "LSM1",
+   "max_power_condition": 1.0
   },
   {
    "f": "18000000000",
@@ -194,17 +354,22 @@
    "Q_over_k0sq": 12.3000245999754,
    "zeros": 3,
    "boxes": 2632,
-   "seconds": 2.9
+   "seconds": 1.9
   }
  ],
  "G04": [
+  {
+   "f": "10000000000",
+   "family": "LSE0",
+   "max_power_condition": 1.0
+  },
   {
    "f": "10000000000",
    "kind": "LSE",
    "Q_over_k0sq": 3.4803707657346283,
    "zeros": 2,
    "boxes": 178,
-   "seconds": 0.9
+   "seconds": 0.8
   },
   {
    "f": "10000000000",
@@ -212,7 +377,17 @@
    "Q_over_k0sq": 52.852861774124335,
    "zeros": 3,
    "boxes": 588,
-   "seconds": 3.0
+   "seconds": 1.8
+  },
+  {
+   "f": "14000000000",
+   "family": "LSE0",
+   "max_power_condition": 1.0
+  },
+  {
+   "f": "14000000000",
+   "family": "LSE1",
+   "max_power_condition": 1.0
   },
   {
    "f": "14000000000",
@@ -220,7 +395,12 @@
    "Q_over_k0sq": 3.4803596151707294,
    "zeros": 2,
    "boxes": 399,
-   "seconds": 2.2
+   "seconds": 1.6
+  },
+  {
+   "f": "14000000000",
+   "family": "LSM1",
+   "max_power_condition": 1.0
   },
   {
    "f": "14000000000",
@@ -228,7 +408,17 @@
    "Q_over_k0sq": 35.235241182749554,
    "zeros": 3,
    "boxes": 817,
-   "seconds": 3.8
+   "seconds": 2.7
+  },
+  {
+   "f": "15000000000",
+   "family": "LSE0",
+   "max_power_condition": 1.0
+  },
+  {
+   "f": "15000000000",
+   "family": "LSE1",
+   "max_power_condition": 1.0
   },
   {
    "f": "15000000000",
@@ -236,7 +426,12 @@
    "Q_over_k0sq": 3.48035811810428,
    "zeros": 3,
    "boxes": 540,
-   "seconds": 2.7
+   "seconds": 2.2
+  },
+  {
+   "f": "15000000000",
+   "family": "LSM1",
+   "max_power_condition": 1.0
   },
   {
    "f": "15000000000",
@@ -244,7 +439,17 @@
    "Q_over_k0sq": 35.23524118274956,
    "zeros": 4,
    "boxes": 947,
-   "seconds": 5.2
+   "seconds": 3.2
+  },
+  {
+   "f": "18000000000",
+   "family": "LSE0",
+   "max_power_condition": 1.0
+  },
+  {
+   "f": "18000000000",
+   "family": "LSE1",
+   "max_power_condition": 1.0
   },
   {
    "f": "18000000000",
@@ -252,7 +457,12 @@
    "Q_over_k0sq": 3.480355026461305,
    "zeros": 3,
    "boxes": 972,
-   "seconds": 4.9
+   "seconds": 3.6
+  },
+  {
+   "f": "18000000000",
+   "family": "LSM1",
+   "max_power_condition": 1.0
   },
   {
    "f": "18000000000",
@@ -260,10 +470,15 @@
    "Q_over_k0sq": 23.490160788499704,
    "zeros": 4,
    "boxes": 1160,
-   "seconds": 5.8
+   "seconds": 4.1
   }
  ],
  "G05": [
+  {
+   "f": "12000000000",
+   "family": "LSE0",
+   "max_power_condition": 1.0
+  },
   {
    "f": "12000000000",
    "kind": "LSE",
@@ -278,7 +493,12 @@
    "Q_over_k0sq": 4.160000332799988,
    "zeros": 2,
    "boxes": 188,
-   "seconds": 0.2
+   "seconds": 0.1
+  },
+  {
+   "f": "16500000000",
+   "family": "LSE0",
+   "max_power_condition": 1.0
   },
   {
    "f": "16500000000",
@@ -290,11 +510,26 @@
   },
   {
    "f": "16500000000",
+   "family": "LSM1",
+   "max_power_condition": 1.0
+  },
+  {
+   "f": "16500000000",
    "kind": "LSM",
    "Q_over_k0sq": 4.160000332799988,
    "zeros": 3,
    "boxes": 285,
-   "seconds": 0.3
+   "seconds": 0.2
+  },
+  {
+   "f": "20000000000",
+   "family": "LSE0",
+   "max_power_condition": 1.0
+  },
+  {
+   "f": "20000000000",
+   "family": "LSE1",
+   "max_power_condition": 1.0
   },
   {
    "f": "20000000000",
@@ -302,7 +537,12 @@
    "Q_over_k0sq": 2.0802136914336575,
    "zeros": 2,
    "boxes": 356,
-   "seconds": 0.4
+   "seconds": 0.2
+  },
+  {
+   "f": "20000000000",
+   "family": "LSM1",
+   "max_power_condition": 1.0
   },
   {
    "f": "20000000000",
@@ -310,7 +550,17 @@
    "Q_over_k0sq": 4.160000332799987,
    "zeros": 3,
    "boxes": 422,
-   "seconds": 0.5
+   "seconds": 0.3
+  },
+  {
+   "f": "22000000000",
+   "family": "LSE0",
+   "max_power_condition": 1.0
+  },
+  {
+   "f": "22000000000",
+   "family": "LSE1",
+   "max_power_condition": 1.0
   },
   {
    "f": "22000000000",
@@ -322,21 +572,31 @@
   },
   {
    "f": "22000000000",
+   "family": "LSM1",
+   "max_power_condition": 1.0
+  },
+  {
+   "f": "22000000000",
    "kind": "LSM",
    "Q_over_k0sq": 4.160000332799987,
    "zeros": 3,
    "boxes": 548,
-   "seconds": 0.5
+   "seconds": 0.4
   }
  ],
  "G06": [
+  {
+   "f": "4150000000",
+   "family": "LSE0",
+   "max_power_condition": 1.0
+  },
   {
    "f": "4150000000",
    "kind": "LSE",
    "Q_over_k0sq": 10.20115218600452,
    "zeros": 1,
    "boxes": 121,
-   "seconds": 0.2
+   "seconds": 0.1
   },
   {
    "f": "4150000000",
@@ -344,7 +604,12 @@
    "Q_over_k0sq": 20.400049367940266,
    "zeros": 2,
    "boxes": 308,
-   "seconds": 0.4
+   "seconds": 0.3
+  },
+  {
+   "f": "6000000000",
+   "family": "LSE0",
+   "max_power_condition": 1.0
   },
   {
    "f": "6000000000",
@@ -352,7 +617,7 @@
    "Q_over_k0sq": 10.20108323815175,
    "zeros": 1,
    "boxes": 202,
-   "seconds": 0.3
+   "seconds": 0.2
   },
   {
    "f": "6000000000",
@@ -360,7 +625,12 @@
    "Q_over_k0sq": 30.600074051910408,
    "zeros": 2,
    "boxes": 698,
-   "seconds": 0.9
+   "seconds": 0.6
+  },
+  {
+   "f": "8400000000",
+   "family": "LSE0",
+   "max_power_condition": 1.0
   },
   {
    "f": "8400000000",
@@ -368,7 +638,12 @@
    "Q_over_k0sq": 10.201052264363138,
    "zeros": 2,
    "boxes": 471,
-   "seconds": 0.7
+   "seconds": 0.4
+  },
+  {
+   "f": "8400000000",
+   "family": "LSM1",
+   "max_power_condition": 1.0
   },
   {
    "f": "8400000000",
@@ -376,7 +651,12 @@
    "Q_over_k0sq": 20.400049367940266,
    "zeros": 3,
    "boxes": 2270,
-   "seconds": 2.6
+   "seconds": 1.6
+  },
+  {
+   "f": "10000000000",
+   "family": "LSE0",
+   "max_power_condition": 1.0
   },
   {
    "f": "10000000000",
@@ -384,7 +664,12 @@
    "Q_over_k0sq": 10.201042765734629,
    "zeros": 2,
    "boxes": 682,
-   "seconds": 0.8
+   "seconds": 0.6
+  },
+  {
+   "f": "10000000000",
+   "family": "LSM1",
+   "max_power_condition": 1.0
   },
   {
    "f": "10000000000",
@@ -392,7 +677,7 @@
    "Q_over_k0sq": 20.400049367940266,
    "zeros": 3,
    "boxes": 3008,
-   "seconds": 3.5
+   "seconds": 2.1
   }
  ],
  "G07": [
@@ -402,7 +687,12 @@
    "Q_over_k0sq": 3.780421915383156,
    "zeros": 0,
    "boxes": 42,
-   "seconds": 0.1
+   "seconds": 0.0
+  },
+  {
+   "f": "7200000000",
+   "family": "LSM1",
+   "max_power_condition": 3.449983712755932
   },
   {
    "f": "7200000000",
@@ -410,7 +700,7 @@
    "Q_over_k0sq": 290.6317983281589,
    "zeros": 2,
    "boxes": 2828,
-   "seconds": 3.5
+   "seconds": 2.3
   },
   {
    "f": "7600000000",
@@ -418,7 +708,12 @@
    "Q_over_k0sq": 3.7804174143605054,
    "zeros": 0,
    "boxes": 50,
-   "seconds": 0.1
+   "seconds": 0.0
+  },
+  {
+   "f": "7600000000",
+   "family": "LSM1",
+   "max_power_condition": 3.443632422739582
   },
   {
    "f": "7600000000",
@@ -426,7 +721,7 @@
    "Q_over_k0sq": 193.7545322187726,
    "zeros": 2,
    "boxes": 2237,
-   "seconds": 2.8
+   "seconds": 1.9
   },
   {
    "f": "8300000000",
@@ -442,7 +737,12 @@
    "Q_over_k0sq": 86.11312543056566,
    "zeros": 0,
    "boxes": 680,
-   "seconds": 0.9
+   "seconds": 0.6
+  },
+  {
+   "f": "11000000000",
+   "family": "LSE0",
+   "max_power_condition": 1.0
   },
   {
    "f": "11000000000",
@@ -450,7 +750,7 @@
    "Q_over_k0sq": 3.7803968146567177,
    "zeros": 1,
    "boxes": 201,
-   "seconds": 0.4
+   "seconds": 0.3
   },
   {
    "f": "11000000000",
@@ -458,7 +758,7 @@
    "Q_over_k0sq": 25.515000127575,
    "zeros": 1,
    "boxes": 430,
-   "seconds": 1.0
+   "seconds": 0.6
   }
  ],
  "G08": [
@@ -468,7 +768,17 @@
    "Q_over_k0sq": 3.7804955916044873,
    "zeros": 0,
    "boxes": 41,
-   "seconds": 0.1
+   "seconds": 0.0
+  },
+  {
+   "f": "4400000000",
+   "family": "LSM1",
+   "max_power_condition": 4.642257096405966
+  },
+  {
+   "f": "4400000000",
+   "family": "LSM2",
+   "max_power_condition": 4.644171834722265
   },
   {
    "f": "4400000000",
@@ -476,7 +786,7 @@
    "Q_over_k0sq": 653.9215462383577,
    "zeros": 2,
    "boxes": 14358,
-   "seconds": 16.6
+   "seconds": 10.2
   },
   {
    "f": "4800000000",
@@ -488,11 +798,21 @@
   },
   {
    "f": "4800000000",
+   "family": "LSM1",
+   "max_power_condition": 3.6570271786102393
+  },
+  {
+   "f": "4800000000",
    "kind": "LSM",
    "Q_over_k0sq": 193.75453221877265,
    "zeros": 2,
    "boxes": 4095,
-   "seconds": 5.1
+   "seconds": 3.1
+  },
+  {
+   "f": "5600000000",
+   "family": "LSE0",
+   "max_power_condition": 1.0
   },
   {
    "f": "5600000000",
@@ -500,7 +820,7 @@
    "Q_over_k0sq": 3.780450594817056,
    "zeros": 1,
    "boxes": 156,
-   "seconds": 0.3
+   "seconds": 0.2
   },
   {
    "f": "5600000000",
@@ -508,7 +828,12 @@
    "Q_over_k0sq": 86.11312543056565,
    "zeros": 1,
    "boxes": 597,
-   "seconds": 0.9
+   "seconds": 0.6
+  },
+  {
+   "f": "8000000000",
+   "family": "LSE0",
+   "max_power_condition": 1.0
   },
   {
    "f": "8000000000",
@@ -516,7 +841,7 @@
    "Q_over_k0sq": 3.7804135714603575,
    "zeros": 2,
    "boxes": 528,
-   "seconds": 0.9
+   "seconds": 0.7
   },
   {
    "f": "8000000000",
@@ -524,10 +849,15 @@
    "Q_over_k0sq": 25.515000127575,
    "zeros": 2,
    "boxes": 1026,
-   "seconds": 2.1
+   "seconds": 1.3
   }
  ],
  "G09": [
+  {
+   "f": "2600000000",
+   "family": "LSE0",
+   "max_power_condition": 1.0
+  },
   {
    "f": "2600000000",
    "kind": "LSE",
@@ -542,7 +872,12 @@
    "Q_over_k0sq": 653.9215462383577,
    "zeros": 2,
    "boxes": 2383,
-   "seconds": 3.4
+   "seconds": 2.1
+  },
+  {
+   "f": "2750000000",
+   "family": "LSE0",
+   "max_power_condition": 1.0
   },
   {
    "f": "2750000000",
@@ -550,7 +885,12 @@
    "Q_over_k0sq": 3.780679034507485,
    "zeros": 1,
    "boxes": 294,
-   "seconds": 0.6
+   "seconds": 0.4
+  },
+  {
+   "f": "2750000000",
+   "family": "LSM1",
+   "max_power_condition": 2.731372885885614
   },
   {
    "f": "2750000000",
@@ -558,7 +898,12 @@
    "Q_over_k0sq": 290.63179832815894,
    "zeros": 3,
    "boxes": 2212,
-   "seconds": 3.5
+   "seconds": 2.2
+  },
+  {
+   "f": "2900000000",
+   "family": "LSE0",
+   "max_power_condition": 1.0
   },
   {
    "f": "2900000000",
@@ -566,7 +911,12 @@
    "Q_over_k0sq": 3.780648698390352,
    "zeros": 1,
    "boxes": 402,
-   "seconds": 0.9
+   "seconds": 0.5
+  },
+  {
+   "f": "2900000000",
+   "family": "LSM1",
+   "max_power_condition": 3.2408820797779354
   },
   {
    "f": "2900000000",
@@ -574,7 +924,12 @@
    "Q_over_k0sq": 290.631798328159,
    "zeros": 3,
    "boxes": 2258,
-   "seconds": 3.7
+   "seconds": 2.2
+  },
+  {
+   "f": "3500000000",
+   "family": "LSE0",
+   "max_power_condition": 1.0
   },
   {
    "f": "3500000000",
@@ -582,7 +937,7 @@
    "Q_over_k0sq": 3.7805638427316617,
    "zeros": 1,
    "boxes": 481,
-   "seconds": 0.9
+   "seconds": 0.6
   },
   {
    "f": "3500000000",
@@ -590,17 +945,22 @@
    "Q_over_k0sq": 86.11312543056562,
    "zeros": 1,
    "boxes": 950,
-   "seconds": 2.2
+   "seconds": 1.2
   }
  ],
  "G10": [
+  {
+   "f": "3500000000",
+   "family": "LSE0",
+   "max_power_condition": 1.0
+  },
   {
    "f": "3500000000",
    "kind": "LSE",
    "Q_over_k0sq": 6.1508008427316625,
    "zeros": 1,
    "boxes": 153,
-   "seconds": 0.3
+   "seconds": 0.2
   },
   {
    "f": "3500000000",
@@ -608,7 +968,12 @@
    "Q_over_k0sq": 315.23617734546326,
    "zeros": 1,
    "boxes": 251,
-   "seconds": 0.4
+   "seconds": 0.2
+  },
+  {
+   "f": "4750000000",
+   "family": "LSE0",
+   "max_power_condition": 1.0
   },
   {
    "f": "4750000000",
@@ -616,7 +981,7 @@
    "Q_over_k0sq": 6.150715900762896,
    "zeros": 2,
    "boxes": 513,
-   "seconds": 0.8
+   "seconds": 0.6
   },
   {
    "f": "4750000000",
@@ -624,7 +989,17 @@
    "Q_over_k0sq": 62.26887453737545,
    "zeros": 2,
    "boxes": 458,
-   "seconds": 0.9
+   "seconds": 0.5
+  },
+  {
+   "f": "5250000000",
+   "family": "LSE0",
+   "max_power_condition": 1.0
+  },
+  {
+   "f": "5250000000",
+   "family": "LSE1",
+   "max_power_condition": 1.0
   },
   {
    "f": "5250000000",
@@ -632,7 +1007,7 @@
    "Q_over_k0sq": 6.150697596769627,
    "zeros": 2,
    "boxes": 589,
-   "seconds": 0.9
+   "seconds": 0.7
   },
   {
    "f": "5250000000",
@@ -640,7 +1015,17 @@
    "Q_over_k0sq": 41.512583024916964,
    "zeros": 2,
    "boxes": 605,
-   "seconds": 1.4
+   "seconds": 0.7
+  },
+  {
+   "f": "6200000000",
+   "family": "LSE0",
+   "max_power_condition": 1.0
+  },
+  {
+   "f": "6200000000",
+   "family": "LSE1",
+   "max_power_condition": 1.0
   },
   {
    "f": "6200000000",
@@ -648,7 +1033,7 @@
    "Q_over_k0sq": 6.150674224075517,
    "zeros": 2,
    "boxes": 566,
-   "seconds": 0.9
+   "seconds": 0.6
   },
   {
    "f": "6200000000",
@@ -656,7 +1041,7 @@
    "Q_over_k0sq": 41.51258302491698,
    "zeros": 2,
    "boxes": 717,
-   "seconds": 1.6
+   "seconds": 0.8
   }
  ],
  "G11": [
@@ -670,11 +1055,16 @@
   },
   {
    "f": "5500000000",
+   "family": "LSM1",
+   "max_power_condition": 3.043472644210366
+  },
+  {
+   "f": "5500000000",
    "kind": "LSM",
    "Q_over_k0sq": 193.75453221877265,
    "zeros": 2,
    "boxes": 1820,
-   "seconds": 2.5
+   "seconds": 1.5
   },
   {
    "f": "5800000000",
@@ -686,11 +1076,21 @@
   },
   {
    "f": "5800000000",
+   "family": "LSM1",
+   "max_power_condition": 3.8748573675206606
+  },
+  {
+   "f": "5800000000",
    "kind": "LSM",
    "Q_over_k0sq": 86.11312543056565,
    "zeros": 2,
    "boxes": 2192,
-   "seconds": 3.0
+   "seconds": 1.9
+  },
+  {
+   "f": "7000000000",
+   "family": "LSE0",
+   "max_power_condition": 1.0
   },
   {
    "f": "7000000000",
@@ -698,7 +1098,7 @@
    "Q_over_k0sq": 3.7804244606829154,
    "zeros": 1,
    "boxes": 176,
-   "seconds": 0.3
+   "seconds": 0.2
   },
   {
    "f": "7000000000",
@@ -706,7 +1106,12 @@
    "Q_over_k0sq": 38.27250019136249,
    "zeros": 1,
    "boxes": 371,
-   "seconds": 0.7
+   "seconds": 0.5
+  },
+  {
+   "f": "9000000000",
+   "family": "LSE0",
+   "max_power_condition": 1.0
   },
   {
    "f": "9000000000",
@@ -714,7 +1119,7 @@
    "Q_over_k0sq": 3.7804061058452203,
    "zeros": 1,
    "boxes": 319,
-   "seconds": 0.6
+   "seconds": 0.4
   },
   {
    "f": "9000000000",
@@ -722,7 +1127,7 @@
    "Q_over_k0sq": 17.010000085050002,
    "zeros": 3,
    "boxes": 874,
-   "seconds": 2.1
+   "seconds": 1.3
   }
  ],
  "G12": [
@@ -736,11 +1141,16 @@
   },
   {
    "f": "5000000000",
+   "family": "LSM1",
+   "max_power_condition": 2.973959142338836
+  },
+  {
+   "f": "5000000000",
    "kind": "LSM",
    "Q_over_k0sq": 348.55396849754186,
    "zeros": 2,
    "boxes": 703,
-   "seconds": 1.0
+   "seconds": 0.7
   },
   {
    "f": "5150000000",
@@ -752,11 +1162,26 @@
   },
   {
    "f": "5150000000",
+   "family": "LSM1",
+   "max_power_condition": 3.4328359058481506
+  },
+  {
+   "f": "5150000000",
    "kind": "LSM",
    "Q_over_k0sq": 522.8309527463127,
    "zeros": 2,
    "boxes": 838,
-   "seconds": 1.2
+   "seconds": 0.8
+  },
+  {
+   "f": "9000000000",
+   "family": "LSE0",
+   "max_power_condition": 1.0
+  },
+  {
+   "f": "9000000000",
+   "family": "LSE1",
+   "max_power_condition": 1.0
   },
   {
    "f": "9000000000",
@@ -768,11 +1193,26 @@
   },
   {
    "f": "9000000000",
+   "family": "LSM1",
+   "max_power_condition": 1.0886412961876317
+  },
+  {
+   "f": "9000000000",
    "kind": "LSM",
    "Q_over_k0sq": 45.900111077865596,
    "zeros": 2,
    "boxes": 361,
-   "seconds": 0.8
+   "seconds": 0.6
+  },
+  {
+   "f": "11400000000",
+   "family": "LSE0",
+   "max_power_condition": 1.0
+  },
+  {
+   "f": "11400000000",
+   "family": "LSE1",
+   "max_power_condition": 1.0
   },
   {
    "f": "11400000000",
@@ -784,147 +1224,654 @@
   },
   {
    "f": "11400000000",
+   "family": "LSM1",
+   "max_power_condition": 1.0050592982408404
+  },
+  {
+   "f": "11400000000",
+   "family": "LSM2",
+   "max_power_condition": 1.0050603468870043
+  },
+  {
+   "f": "11400000000",
    "kind": "LSM",
    "Q_over_k0sq": 30.6000740519104,
    "zeros": 2,
    "boxes": 286,
-   "seconds": 0.6
+   "seconds": 0.5
   }
  ],
  "G13": [
   {
    "f": "8000000000",
-   "kind": "TE (ferrite)",
+   "kind": "TE (n = 0)",
    "B_over_k0": 18.243325891594168,
    "zeros": 2,
    "boxes": 1006,
-   "seconds": 1.3
+   "seconds": 0.9
+  },
+  {
+   "f": "8000000000",
+   "kind": "HYB1",
+   "method": "candidates of two solvers, Krawczyk-certified",
+   "zeros": 2,
+   "seconds": 0.2
+  },
+  {
+   "f": "8000000000",
+   "max_power_condition": 1.04274556971223
   },
   {
    "f": "9000000000",
-   "kind": "TE (ferrite)",
+   "kind": "TE (n = 0)",
    "B_over_k0": 18.24332589159417,
    "zeros": 4,
    "boxes": 938,
-   "seconds": 1.3
+   "seconds": 1.1
+  },
+  {
+   "f": "9000000000",
+   "kind": "HYB1",
+   "method": "candidates of two solvers, Krawczyk-certified",
+   "zeros": 2,
+   "seconds": 0.6
+  },
+  {
+   "f": "9000000000",
+   "max_power_condition": 1.0569387133602808
   },
   {
    "f": "10500000000",
-   "kind": "TE (ferrite)",
+   "kind": "TE (n = 0)",
    "B_over_k0": 18.243325891594168,
    "zeros": 4,
    "boxes": 710,
-   "seconds": 1.3
+   "seconds": 1.0
+  },
+  {
+   "f": "10500000000",
+   "kind": "HYB1",
+   "method": "candidates of two solvers, Krawczyk-certified",
+   "zeros": 4,
+   "seconds": 0.8
+  },
+  {
+   "f": "10500000000",
+   "kind": "HYB2",
+   "method": "candidates of two solvers, Krawczyk-certified",
+   "zeros": 2,
+   "seconds": 0.2
+  },
+  {
+   "f": "10500000000",
+   "max_power_condition": 1.3887504667666413
   },
   {
    "f": "12000000000",
-   "kind": "TE (ferrite)",
+   "kind": "TE (n = 0)",
    "B_over_k0": 18.750705440062873,
    "zeros": 6,
    "boxes": 1206,
-   "seconds": 2.2
+   "seconds": 1.6
+  },
+  {
+   "f": "12000000000",
+   "kind": "HYB1",
+   "method": "candidates of two solvers, Krawczyk-certified",
+   "zeros": 4,
+   "seconds": 0.5
+  },
+  {
+   "f": "12000000000",
+   "kind": "HYB2",
+   "method": "candidates of two solvers, Krawczyk-certified",
+   "zeros": 2,
+   "seconds": 0.2
+  },
+  {
+   "f": "12000000000",
+   "max_power_condition": 1.447692713338623
   }
  ],
  "G14": [
   {
    "f": "8500000000",
-   "kind": "TE (ferrite)",
+   "kind": "TE (n = 0)",
    "B_over_k0": 16.18278359072824,
    "zeros": 4,
    "boxes": 27686,
-   "seconds": 34.4
+   "seconds": 22.0
+  },
+  {
+   "f": "8500000000",
+   "kind": "HYB1",
+   "method": "candidates of two solvers, Krawczyk-certified",
+   "zeros": 4,
+   "seconds": 1.8
+  },
+  {
+   "f": "8500000000",
+   "max_power_condition": 1.0016818464602106
   },
   {
    "f": "10000000000",
-   "kind": "TE (ferrite)",
+   "kind": "TE (n = 0)",
    "B_over_k0": 18.156020135645143,
    "zeros": 4,
    "boxes": 10524,
-   "seconds": 13.2
+   "seconds": 9.1
+  },
+  {
+   "f": "10000000000",
+   "kind": "HYB1",
+   "method": "candidates of two solvers, Krawczyk-certified",
+   "zeros": 4,
+   "seconds": 1.4
+  },
+  {
+   "f": "10000000000",
+   "max_power_condition": 1.0
   },
   {
    "f": "11500000000",
-   "kind": "TE (ferrite)",
+   "kind": "TE (n = 0)",
    "B_over_k0": 19.25424077144959,
    "zeros": 4,
    "boxes": 5760,
-   "seconds": 7.2
+   "seconds": 4.9
+  },
+  {
+   "f": "11500000000",
+   "kind": "HYB1",
+   "method": "candidates of two solvers, Krawczyk-certified",
+   "zeros": 4,
+   "seconds": 3.2
+  },
+  {
+   "f": "11500000000",
+   "kind": "HYB2",
+   "method": "candidates of two solvers, Krawczyk-certified",
+   "zeros": 4,
+   "seconds": 3.2
+  },
+  {
+   "f": "11500000000",
+   "max_power_condition": 1.8541931171513029
   },
   {
    "f": "12000000000",
-   "kind": "TE (ferrite)",
+   "kind": "TE (n = 0)",
    "B_over_k0": 19.51650141933226,
    "zeros": 4,
    "boxes": 5264,
-   "seconds": 7.4
+   "seconds": 4.6
+  },
+  {
+   "f": "12000000000",
+   "kind": "HYB1",
+   "method": "candidates of two solvers, Krawczyk-certified",
+   "zeros": 4,
+   "seconds": 2.0
+  },
+  {
+   "f": "12000000000",
+   "kind": "HYB2",
+   "method": "candidates of two solvers, Krawczyk-certified",
+   "zeros": 4,
+   "seconds": 3.1
+  },
+  {
+   "f": "12000000000",
+   "max_power_condition": 1.255729838888063
   }
  ],
  "G15": [
   {
    "f": "9000000000",
-   "kind": "TE (ferrite)",
+   "kind": "TE (n = 0)",
    "B_over_k0": 35.540416849361286,
    "zeros": 2,
    "boxes": 1090,
-   "seconds": 1.1
+   "seconds": 0.8
+  },
+  {
+   "f": "9000000000",
+   "kind": "HYB1",
+   "method": "candidates of two solvers, Krawczyk-certified",
+   "zeros": 2,
+   "seconds": 0.2
+  },
+  {
+   "f": "9000000000",
+   "max_power_condition": 1.732977362055917
   },
   {
    "f": "10250000000",
-   "kind": "TE (ferrite)",
+   "kind": "TE (n = 0)",
    "B_over_k0": 16.406689873857665,
    "zeros": 4,
    "boxes": 818,
+   "seconds": 0.7
+  },
+  {
+   "f": "10250000000",
+   "max_power_condition": 1.3919750327348064
+  },
+  {
+   "f": "11000000000",
+   "kind": "TE (n = 0)",
+   "B_over_k0": 54.806220907996504,
+   "zeros": 1,
+   "boxes": 1480,
    "seconds": 0.9
   },
   {
    "f": "11000000000",
-   "kind": "TE (ferrite)",
-   "B_over_k0": 54.806220907996504,
-   "zeros": 1,
-   "boxes": 1480,
-   "seconds": 1.4
+   "max_power_condition": 1.0
   },
   {
    "f": "11500000000",
-   "kind": "TE (ferrite)",
+   "kind": "TE (n = 0)",
    "B_over_k0": 63.89877218864086,
    "zeros": 4,
    "boxes": 2616,
-   "seconds": 1.8
+   "seconds": 1.3
+  },
+  {
+   "f": "11500000000",
+   "kind": "HYB1",
+   "method": "candidates of two solvers, Krawczyk-certified",
+   "zeros": 2,
+   "seconds": 0.2
+  },
+  {
+   "f": "11500000000",
+   "max_power_condition": 1.3630418989165483
   }
  ],
  "G16": [
   {
    "f": "5000000000",
-   "kind": "TE (ferrite)",
+   "kind": "TE (n = 0)",
    "B_over_k0": 14.752654489343318,
    "zeros": 2,
    "boxes": 1722,
-   "seconds": 1.8
+   "seconds": 1.2
+  },
+  {
+   "f": "5000000000",
+   "kind": "HYB1",
+   "method": "candidates of two solvers, Krawczyk-certified",
+   "zeros": 2,
+   "seconds": 0.2
+  },
+  {
+   "f": "5000000000",
+   "max_power_condition": 1.2340913954332742
   },
   {
    "f": "6000000000",
-   "kind": "TE (ferrite)",
+   "kind": "TE (n = 0)",
    "B_over_k0": 14.165809496993582,
    "zeros": 4,
    "boxes": 8336,
-   "seconds": 9.8
+   "seconds": 6.3
+  },
+  {
+   "f": "6000000000",
+   "kind": "HYB1",
+   "method": "candidates of two solvers, Krawczyk-certified",
+   "zeros": 2,
+   "seconds": 0.2
+  },
+  {
+   "f": "6000000000",
+   "max_power_condition": 1.1699591988218592
   },
   {
    "f": "7000000000",
-   "kind": "TE (ferrite)",
+   "kind": "TE (n = 0)",
    "B_over_k0": 14.165809496993582,
    "zeros": 4,
    "boxes": 1474,
-   "seconds": 2.0
+   "seconds": 1.5
+  },
+  {
+   "f": "7000000000",
+   "kind": "HYB1",
+   "method": "candidates of two solvers, Krawczyk-certified",
+   "zeros": 2,
+   "seconds": 0.2
+  },
+  {
+   "f": "7000000000",
+   "kind": "HYB2",
+   "method": "candidates of two solvers, Krawczyk-certified",
+   "zeros": 2,
+   "seconds": 0.2
+  },
+  {
+   "f": "7000000000",
+   "max_power_condition": 1.7618564679987405
   },
   {
    "f": "8000000000",
-   "kind": "TE (ferrite)",
+   "kind": "TE (n = 0)",
    "B_over_k0": 15.785050351146285,
    "zeros": 4,
    "boxes": 1030,
-   "seconds": 1.6
+   "seconds": 1.2
+  },
+  {
+   "f": "8000000000",
+   "kind": "HYB1",
+   "method": "candidates of two solvers, Krawczyk-certified",
+   "zeros": 4,
+   "seconds": 0.8
+  },
+  {
+   "f": "8000000000",
+   "kind": "HYB2",
+   "method": "candidates of two solvers, Krawczyk-certified",
+   "zeros": 2,
+   "seconds": 0.2
+  },
+  {
+   "f": "8000000000",
+   "max_power_condition": 1.320177143067268
   }
- ]
+ ],
+ "G17": [
+  {
+   "f": "7500000000",
+   "kind": "TE (n = 0)",
+   "B_over_k0": 6.571471084614249,
+   "zeros": 2,
+   "boxes": 250,
+   "seconds": 0.5
+  },
+  {
+   "f": "7500000000",
+   "kind": "HYB1",
+   "method": "candidates of two solvers, Krawczyk-certified",
+   "zeros": 2,
+   "seconds": 0.6
+  },
+  {
+   "f": "7500000000",
+   "max_power_condition": 4.278705245309736
+  },
+  {
+   "f": "8500000000",
+   "kind": "TE (n = 0)",
+   "B_over_k0": 6.57147108461425,
+   "zeros": 2,
+   "boxes": 276,
+   "seconds": 0.6
+  },
+  {
+   "f": "8500000000",
+   "max_power_condition": 1.0
+  },
+  {
+   "f": "10500000000",
+   "kind": "TE (n = 0)",
+   "B_over_k0": 5.054977757395575,
+   "zeros": 2,
+   "boxes": 306,
+   "seconds": 0.7
+  },
+  {
+   "f": "10500000000",
+   "max_power_condition": 1.0
+  },
+  {
+   "f": "12500000000",
+   "kind": "TE (n = 0)",
+   "B_over_k0": 5.054977757395576,
+   "zeros": 4,
+   "boxes": 656,
+   "seconds": 1.3
+  },
+  {
+   "f": "12500000000",
+   "max_power_condition": 1.0
+  }
+ ],
+ "G18": [
+  {
+   "f": "4500000000",
+   "kind": "TE (n = 0)",
+   "B_over_k0": 6.447796766952014,
+   "zeros": 2,
+   "boxes": 300,
+   "seconds": 0.5
+  },
+  {
+   "f": "4500000000",
+   "kind": "HYB1",
+   "method": "candidates of two solvers, Krawczyk-certified",
+   "zeros": 1,
+   "seconds": 0.1
+  },
+  {
+   "f": "4500000000",
+   "kind": "HYB2",
+   "method": "candidates of two solvers, Krawczyk-certified",
+   "zeros": 1,
+   "seconds": 0.6
+  },
+  {
+   "f": "4500000000",
+   "max_power_condition": 3.570368909280918
+  },
+  {
+   "f": "5500000000",
+   "kind": "TE (n = 0)",
+   "B_over_k0": 6.447796766952015,
+   "zeros": 2,
+   "boxes": 730,
+   "seconds": 0.8
+  },
+  {
+   "f": "5500000000",
+   "max_power_condition": 1.0
+  },
+  {
+   "f": "6500000000",
+   "kind": "TE (n = 0)",
+   "B_over_k0": 6.447796766952015,
+   "zeros": 2,
+   "boxes": 764,
+   "seconds": 0.8
+  },
+  {
+   "f": "6500000000",
+   "max_power_condition": 1.0
+  },
+  {
+   "f": "8200000000",
+   "kind": "TE (n = 0)",
+   "B_over_k0": 4.959843666886166,
+   "zeros": 4,
+   "boxes": 908,
+   "seconds": 1.1
+  },
+  {
+   "f": "8200000000",
+   "kind": "HYB1",
+   "method": "candidates of two solvers, Krawczyk-certified",
+   "zeros": 2,
+   "seconds": 0.2
+  },
+  {
+   "f": "8200000000",
+   "max_power_condition": 1.0
+  }
+ ],
+ "exhaustive_hybrid_checks": {
+  "note": "branch-and-bound over |Re gamma| <= 1.02 A, |Im gamma| <= 4 k0 sqrt(m) + 2 k_y + 400 (hybacb.modes), run for these families; each count equals the candidate count",
+  "runs": [
+   {
+    "guide": "G13",
+    "f": "8000000000",
+    "family": "HYB1",
+    "forward": 1,
+    "reverse": 1,
+    "boxes": 2794
+   },
+   {
+    "guide": "G13",
+    "f": "8000000000",
+    "family": "HYB2",
+    "forward": 0,
+    "reverse": 0,
+    "boxes": 2762
+   },
+   {
+    "guide": "G13",
+    "f": "8000000000",
+    "family": "HYB3",
+    "forward": 0,
+    "reverse": 0,
+    "boxes": 12630
+   },
+   {
+    "guide": "G14",
+    "f": "8500000000",
+    "family": "HYB1",
+    "forward": 2,
+    "reverse": 2,
+    "boxes": 52524
+   },
+   {
+    "guide": "G15",
+    "f": "9000000000",
+    "family": "HYB1",
+    "forward": 1,
+    "reverse": 1,
+    "boxes": 5432
+   },
+   {
+    "guide": "G15",
+    "f": "9000000000",
+    "family": "HYB2",
+    "forward": 0,
+    "reverse": 0,
+    "boxes": 3580
+   },
+   {
+    "guide": "G15",
+    "f": "9000000000",
+    "family": "HYB3",
+    "forward": 0,
+    "reverse": 0,
+    "boxes": 3024
+   },
+   {
+    "guide": "G15",
+    "f": "9000000000",
+    "family": "HYB4",
+    "forward": 0,
+    "reverse": 0,
+    "boxes": 3792
+   },
+   {
+    "guide": "G15",
+    "f": "9000000000",
+    "family": "HYB5",
+    "forward": 0,
+    "reverse": 0,
+    "boxes": 4588
+   },
+   {
+    "guide": "G15",
+    "f": "9000000000",
+    "family": "HYB6",
+    "forward": 0,
+    "reverse": 0,
+    "boxes": 5784
+   },
+   {
+    "guide": "G15",
+    "f": "9000000000",
+    "family": "HYB7",
+    "forward": 0,
+    "reverse": 0,
+    "boxes": 7272
+   },
+   {
+    "guide": "G15",
+    "f": "9000000000",
+    "family": "HYB8",
+    "forward": 0,
+    "reverse": 0,
+    "boxes": 8892
+   },
+   {
+    "guide": "G15",
+    "f": "9000000000",
+    "family": "HYB9",
+    "forward": 0,
+    "reverse": 0,
+    "boxes": 12380
+   },
+   {
+    "guide": "G15",
+    "f": "9000000000",
+    "family": "HYB10",
+    "forward": 0,
+    "reverse": 0,
+    "boxes": 15274
+   },
+   {
+    "guide": "G15",
+    "f": "9000000000",
+    "family": "HYB11",
+    "forward": 0,
+    "reverse": 0,
+    "boxes": 21206
+   },
+   {
+    "guide": "G16",
+    "f": "5000000000",
+    "family": "HYB1",
+    "forward": 1,
+    "reverse": 1,
+    "boxes": 5172
+   },
+   {
+    "guide": "G16",
+    "f": "5000000000",
+    "family": "HYB2",
+    "forward": 0,
+    "reverse": 0,
+    "boxes": 11386
+   },
+   {
+    "guide": "G16",
+    "f": "5000000000",
+    "family": "HYB3",
+    "forward": 0,
+    "reverse": 0,
+    "boxes": 66838
+   },
+   {
+    "guide": "G18",
+    "f": "4500000000",
+    "family": "HYB1",
+    "forward": 1,
+    "reverse": 0,
+    "boxes": 35304
+   },
+   {
+    "guide": "G13",
+    "f": "12000000000",
+    "family": "HYB1",
+    "forward": 2,
+    "reverse": 2,
+    "boxes": 12364
+   }
+  ]
+ }
 }

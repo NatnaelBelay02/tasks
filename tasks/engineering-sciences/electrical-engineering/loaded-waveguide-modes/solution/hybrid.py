@@ -165,9 +165,15 @@ class Hyb:
         return s[0, 0] * s[1, 1] - s[0, 1] * s[1, 0]
 
     def polish(self, g):
+        """Secant iteration in mpmath; converged when the step is below 1e-30 |gamma| (D itself can be
+        of any size, so its value is not used as the stopping test)."""
         with mp.workdps(45):
-            r = mp.findroot(self.value_mp, mp.mpc(g.real, g.imag), tol=mp.mpf(10) ** -32)
-            return complex(r)
+            x0 = mp.mpc(g.real, g.imag)
+            r = mp.findroot(self.value_mp, x0, tol=mp.mpf(10) ** -60, verify=False, maxsteps=60)
+            r2 = mp.findroot(self.value_mp, r, tol=mp.mpf(10) ** -60, verify=False, maxsteps=10)
+            if abs(r2 - r) > mp.mpf(10) ** -25 * abs(r) or abs(r - x0) > 1e-3 * abs(x0):
+                raise RuntimeError('polishing did not converge near %r in %s' % (g, self.G.id))
+            return complex(r2)
 
     # ---- modal power per layer ----
     def power(self, g, nodes=24):
