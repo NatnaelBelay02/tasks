@@ -1,4 +1,4 @@
-"""Input data: the 12 guides of guides.json.
+"""Input data: the 18 guides of guides.json.
 
 usage: python3 gen_guides.py guides.json
 
@@ -49,6 +49,14 @@ def yig(t, h0, sign):
 def argon(t, fp, nu, ne, pa):
     return {'thickness': t, 'material': {'type': 'plasma',
             'name': 'argon discharge, n_e = %s m^-3, %s Pa' % (ne, pa), 'f_p': fp, 'collision_frequency': nu}}
+
+
+def magargon(t, fp, nu, fc, sign, ne, pa, gauss):
+    """Argon discharge in a static magnetic field B0 = gauss (G) along +y or -y: electron cyclotron
+    frequency f_c = e B0 / (2 pi m_e) = 2.799 MHz/G x B0, rounded to the stated value."""
+    return {'thickness': t, 'material': {'type': 'magnetized_plasma',
+            'name': 'magnetised argon discharge, n_e = %s m^-3, %s Pa, B0 = %s G' % (ne, pa, gauss), 'f_p': fp,
+            'collision_frequency': nu, 'cyclotron_frequency': fc, 'bias_direction': sign}}
 
 
 def rest(wr, layers):
@@ -122,6 +130,16 @@ def guides():
     L.append(diel(rest('WR-137', L), 'air'))
     G.append(g('G16', 'WR-137', 'C-band ferrite phase shifter, 3 mm YIG slab (300 Oe, +y) 5 mm from a side wall, backed by 3 mm RO3006',
                L, FT['G16']))
+    # magnetised discharges (static B0 along y): gyroelectric, nonreciprocal hybrid modes
+    L = [diel('0.004', 'air'), diel('0.001', 'quartz'), magargon('0.004', '11e9', '3e8', '4.2e9', '+y', '1.5e18', '12', '1500'),
+         diel('0.001', 'quartz')]
+    L.append(diel(rest('WR-90', L), 'air'))
+    G.append(g('G17', 'WR-90', 'magnetised-plasma phase shifter, 4 mm argon discharge between 1 mm quartz plates, 4 mm from a side wall, in a 1500 G field along +y',
+               L, ['7.5e9', '8.5e9', '10.5e9', '12.5e9']))
+    L = [magargon('0.006', '7e9', '2e8', '2.8e9', '-y', '6.1e17', '8', '1000'), diel('0.0015', 'quartz'), diel('0.003', '3006')]
+    L.append(diel(rest('WR-137', L), 'air'))
+    G.append(g('G18', 'WR-137', 'magnetised plasma against a side wall, 6 mm argon discharge behind a 1.5 mm quartz window, then 3 mm RO3006, in a 1000 G field along -y',
+               L, ['4.5e9', '5.5e9', '6.5e9', '8.2e9']))
     return G
 
 
@@ -149,6 +167,11 @@ def dumps(gs):
             elif m['type'] == 'plasma':
                 mat = '{"type": "plasma", "name": %s, "f_p": %s, "collision_frequency": %s}' % (
                     json.dumps(m['name']), num(m['f_p']), num(m['collision_frequency']))
+            elif m['type'] == 'magnetized_plasma':
+                mat = ('{"type": "magnetized_plasma", "name": %s, "f_p": %s, "collision_frequency": %s, '
+                       '"cyclotron_frequency": %s, "bias_direction": "%s"}') % (
+                    json.dumps(m['name']), num(m['f_p']), num(m['collision_frequency']), num(m['cyclotron_frequency']),
+                    m['bias_direction'])
             else:
                 mat = ('{"type": "ferrite", "name": %s, "eps": %s, "loss_tangent": %s, "saturation_magnetization_gauss": %s, '
                        '"linewidth_oe": %s, "bias_field_oe": %s, "bias_direction": "%s"}') % (

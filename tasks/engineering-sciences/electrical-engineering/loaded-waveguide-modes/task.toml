@@ -4,10 +4,10 @@ artifacts = ["/root/results/modes.json"]
 
 [task]
 name = "turing/loaded-waveguide-modes"
-description = "Mode analysis of rectangular waveguides loaded with lossy microwave laminates, argon discharge cells and magnetised YIG slabs: every mode with attenuation at most 200 dB/m at each test frequency and in each direction, as alpha + j beta (dispersion relations to be derived; nonreciprocal ferrite guides, backward waves, evanescent modes, lossy surface waves)."
-version = "3.0.0"
+description = "Mode analysis of rectangular waveguides loaded with lossy microwave laminates, argon discharge cells, magnetised YIG slabs and magnetised argon discharges: every mode with attenuation at most 200 dB/m at each test frequency and in each direction, as alpha + j beta with its per-layer power split (dispersion relations and fields to be derived; nonreciprocal hybrid modes of gyrotropic guides, one-way surface magnetoplasmons, backward waves, evanescent modes, lossy surface waves)."
+version = "4.0.0"
 authors = [{ name = "Abdrahim Temami", email = "abdrahim.t@turing.com" }]
-keywords = ["waveguides", "microwave-engineering", "lse-lsm-modes", "transverse-resonance", "lossy-waveguides", "plasma-loaded-waveguides", "ferrite-devices", "nonreciprocal-waveguides", "surface-waves", "backward-waves", "complex-modes", "electromagnetics"]
+keywords = ["waveguides", "microwave-engineering", "lse-lsm-modes", "transverse-resonance", "lossy-waveguides", "plasma-loaded-waveguides", "ferrite-devices", "magnetoplasma", "hybrid-modes", "poynting-flux", "nonreciprocal-waveguides", "surface-waves", "backward-waves", "complex-modes", "electromagnetics"]
 
 [metadata]
 author_name = "Abdrahim Temami"
@@ -15,8 +15,8 @@ author_email = "abdrahim.t@turing.com"
 domain = "engineering-sciences"
 category = "electrical-engineering"
 subcategory = "electromagnetics"
-tags = ["waveguides", "microwave-engineering", "lse-lsm-modes", "transverse-resonance", "lossy-waveguides", "plasma-loaded-waveguides", "ferrite-devices", "nonreciprocal-waveguides", "surface-waves", "backward-waves", "complex-modes", "electromagnetics"]
-expert_time_estimate_hours = 20.0
+tags = ["waveguides", "microwave-engineering", "lse-lsm-modes", "transverse-resonance", "lossy-waveguides", "plasma-loaded-waveguides", "ferrite-devices", "magnetoplasma", "hybrid-modes", "poynting-flux", "nonreciprocal-waveguides", "surface-waves", "backward-waves", "complex-modes", "electromagnetics"]
+expert_time_estimate_hours = 30.0
 reward_type = "binary"
 source = "Written by PhD annotators"
 public_overlap = "None"

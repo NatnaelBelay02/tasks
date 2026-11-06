@@ -27,6 +27,8 @@ import sys
 import mpmath as mp
 import numpy as np
 
+import hybrid
+
 C = 299792458.0
 DB = 20 / math.log(10)
 A_DB = 200.0
@@ -50,12 +52,18 @@ class Guide:
             elif m['type'] == 'plasma':
                 self.layers.append((float(d), 'p', float(m['f_p']), float(m['collision_frequency'])))
                 self.mlayers.append((mp.mpf(str(d)), 'p', mp.mpf(str(m['f_p'])), mp.mpf(str(m['collision_frequency']))))
+            elif m['type'] == 'magnetized_plasma':
+                sg = 1 if m['bias_direction'] == '+y' else -1
+                vals = [m['f_p'], m['collision_frequency'], m['cyclotron_frequency']]
+                self.layers.append((float(d), 'm') + tuple(float(v) for v in vals) + (sg,))
+                self.mlayers.append((mp.mpf(str(d)), 'm') + tuple(mp.mpf(str(v)) for v in vals) + (sg,))
             else:
                 sg = 1 if m['bias_direction'] == '+y' else -1
                 vals = [m['eps'], m['loss_tangent'], m['saturation_magnetization_gauss'], m['bias_field_oe'], m['linewidth_oe']]
                 self.layers.append((float(d), 'f') + tuple(float(v) for v in vals) + (sg,))
                 self.mlayers.append((mp.mpf(str(d)), 'f') + tuple(mp.mpf(str(v)) for v in vals) + (sg,))
-        self.ferrite = any(L[1] == 'f' for L in self.layers)
+        self.gyro = any(L[1] in ('f', 'm') for L in self.layers)
+        self.b_str = rec['b']
         self.tests = rec['test_frequencies']
 
     @staticmethod
@@ -136,128 +144,6 @@ class Guide:
             fm = mp.mpf(str(f))
             r = mp.findroot(lambda x: self.dfun_mp(kind, x, fm), mp.mpc(q.real, q.imag), tol=mp.mpf(10) ** -40)
             return complex(r)
-
-
-# ------------------------------------------------------------ ferrite guides: TE modes ---
-GYRO = 2.8e6     # Hz per oersted
-
-
-def polder(L, f, lib=cmath):
-    """mu, kappa of a y-biased ferrite layer (mu = 1, kappa = 0 for the other materials)."""
-    if L[1] != 'f':
-        return 1.0, 0.0
-    _, _, e, td, Ms, H0, dH, sg = L
-    g = mp.mpf('2.8e6') if lib is mp else GYRO
-    f0 = g * H0 + 1j * g * dH / 2
-    fm = g * Ms
-    den = f0 * f0 - f * f
-    return 1 + f0 * fm / den, sg * f * fm / den
-
-
-def te_value(G, g, f):
-    """D_TE(gamma) up to a positive factor: E(a) for E(0) = 0, P(0) = 1 with E'' + (k0^2 eps mu_e + gamma^2) E = 0
-    and E, P = (E' - j tau gamma E) / mu_e continuous."""
-    k02 = (2 * math.pi * f / C) ** 2
-    E, P = 0j, 1 + 0j
-    for L in G.layers:
-        d = L[0]
-        mu, ka = polder(L, f)
-        mue = (mu * mu - ka * ka) / mu
-        tau = ka / mu
-        Ep = mue * P + 1j * tau * g * E
-        K2 = k02 * Guide.eps_of(L, f) * mue + g * g
-        kap = cmath.sqrt(-K2)
-        if kap.real < 0:
-            kap = -kap
-        if abs(kap * d) < 1e-8:
-            c, s_ = 1.0, d
-        else:
-            e1 = cmath.exp(kap * d - kap.real * d)
-            e2 = cmath.exp(-kap * d - kap.real * d)
-            c, s_ = (e1 + e2) / 2, (e1 - e2) / (2 * kap)
-        En, Epn = c * E + s_ * Ep, kap * kap * s_ * E + c * Ep
-        E, P = En, (Epn - 1j * tau * g * En) / mue
-        m = max(abs(E), abs(P), 1e-300)
-        E, P = E / m, P / m
-    return E
-
-
-def te_value_mp(G, g, f):
-    k02 = (2 * mp.pi * f / C) ** 2
-    E, P = mp.mpc(0), mp.mpc(1)
-    for L in G.mlayers:
-        d = L[0]
-        mu, ka = polder(L, f, lib=mp)
-        mue = (mu * mu - ka * ka) / mu
-        tau = ka / mu
-        Ep = mue * P + 1j * tau * g * E
-        K2 = k02 * Guide.eps_of(L, f, lib=mp) * mue + g * g
-        Ks = mp.sqrt(K2)
-        c = mp.cos(Ks * d)
-        s_ = mp.sin(Ks * d) / Ks if Ks != 0 else d
-        En, Epn = c * E + s_ * Ep, -K2 * s_ * E + c * Ep
-        E, P = En, (Epn - 1j * tau * g * En) / mue
-    return E
-
-
-def te_winding(G, f, corners):
-    total = 0.0
-    for a, b in zip(corners, corners[1:] + corners[:1]):
-        t, vt, h = 0.0, te_value(G, a, f), 1 / 64
-        while t < 1:
-            h = min(h, 1 - t)
-            v1 = te_value(G, a + (b - a) * (t + h), f)
-            dphi = cmath.phase(v1 / vt)
-            if abs(dphi) > 0.3 and h > 1e-13:
-                h /= 2
-                continue
-            total += dphi
-            t += h
-            vt = v1
-            if abs(dphi) < 0.08:
-                h *= 1.5
-    return int(round(total / (2 * math.pi)))
-
-
-def te_zeros_rect(G, f, fm, r0, r1, i0, i1, depth=0):
-    n = te_winding(G, f, [complex(r0, i0), complex(r1, i0), complex(r1, i1), complex(r0, i1)])
-    if n == 0:
-        return []
-    size = max(r1 - r0, i1 - i0)
-    if n == 1 and size < 1e-4 * max(abs(complex(r0, i0)), abs(complex(r1, i1)), 1.0):
-        with mp.workdps(40):
-            z = mp.findroot(lambda x: te_value_mp(G, x, fm), mp.mpc((r0 + r1) / 2, (i0 + i1) / 2), tol=mp.mpf(10) ** -30)
-        return [complex(z)]
-    if depth > 120:
-        raise RuntimeError('cannot isolate TE zeros in %s' % G.id)
-    if (r1 - r0) >= (i1 - i0):
-        m = (r0 + r1) / 2
-        return te_zeros_rect(G, f, fm, r0, m, i0, i1, depth + 1) + te_zeros_rect(G, f, fm, m, r1, i0, i1, depth + 1)
-    m = (i0 + i1) / 2
-    return te_zeros_rect(G, f, fm, r0, r1, i0, m, depth + 1) + te_zeros_rect(G, f, fm, r0, r1, m, i1, depth + 1)
-
-
-def te_modes(G, fs):
-    """(forward, reverse) lists of [beta, alpha] for the y-independent TE modes of a ferrite guide."""
-    f = float(fs)
-    fm = mp.mpf(str(fs))
-    k0 = 2 * math.pi * f / C
-    m = max(abs(Guide.eps_of(L, f) * (lambda mk: (mk[0] ** 2 - mk[1] ** 2) / mk[0])(polder(L, f))) for L in G.layers)
-    bmax = 4 * k0 * math.sqrt(m) + 200
-    zs = []
-    nstrip = 48
-    for k in range(nstrip):
-        b0 = -bmax + 2 * bmax * k / nstrip + 1e-3
-        b1 = -bmax + 2 * bmax * (k + 1) / nstrip + 1e-3
-        for r0, r1 in ((-A1, -1e-6), (1e-6, A1)):
-            zs += te_zeros_rect(G, f, fm, r0, r1, b0, b1)
-    fwd, rev = [], []
-    for z in zs:
-        if z.real > 0 and z.real <= A:
-            fwd.append([z.imag, z.real])
-        elif z.real < 0 and -z.real <= A:
-            rev.append([-z.imag, -z.real])
-    return fwd, rev
 
 
 # ------------------------------------------------------------ argument principle ---
@@ -377,14 +263,41 @@ def all_zeros(G, kind, f):
     return out
 
 
-def solve_guide(rec):
-    G = Guide(rec)
+def gyro_guide(G, rec):
+    """Gyrotropic guide: LSE0 (n = 0, TE) and the hybrid families HYB<n>, forward and reverse differ."""
     res = []
     for fs in rec['test_frequencies']:
-        if G.ferrite:
-            fwd, rev = te_modes(G, fs)
-            res.append({'forward': {'LSE0': fwd} if fwd else {}, 'reverse': {'LSE0': rev} if rev else {}})
-            continue
+        entry = {'forward': {}, 'reverse': {}}
+        n = 0
+        while True:
+            H, fwd, rev = hybrid.family_modes(G, n, fs, A, A1)
+            name = 'LSE0' if n == 0 else 'HYB%d' % n
+            for dr, lst, sign in (('forward', fwd, 1), ('reverse', rev, -1)):
+                if lst:
+                    entry[dr][name] = [[g.imag, g.real, H.power(sign * g)] for g in lst]
+            # past the last family that can have alpha <= A: k_y^2 beyond k0^2 max|eps mu| + A^2
+            if n >= 1 and not fwd and not rev and H.ky ** 2 > H.k02 * hybrid_reach(H) + A * A:
+                break
+            n += 1
+        res.append(entry)
+        print(G.id, fs, {d: {k: len(v) for k, v in e.items()} for d, e in entry.items()}, flush=True)
+    return {'modes': res}
+
+
+def hybrid_reach(H):
+    m = 1.0
+    for e1, e3, e2, mu, ka in H.ten:
+        mue = (mu * mu - ka * ka) / mu
+        m = max(m, max(abs(e1), abs(e3)) * max(abs(mu), abs(mue), 1))
+    return m
+
+
+def solve_guide(rec):
+    G = Guide(rec)
+    if G.gyro:
+        return gyro_guide(G, rec)
+    res = []
+    for fs in rec['test_frequencies']:
         f = float(fs)
         entry = {}
         for kind in ('LSE', 'LSM'):
@@ -404,12 +317,14 @@ def solve_guide(rec):
                     if g.real < 0:
                         g = -g
                     if g.real <= A:
-                        lst.append([g.imag, g.real])
+                        lst.append(g)
                 if lst:
-                    entry['%s%d' % (kind, n)] = lst
+                    H = hybrid.Hyb(G, n, fs)
+                    entry['%s%d' % (kind, n)] = [[g.imag, g.real, H.power(g)] for g in lst]
                 n += 1
-        # reciprocal guide: the modes towards -z have the same gamma
+        # reciprocal guide: the modes towards -z have the same gamma and the same power split
         res.append({'forward': entry, 'reverse': copy.deepcopy(entry)})
+        print(G.id, fs, {k: len(v) for k, v in entry.items()}, flush=True)
     return {'modes': res}
 
 
@@ -420,7 +335,6 @@ def main():
     out = {}
     for rec in guides:
         out[rec['id']] = solve_guide(rec)
-        print(rec['id'], 'done', flush=True)
     with open(dst, 'w') as fh:
         json.dump({'guides': out}, fh)
 

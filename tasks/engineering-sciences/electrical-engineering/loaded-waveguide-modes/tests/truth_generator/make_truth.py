@@ -21,12 +21,71 @@ import time
 from flint import acb, arb, ctx
 
 import certify2 as CZ
+import hybacb as HY
+import power as PW
 from wgacb import Guide
 
 ctx.prec = 256
 A = 10 * arb(10).log()                # 200 dB/m in Np/m
 A1 = float((A * arb('1.02')).mid())
 MARGIN = arb('0.02')
+COND = 30          # guarantee stated in the instruction: sum |P_i| <= 30 |P| for every reported mode
+
+
+def with_power(G, n, f, lst, sign=1):
+    """[beta, alpha, fractions] strings for the modes gamma in lst (fields of the zero sign * gamma)."""
+    out, worst = [], 0.0
+    for g in lst:
+        fr, cond = PW.fractions(G, n, g * sign, f)
+        assert cond < COND, (G.id, n, 'power split too ill-conditioned', cond)
+        for x in fr:
+            assert float(x.rad()) < 1e-9, (G.id, n, 'power fraction not resolved', x)
+        worst = max(worst, float(cond.upper()))
+        out.append([s25(g.imag), s25(g.real), [x.mid().str(17, radius=False) for x in fr]])
+    return out, worst
+
+
+def hybrid_families(G, f, fs, dg):
+    """Certified forward / reverse modes of the hybrid families n = 1, 2, ... of a gyrotropic guide."""
+    fwd_all, rev_all = {}, {}
+    k0, m = HY.reach(G, fs)
+    n, empty = 1, 0
+    worst = 0.0
+    while True:
+        H = HY.HybGuide(G, n)
+        ky = float(H.ky.mid())
+        B = 4 * k0 * math.sqrt(m) + 2 * ky + 400
+        t = time.time()
+        zeros, nbox = HY.modes(H, f, A1, B)
+        fwd, rev = [], []
+        for z in zeros:
+            assert z.real > 0 or z.real < 0, (G.id, fs, n, 'Re gamma not certainly nonzero')
+            g = z if z.real > 0 else -z
+            assert abs(g.real - A) > MARGIN * A, (G.id, fs, n, 'alpha within 2 % of the limit', g)
+            if g.real < A:
+                (fwd if z.real > 0 else rev).append(g)
+        for lst in (fwd, rev):
+            for i in range(len(lst)):
+                for j in range(i):
+                    assert (lst[i] - lst[j]).abs_lower() > arb('1e-4') * lst[i].abs_upper(), (G.id, fs, n, 'close modes')
+        if fwd:
+            fwd_all['HYB%d' % n], w1 = with_power(G, n, f, fwd, 1)
+            worst = max(worst, w1)
+        if rev:
+            rev_all['HYB%d' % n], w2 = with_power(G, n, f, rev, -1)
+            worst = max(worst, w2)
+        dg.append({'f': fs, 'kind': 'HYB%d' % n, 'B_over_k0': B / k0, 'zeros': len(zeros), 'boxes': nbox,
+                   'seconds': round(time.time() - t, 1)})
+        print(G.id, fs, 'HYB%d' % n, 'forward', len(fwd), 'reverse', len(rev), 'zeros', len(zeros), 'boxes', nbox, flush=True)
+        # stop after two consecutive families without a zero in the region, past k_y^2 > k0^2 m + A1^2
+        if not zeros and ky * ky > k0 * k0 * m + A1 * A1:
+            empty += 1
+            if empty == 2:
+                break
+        else:
+            empty = 0
+        n += 1
+    return fwd_all, rev_all, worst
 
 
 def s25(x):
@@ -92,12 +151,22 @@ def main():
                     for i in range(len(lst)):
                         for j in range(i):
                             assert (lst[i] - lst[j]).abs_lower() > arb('1e-4') * lst[i].abs_upper(), (G.id, fs, 'close modes')
-                entry = {'forward': {'LSE0': [[s25(g.imag), s25(g.real)] for g in fwd]} if fwd else {},
-                         'reverse': {'LSE0': [[s25(g.imag), s25(g.real)] for g in rev]} if rev else {}}
-                dg.append({'f': fs, 'kind': 'TE (ferrite)', 'B_over_k0': B / k0, 'zeros': len(zeros), 'boxes': nbox,
+                entry = {'forward': {}, 'reverse': {}}
+                worst = 0.0
+                if fwd:
+                    entry['forward']['LSE0'], w = with_power(G, 0, f, fwd, 1)
+                    worst = max(worst, w)
+                if rev:
+                    entry['reverse']['LSE0'], w = with_power(G, 0, f, rev, -1)
+                    worst = max(worst, w)
+                dg.append({'f': fs, 'kind': 'TE (n = 0)', 'B_over_k0': B / k0, 'zeros': len(zeros), 'boxes': nbox,
                            'seconds': round(time.time() - t, 1)})
+                print(rec['id'], fs, 'LSE0 forward', len(fwd), 'reverse', len(rev), flush=True)
+                hf, hr, w = hybrid_families(G, f, fs, dg)
+                entry['forward'].update(hf)
+                entry['reverse'].update(hr)
+                dg.append({'f': fs, 'max_power_condition': max(worst, w)})
                 modes.append(entry)
-                print(rec['id'], fs, 'forward', len(fwd), 'reverse', len(rev), flush=True)
                 continue
             entry = {}
             for kind in ('LSE', 'LSM'):
@@ -106,7 +175,8 @@ def main():
                 zeros, nbox = CZ.modes(G, kind, f, A1, Q)
                 fam = families(G, kind, zeros)
                 for k, lst in fam.items():
-                    entry[k] = [[s25(g.imag), s25(g.real)] for g in lst]
+                    entry[k], w = with_power(G, int(k[3:]), f, lst, 1)
+                    dg.append({'f': fs, 'family': k, 'max_power_condition': w})
                 dg.append({'f': fs, 'kind': kind, 'Q_over_k0sq': Q / k0 ** 2, 'zeros': len(zeros), 'boxes': nbox,
                            'seconds': round(time.time() - t, 1)})
             entry = dict(sorted(entry.items(), key=lambda kv: (kv[0][:3], int(kv[0][3:]))))

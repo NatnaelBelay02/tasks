@@ -137,11 +137,15 @@ class Guide:
                 self.layers.append((d, 'd', A(m['eps']), A(m['loss_tangent'])))
             elif m['type'] == 'plasma':
                 self.layers.append((d, 'p', A(m['f_p']), A(m['collision_frequency'])))
+            elif m['type'] == 'magnetized_plasma':
+                # (d, 'm', f_p, nu, f_c, s): the TE (n = 0) problem sees only e3, the Drude permittivity
+                sgn = 1 if m['bias_direction'] == '+y' else -1
+                self.layers.append((d, 'm', A(m['f_p']), A(m['collision_frequency']), A(m['cyclotron_frequency']), sgn))
             else:
                 sgn = 1 if m['bias_direction'] == '+y' else -1
                 self.layers.append((d, 'f', A(m['eps']), A(m['loss_tangent']), A(m['saturation_magnetization_gauss']),
                                     A(m['bias_field_oe']), A(m['linewidth_oe']), sgn))
-        self.ferrite = any(L[1] == 'f' for L in self.layers)
+        self.ferrite = any(L[1] in ('f', 'm') for L in self.layers)      # gyrotropic layer present
         self.band = [A(x) for x in rec['band']] if 'band' in rec else None
         self.tests = [A(x) for x in rec['test_frequencies']]
 

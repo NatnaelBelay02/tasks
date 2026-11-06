@@ -131,5 +131,22 @@
     {"thickness": 0.003, "material": {"type": "dielectric", "name": "RO3006", "eps": 6.15, "loss_tangent": 0.002}},
     {"thickness": 0.023849, "material": {"type": "dielectric", "name": "air", "eps": 1, "loss_tangent": 0}}
    ],
-   "test_frequencies": [5000000000, 6000000000, 7000000000, 8000000000]}
+   "test_frequencies": [5000000000, 6000000000, 7000000000, 8000000000]},
+  {"id": "G17", "description": "WR-90: magnetised-plasma phase shifter, 4 mm argon discharge between 1 mm quartz plates, 4 mm from a side wall, in a 1500 G field along +y", "a": 0.02286, "b": 0.01016,
+   "layers": [
+    {"thickness": 0.004, "material": {"type": "dielectric", "name": "air", "eps": 1, "loss_tangent": 0}},
+    {"thickness": 0.001, "material": {"type": "dielectric", "name": "fused quartz", "eps": 3.78, "loss_tangent": 0.0001}},
+    {"thickness": 0.004, "material": {"type": "magnetized_plasma", "name": "magnetised argon discharge, n_e = 1.5e18 m^-3, 12 Pa, B0 = 1500 G", "f_p": 11000000000, "collision_frequency": 300000000, "cyclotron_frequency": 4200000000, "bias_direction": "+y"}},
+    {"thickness": 0.001, "material": {"type": "dielectric", "name": "fused quartz", "eps": 3.78, "loss_tangent": 0.0001}},
+    {"thickness": 0.01286, "material": {"type": "dielectric", "name": "air", "eps": 1, "loss_tangent": 0}}
+   ],
+   "test_frequencies": [7500000000, 8500000000, 10500000000, 12500000000]},
+  {"id": "G18", "description": "WR-137: magnetised plasma against a side wall, 6 mm argon discharge behind a 1.5 mm quartz window, then 3 mm RO3006, in a 1000 G field along -y", "a": 0.034849, "b": 0.015799,
+   "layers": [
+    {"thickness": 0.006, "material": {"type": "magnetized_plasma", "name": "magnetised argon discharge, n_e = 6.1e17 m^-3, 8 Pa, B0 = 1000 G", "f_p": 7000000000, "collision_frequency": 200000000, "cyclotron_frequency": 2800000000, "bias_direction": "-y"}},
+    {"thickness": 0.0015, "material": {"type": "dielectric", "name": "fused quartz", "eps": 3.78, "loss_tangent": 0.0001}},
+    {"thickness": 0.003, "material": {"type": "dielectric", "name": "RO3006", "eps": 6.15, "loss_tangent": 0.002}},
+    {"thickness": 0.024349, "material": {"type": "dielectric", "name": "air", "eps": 1, "loss_tangent": 0}}
+   ],
+   "test_frequencies": [4500000000, 5500000000, 6500000000, 8200000000]}
 ]}
