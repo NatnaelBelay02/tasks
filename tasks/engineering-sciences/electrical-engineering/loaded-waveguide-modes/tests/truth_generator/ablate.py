@@ -122,8 +122,9 @@ def perturbative():
     """First-order loss perturbation: gamma(1) ~ gamma(s1) + (gamma(s2) - gamma(s1)) (1 - s1) / (s2 - s1)
     from two nearly lossless solves; then the 200 dB/m limit."""
     s1, s2 = 1e-3, 2e-3
-    r1 = solve_all(scaled_guides(s1), 3 * A)
-    r2 = solve_all(scaled_guides(s2), 3 * A)
+    iso = lambda gs: [g for g in gs if g['id'] not in GYRO]
+    r1 = solve_all(iso(scaled_guides(s1)), 3 * A)
+    r2 = solve_all(iso(scaled_guides(s2)), 3 * A)
     out = {}
     for gid in r1:
         modes = []
@@ -240,9 +241,10 @@ def merge(base, part):
 
 
 def no_linewidth():
-    """Ferrite linewidth ignored (Delta H = 0): only the dielectric loss of the ferrite remains."""
+    """Ferrite linewidth ignored (Delta H = 0): only the dielectric loss of the ferrite remains
+    (G13, G14, G16; G15 is biased at resonance, where Delta H = 0 makes mu singular)."""
     gs = []
-    for g in GUIDES:
+    for g in [g for g in GUIDES if g['id'] in ('G13', 'G14', 'G16')]:
         g = copy.deepcopy(g)
         for L in g['layers']:
             if L['material']['type'] == 'ferrite':
@@ -365,12 +367,14 @@ def main():
         fn(d['guides'])
         run(name, expect, d)
     t0 = time.time()
-    run('first-order loss perturbation of the nearly lossless guide', False, {'guides': perturbative()})
-    run('limit read as 200 Np/m instead of 200 dB/m', False, {'guides': solve_all(GUIDES, 200.0)})
+    run('first-order loss perturbation of the nearly lossless guide (isotropic guides)', False,
+        merge(base, perturbative()))
+    iso = [g for g in GUIDES if g['id'] not in GYRO]
+    run('limit read as 200 Np/m instead of 200 dB/m (isotropic guides)', False, merge(base, solve_all(iso, 200.0)))
     run('limit 220 dB/m (no mode lies between 200 and 220 dB/m at any test frequency)', True,
         {'guides': solve_all(GUIDES, 220 / (20 / math.log(10)))})
     run('limit 300 dB/m instead of 200 dB/m', False, {'guides': solve_all(GUIDES, 300 / (20 / math.log(10)))})
-    run('ferrite linewidth ignored (Delta H = 0)', False, {'guides': no_linewidth()})
+    run('ferrite linewidth ignored (Delta H = 0; G13, G14, G16)', False, merge(base, no_linewidth()))
     run('gyrotropic tensors with the off-diagonal terms dropped (kappa = g = 0)', False,
         merge(base, with_tensors(no_offdiag)))
     run('magnetised plasma taken as an isotropic Drude plasma (eps_1 = eps_3, g = 0)', False,
