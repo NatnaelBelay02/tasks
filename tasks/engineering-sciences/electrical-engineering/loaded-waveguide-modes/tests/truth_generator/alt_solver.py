@@ -17,9 +17,11 @@ Guides with gyrotropic layers (ferrite, magnetised plasma): family LSE0 from a q
 the TE problem as before; the hybrid families HYB<n> from a six-field collocation of the curl
 equations, which is linear in gamma (A x = gamma B x), polished by Newton iteration on a determinant
 of 4 x 4 matrix exponentials.
-Power split (every family, every guide): the six-field collocation matrix A - gamma B at the polished
-gamma is inverted on a random vector (two inverse-iteration steps) to get the fields on the
-collocation nodes, and the Poynting flux is integrated over each layer by Clenshaw-Curtis quadrature.
+Power split (every family, every guide): at the polished gamma the tangential state is carried
+through the guide in mpmath (30 digits) by exp(M t) of the 4 x 4 matrix obtained from the six curl
+equations, e_x and h_x follow from the two algebraic ones, and the Poynting flux is integrated by
+Clenshaw-Curtis quadrature on pieces of each layer short enough for the field's growth rate.  (The
+null vector of the collocation matrix itself gives the fractions only to about 1e-5.)
 """
 import json
 import math
@@ -250,9 +252,8 @@ def te_solve(rec, f):
                 continue
         if all(abs(r - z) > 1e-8 * max(abs(r), 1) for z in zs):
             zs.append(r)
-    six = Six(rec, f, 0, 5.0)
-    fwd = [[z.imag, z.real, six.power(z)] for z in zs if 0 < z.real <= A]
-    rev = [[-z.imag, -z.real, six.power(z)] for z in zs if 0 < -z.real <= A]
+    fwd = [[z.imag, z.real, power_split(rec, f, 0, z)] for z in zs if 0 < z.real <= A]
+    rev = [[-z.imag, -z.real, power_split(rec, f, 0, z)] for z in zs if 0 < -z.real <= A]
     return fwd, rev
 
 
@@ -406,29 +407,72 @@ class Six:
         return [p / tot for p in P]
 
 
+def state_matrix(L, g, f, n, b):
+    """(M, e_x row, h_x row) in mpmath for the state (e_y, e_z, h_y, h_z) of family n in layer L."""
+    k0 = 2 * mp.pi * mp.mpf(f) / C
+    ky = n * mp.pi / mp.mpf(str(b))
+    jk = mp.mpc(0, 1) * k0
+    e1, e3, e2, mu, ka = tensor6(L['material'], f, lib=mp)
+    # e_x and h_x from the two algebraic equations, as rows acting on (e_y, e_z, h_y, h_z)
+    ex = [0, -k0 * e2 / (jk * e1), g / (jk * e1), -ky / (jk * e1)]
+    hx = [-g / (jk * mu), -ky / (jk * mu), 0, -k0 * ka / (jk * mu)]
+    M = mp.matrix(4, 4)
+    for c in range(4):
+        M[0, c] = ky * ex[c] + k0 * ka * hx[c]
+        M[1, c] = -g * ex[c]
+        M[2, c] = -ky * hx[c] - k0 * e2 * ex[c]
+        M[3, c] = -g * hx[c]
+    M[0, 3] -= jk * mu
+    M[1, 2] += jk
+    M[2, 1] += jk * e1
+    M[3, 0] -= jk * e3
+    return M, ex, hx
+
+
 def hyb_det(rec, g, f, n):
     """det of the (e_y, e_z) rows of prod exp(M d) [0; I] for the state (e_y, e_z, h_y, h_z)."""
-    k0 = 2 * mp.pi * mp.mpf(f) / C
-    ky = n * mp.pi / mp.mpf(str(rec['b']))
-    jk = mp.mpc(0, 1) * k0
     S = mp.matrix([[0, 0], [0, 0], [1, 0], [0, 1]])
     for L in rec['layers']:
-        e1, e3, e2, mu, ka = tensor6(L['material'], f, lib=mp)
-        # e_x and h_x from the two algebraic equations, as rows acting on (e_y, e_z, h_y, h_z)
-        ex = [0, -k0 * e2 / (jk * e1), g / (jk * e1), -ky / (jk * e1)]
-        hx = [-g / (jk * mu), -ky / (jk * mu), 0, -k0 * ka / (jk * mu)]
-        M = mp.matrix(4, 4)
-        for c in range(4):
-            M[0, c] = ky * ex[c] + k0 * ka * hx[c]
-            M[1, c] = -g * ex[c]
-            M[2, c] = -ky * hx[c] - k0 * e2 * ex[c]
-            M[3, c] = -g * hx[c]
-        M[0, 3] -= jk * mu
-        M[1, 2] += jk
-        M[2, 1] += jk * e1
-        M[3, 0] -= jk * e3
+        M, _, _ = state_matrix(L, g, f, n, rec['b'])
         S = mp.expm(M * mp.mpf(str(L['thickness']))) * S
     return S[0, 0] * S[1, 1] - S[0, 1] * S[1, 0]
+
+
+def power_split(rec, f, n, g, nodes=24):
+    """Per-layer fractions of Re int (e_x h_y* - e_y h_x*) dx for the mode gamma = g of family n."""
+    with mp.workdps(30):
+        gm = mp.mpc(g.real, g.imag)
+        lay = [(L, state_matrix(L, gm, f, n, rec['b']), mp.mpf(str(L['thickness']))) for L in rec['layers']]
+        if n == 0:
+            s = mp.matrix([[0], [0], [0], [1]])
+        else:
+            S = mp.matrix([[0, 0], [0, 0], [1, 0], [0, 1]])
+            for _, (M, _, _), d in lay:
+                S = mp.expm(M * d) * S
+            a, b2, c, d2 = S[0, 0], S[0, 1], S[1, 0], S[1, 1]
+            v = (-b2, a) if abs(a) + abs(b2) >= abs(c) + abs(d2) else (-d2, c)
+            s = mp.matrix([[0], [0], [v[0]], [v[1]]])
+        xk = [mp.cos(mp.pi * k / nodes) for k in range(nodes + 1)]
+        wk = [mp.mpf(x) for x in cc_weights(nodes)]
+        P = []
+        for L, (M, ex, hx), d in lay:
+            Mf = np.array([[complex(M[r, c]) for c in range(4)] for r in range(4)])
+            rate = max(abs(np.linalg.eigvals(Mf)))
+            pieces = max(1, int(math.ceil(float(rate * d) / 2.0)))
+            h = d / pieces
+            tot = mp.mpf(0)
+            sp = s
+            for _ in range(pieces):
+                for x, w in zip(xk, wk):
+                    p = mp.expm(M * (h * (x + 1) / 2)) * sp
+                    exv = sum(ex[k] * p[k] for k in range(4))
+                    hxv = sum(hx[k] * p[k] for k in range(4))
+                    tot += w * h / 2 * mp.re(exv * mp.conj(p[2]) - p[0] * mp.conj(hxv))
+                sp = mp.expm(M * h) * sp
+            P.append(tot)
+            s = mp.expm(M * d) * s
+        T = sum(P)
+        return [float(x / T) for x in P]
 
 
 def hyb_family(rec, f, n):
@@ -470,9 +514,8 @@ def gyro_solve(rec, f):
         ky = n * math.pi / b
         zs = hyb_family(rec, f, n)
         if zs:
-            six = Six(rec, f, n, 5.0)
-            fw = sorted([[z.imag, z.real, six.power(z)] for z in zs if 0 < z.real <= A])
-            rv = sorted([[-z.imag, -z.real, six.power(z)] for z in zs if 0 < -z.real <= A])
+            fw = sorted([[z.imag, z.real, power_split(rec, f, n, z)] for z in zs if 0 < z.real <= A])
+            rv = sorted([[-z.imag, -z.real, power_split(rec, f, n, z)] for z in zs if 0 < -z.real <= A])
             if fw:
                 out_f['HYB%d' % n] = fw
             if rv:
@@ -509,8 +552,7 @@ def solve(rec):
                     if g.real <= A:
                         lst.append(g)
                 if lst:
-                    six = Six(rec, f, n, 5.0)
-                    entry['%s%d' % (kind, n)] = [[g.imag, g.real, six.power(g)] for g in lst]
+                    entry['%s%d' % (kind, n)] = [[g.imag, g.real, power_split(rec, f, n, g)] for g in lst]
                 n += 1
         res.append({'forward': entry, 'reverse': {k: [[p[0], p[1], list(p[2])] for p in v] for k, v in entry.items()}})
     return {'modes': res}
