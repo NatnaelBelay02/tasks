@@ -208,7 +208,7 @@ Scored with the real verifier logic, it passes all 18 guides.
 
 While it was being developed, it missed the even–odd LSM1 pair of G03 at 18 GHz. A strict reproducibility filter between two collocation grids removed it; the filter now only screens.
 
-**Ablations** (`tests/truth_generator/ablate.py`): {{ABL}} behave as expected.
+**Ablations** (`tests/truth_generator/ablate.py`): 63 of 63 behave as expected.
 - **These pass:** the oracle; the second implementation; every $ \gamma $ scaled by $ 1 + 5\times10^{-8} $; every power fraction scaled by $ 1 + 3\times10^{-7} $; a 220 dB/m limit.
 - **Gyrotropic shortcuts fail:**
   - the hybrid families left out (the v3.0 contract), or only HYB$ _1 $ searched;
@@ -217,7 +217,7 @@ While it was being developed, it missed the even–odd LSM1 pair of G03 at 18 GH
   - gyrotropic guides treated as reciprocal (reverse copied from forward), everywhere or only for the twin-slab G14;
   - the wrong sign of $ \kappa $ and $ g $ (forward and reverse swapped), or of $ g $ only (G17, G18);
   - the isolated reverse direction of G15 at 11 GHz given the forward mode;
-  - the ferrite linewidth ignored;
+  - the ferrite linewidth ignored (G13, G14, G16);
   - the hybrid families named LSE$ _n $; a hybrid family reported for an isotropic guide.
 - **Power-split shortcuts fail:**
   - the TE expression $ -e_y h_x^* $ used for every mode, or the conjugate dropped (both solved again);
@@ -234,8 +234,8 @@ While it was being developed, it missed the even–odd LSM1 pair of G03 at 18 GH
   - a mode above the limit reported;
   - LSM2 reported as LSM1;
   - one $ \gamma $ off by $ 3\times10^{-7} $;
-  - first-order loss perturbation of the nearly lossless guide (all guides);
-  - the limit read as 200 Np/m;
+  - first-order loss perturbation of the nearly lossless guide (isotropic guides);
+  - the limit read as 200 Np/m (isotropic guides);
   - a 300 dB/m limit.
 - **Format and safety cases fail cleanly:**
   - malformed structure: an extra key, a missing guide, an extra guide key, a missing `reverse` key, an entry without the forward/reverse level, an LSM0 or HYB0 family, an empty list, a mode without its power list, a power list one number short, a missing test-frequency entry;
