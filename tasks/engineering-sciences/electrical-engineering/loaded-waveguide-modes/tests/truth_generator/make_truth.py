@@ -1,6 +1,6 @@
 """Certified reference values (truth.json) from guides.json, independent of solution/.
 
-usage: python3 make_truth.py guides.json truth.json [diagnostics.json] [guide_id ...]
+usage: python3 make_truth.py guides.json truth.json [diagnostics.json] [--candidates a.json,b.json] [guide_id ...]
 
 For every guide, test frequency and kind (LSE, LSM), certify2.modes() encloses every zero q of
 D_kind(., f) with Re sqrt(-q) <= 1.02 A (A = 200 dB/m = 10 ln 10 Np/m) in disjoint boxes, each
@@ -11,6 +11,13 @@ Each zero is refined to a 1e-55 box.  For every family n, gamma = sqrt(k_n^2 - q
 Re gamma > 0 is enclosed; the mode is reported if alpha = Re gamma <= A.  The generator stops if
 an alpha lies within 2 % of A, if Re gamma is not certainly positive, or if two modes of a
 family are closer than 1e-4 |gamma| (the guarantees stated in the instruction).
+
+Gyrotropic guides: LSE0 (n = 0) as above, by branch-and-bound in the gamma plane.  The hybrid families
+HYB<n> either by the same branch-and-bound (hybacb.modes; exhaustive, but slow for the stiff
+multi-layer cases), or, with --candidates, from the modes reported by two independent solvers
+(solution/ and alt_solver.py): every candidate must be reported by both, with the same families,
+and each is then certified (existence and uniqueness of a simple zero in a Krawczyk box, refined to
+1e-55) before the guarantees are checked.
 """
 import copy
 import json
@@ -29,6 +36,7 @@ ctx.prec = 256
 A = 10 * arb(10).log()                # 200 dB/m in Np/m
 A1 = float((A * arb('1.02')).mid())
 MARGIN = arb('0.02')
+CANDIDATES = None   # list of two submissions (dicts guide id -> {'modes': ...}) or None
 COND = 30          # guarantee stated in the instruction: sum |P_i| <= 30 |P| for every reported mode
 
 
@@ -45,8 +53,32 @@ def with_power(G, n, f, lst, sign=1):
     return out, worst
 
 
+def candidate_zeros(G, fs):
+    """{n: [complex zeros]} reported by both candidate solvers (asserted identical up to 1e-9)."""
+    j = [str(x) for x in G.rec['test_frequencies']].index(str(fs))
+    sets = []
+    for sub in CANDIDATES:
+        e = sub[G.id]['modes'][j]
+        d = {}
+        for dr, sg in (('forward', 1), ('reverse', -1)):
+            for fam, lst in e[dr].items():
+                if fam.startswith('HYB'):
+                    d.setdefault(int(fam[3:]), []).extend(sg * complex(m[1], m[0]) for m in lst)
+        sets.append(d)
+    a, b = sets
+    assert set(a) == set(b), (G.id, fs, 'candidate solvers disagree on the hybrid families', sorted(a), sorted(b))
+    for n in a:
+        assert len(a[n]) == len(b[n]), (G.id, fs, n, 'candidate solvers disagree on the mode count')
+        for z in a[n]:
+            w = min(b[n], key=lambda u: abs(u - z))
+            assert abs(w - z) <= 1e-9 * abs(z), (G.id, fs, n, 'candidate solvers disagree', z, w)
+    return a
+
+
 def hybrid_families(G, f, fs, dg):
     """Certified forward / reverse modes of the hybrid families n = 1, 2, ... of a gyrotropic guide."""
+    if CANDIDATES is not None:
+        return hybrid_from_candidates(G, f, fs, dg)
     fwd_all, rev_all = {}, {}
     k0, m = HY.reach(G, fs)
     n, empty = 1, 0
@@ -88,6 +120,35 @@ def hybrid_families(G, f, fs, dg):
     return fwd_all, rev_all, worst
 
 
+def hybrid_from_candidates(G, f, fs, dg):
+    fwd_all, rev_all, worst = {}, {}, 0.0
+    for n, zs in sorted(candidate_zeros(G, fs).items()):
+        H = HY.HybGuide(G, n)
+        t = time.time()
+        zeros = [HY.certify_point(H, z, f) for z in zs]
+        fwd, rev = [], []
+        for z in zeros:
+            assert z.real > 0 or z.real < 0, (G.id, fs, n, 'Re gamma not certainly nonzero')
+            g = z if z.real > 0 else -z
+            assert abs(g.real - A) > MARGIN * A, (G.id, fs, n, 'alpha within 2 % of the limit', g)
+            assert g.real < A, (G.id, fs, n, 'candidate above the limit', g)
+            (fwd if z.real > 0 else rev).append(g)
+        for lst in (fwd, rev):
+            for i in range(len(lst)):
+                for j in range(i):
+                    assert (lst[i] - lst[j]).abs_lower() > arb('1e-4') * lst[i].abs_upper(), (G.id, fs, n, 'close modes')
+        if fwd:
+            fwd_all['HYB%d' % n], w1 = with_power(G, n, f, fwd, 1)
+            worst = max(worst, w1)
+        if rev:
+            rev_all['HYB%d' % n], w2 = with_power(G, n, f, rev, -1)
+            worst = max(worst, w2)
+        dg.append({'f': fs, 'kind': 'HYB%d' % n, 'method': 'candidates of two solvers, Krawczyk-certified',
+                   'zeros': len(zeros), 'seconds': round(time.time() - t, 1)})
+        print(G.id, fs, 'HYB%d' % n, 'forward', len(fwd), 'reverse', len(rev), 'certified', flush=True)
+    return fwd_all, rev_all, worst
+
+
 def s25(x):
     return x.mid().str(25, radius=False)
 
@@ -124,13 +185,23 @@ def families(G, kind, zeros):
 def main():
     src, dst = sys.argv[1], sys.argv[2]
     diag_path = sys.argv[3] if len(sys.argv) > 3 and sys.argv[3].endswith('.json') else None
-    only = [x for x in sys.argv[3:] if not x.endswith('.json')]
+    args = sys.argv[3:]
+    if '--candidates' in args:
+        k = args.index('--candidates')
+        global CANDIDATES
+        CANDIDATES = []
+        for pth in args[k + 1].split(','):
+            d = json.load(open(pth))
+            CANDIDATES.append(d.get('guides', d))
+        args = args[:k] + args[k + 2:]
+    only = [x for x in args if not x.endswith('.json')]
     guides = json.load(open(src), parse_float=str, parse_int=str)['guides']
     truth, diag = {}, {}
     for rec in guides:
         if only and rec['id'] not in only:
             continue
         G = Guide(rec)
+        G.rec = rec
         modes, dg = [], []
         for fs in rec['test_frequencies']:
             f = G.tests[len(modes)]

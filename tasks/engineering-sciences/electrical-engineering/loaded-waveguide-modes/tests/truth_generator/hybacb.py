@@ -436,6 +436,19 @@ def _enumerate(H, fa, stack, maxbox, f):
     return found, nbox
 
 
+def certify_point(H, z, f):
+    """Krawczyk certificate for a zero near the complex number z: a box of half-width
+    1e-10 .. 1e-6 |z| around z that holds exactly one simple zero, then refined to 1e-55."""
+    fa = acb(ARB(f) if not isinstance(f, arb) else f)
+    for rr in (1e-10, 1e-9, 1e-8, 1e-7, 1e-6):
+        h = rr * abs(z)
+        B = CZ.box(z.real - h, z.real + h, z.imag - h, z.imag + h)
+        res = _test(H, B, fa)
+        if isinstance(res, acb):
+            return refine(H, res, fa)
+    raise AssertionError('no Krawczyk certificate near %r (%s n=%d)' % (z, H.G.id, H.n))
+
+
 def reach(G, f):
     """k0^2 max |eps| max(|mu|, |mu_e|, 1) over the layers (float), and k0."""
     fa = acb(ARB(f))
