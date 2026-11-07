@@ -659,5 +659,19 @@ for idx, k in enumerate(CAL):
 for b in sorted(allsegs):
     for a, e in merge(allsegs[b], 0):
         out["corrupted_segments"].append({"bus": int(b), "first_frame": int(a), "last_frame": int(e)})
+# Report within the ranges the instruction states for every true value (r, x of lines and series branches
+# within 10 % of nameplate, transformer x within 5 %, tap within 0.019; |ratio| <= 0.01, |phase| <= 0.0105).
+# The truth lies inside, so clipping can only reduce an error.  It matters for weakly observed corridors,
+# whose likelihood is curved on the scale of their uncertainty (a fitted r can then land far outside).
+for entry in out["branches"]:
+    c = CANDS[entry["id"] - 1]
+    for key in ("r", "x", "tap"):
+        if key in entry:
+            nom = c["nominal"][key]
+            half = 0.019 if key == "tap" else (0.05 if c["model"] == "transformer" else 0.10) * abs(nom)
+            entry[key] = float(min(max(entry[key], nom - half), nom + half))
+for ch in out["channels"].values():
+    ch["ratio_error"] = float(min(max(ch["ratio_error"], -0.01), 0.01))
+    ch["phase_error"] = float(min(max(ch["phase_error"], -0.0105), 0.0105))
 json.dump(out, open(OUT, "w"), indent=1)
 log("wrote", OUT, "topology", active, "segments", out["corrupted_segments"])

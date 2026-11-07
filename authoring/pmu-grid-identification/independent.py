@@ -326,7 +326,13 @@ def vp(par, th, W, iters=40, tol=1e-10):
         g = np.einsum("nij,ni->j", Jt, R) - np.tensordot(Ai @ Axt, np.einsum("nij,ni->nj", Jx, R), axes=([0, 1], [0, 1]))
         rel = 0.0
         while True:
-            dt = -np.linalg.solve(H + lam * np.diag(np.diag(H)), g)
+            Hl = H + lam * np.diag(np.diag(H)) + 1e-12 * np.trace(H) / len(H) * np.eye(len(H))
+            dt = -np.linalg.lstsq(Hl, g, rcond=None)[0]
+            if not np.all(np.isfinite(dt)):
+                lam *= 10
+                if lam > 1e10:
+                    break
+                continue
             th2 = th + dt
             X2 = exact_states(par, th2, W)
             r2, *mc2 = residual(par, th2, X2, W)
@@ -444,11 +450,15 @@ def changepoints(x, a, e, span=120):
     return best[1], best[2]
 
 
-def detect(r, mask_frames):
+def detect(r, clean, skip):
+    """clean: frames that set the scale of each PMU's statistic (no flagged or stale data);
+    skip: frames left out of the search (stale data).  The statistic is normalised by its mean over
+    the clean frames (trimmed of the top 0.5 %), so a stretch of good data sums to zero excess."""
     q = pmu_chi2(r)
-    med = np.median(q[~mask_frames], 0)
-    z = q / med
+    mu = np.array([np.mean(np.sort(q[clean[:, j], j])[:int(0.995 * clean[:, j].sum())]) for j in range(len(PMU))])
+    z = q / mu
     excess = z - 1.0
+    mask_frames = skip
     found = []
     for j, b in enumerate(PMU):
         x = np.where(mask_frames[:, j], 0.0, excess[:, j])
@@ -479,6 +489,8 @@ def detect(r, mask_frames):
             if e2 - a2 + 1 > 1300:                  # longer than any malfunction: model error, not a fault
                 continue
             gain = float(np.sum(x[a2:e2 + 1]))
+            if gain / (e2 - a2 + 1) < 0.5:          # a fault raises the PMU's statistic well above its mean
+                continue
             found.append((gain, b, a2, e2))
     return sorted(found, reverse=True)
 
@@ -567,25 +579,43 @@ def implausible(par, th, cid):
     return z.real <= 0 or z.imag <= 0 or abs(z - nom) > 0.5 * abs(nom)
 
 
-def malfunction_rounds(active, th, W, segs, rounds=4):
+def malfunction_rounds(active, th, W, segs, rounds=8):
+    """Each round refits with the flagged data left out, then searches every PMU afresh: an interval
+    flagged before is kept (with its new ends) only if it is found again, and at most one new interval
+    is added per round, the strongest, because a large fault biases the fit and casts shadows elsewhere."""
+    seen = []
     for rnd in range(rounds):
         par, th, X, cost, r, cov = fit(active, False, th, None, W, SUBF, iters=40)
-        _, _, _, _, rf, _ = fit(active, False, th, None, W, ALLF, iters=4, fixed=True)
-        rf = np.where(W > 0, rf.reshape(T, -1), 0.0)
-        mask_frames = stale_mask.copy()
+        # parameters from the fit without the flagged data; states and residuals of every frame with all
+        # non-stale channels, so a flagged interval is judged exactly as if it were not flagged
+        W0 = weights([], stale)
+        _, _, _, _, rf, _ = fit(active, False, th, None, W0, ALLF, iters=4, fixed=True)
+        rf = np.where(W0 > 0, rf.reshape(T, -1), 0.0)
+        clean = ~stale_mask
         for b, a, e in segs:
-            mask_frames[max(0, a - 5):e + 6, PMU.index(b)] = True
-        new = list(segs)
-        for gain, b, a, e in detect(rf, mask_frames):
-            if gain < 200:
-                continue
-            if any(a <= y and e >= x for _, x, y in new) or any(a <= f1 and e >= f0 for _, _, f0, f1 in stale):
-                continue
-            new.append((b, a, e))
-            break                                            # one interval per round: masks reshape the rest
-        if sorted(new) == sorted(segs):
+            clean[max(0, a - 5):e + 6, PMU.index(b)] = False
+        det = [d for d in detect(rf, clean, stale_mask) if d[0] >= 200
+               and not any(d[2] <= f1 and d[3] >= f0 for _, _, f0, f1 in stale)]
+        def overlaps(lst, a, e):
+            return any(a <= y and e >= x for _, x, y in lst)
+        new = []
+        for b0, a0, e0 in segs:                              # re-found intervals keep their place
+            hit = [d for d in det if d[1] == b0 and d[2] <= e0 and d[3] >= a0 and not overlaps(new, d[2], d[3])]
+            if hit:
+                new.append((b0, hit[0][2], hit[0][3]))
+        for gain, b, a, e in det:                            # then the strongest new one
+            if not overlaps(new, a, e):
+                new.append((b, a, e))
+                break
+        new = sorted(new)
+        if True:
+            print(f"  malfunction round {rnd}: {new}", flush=True)
+        if new == sorted(segs) or new in seen:
+            segs = new
+            W = weights(segs, stale)
             break
-        segs = sorted(new)
+        seen.append(new)
+        segs = new
         W = weights(segs, stale)
     return segs, W, th
 
@@ -669,8 +699,10 @@ FR = SUBF
 th = equation_error(par0, SUBF, W[SUBF])
 for outer in range(3):
     segs, W, th = malfunction_rounds(active, th, W, segs)
+    print("outer", outer, "segments", segs, flush=True)
     old = list(active)
     active, par, th = topology_search(active, th, W)
+    print("outer", outer, "topology", active, flush=True)
     if active == old and outer > 0:
         break
 segs, W, th = malfunction_rounds(active, th, W, segs)
@@ -703,5 +735,15 @@ for b, lst in st.items():
             merged.append([a, e])
     for a, e in merged:
         out["corrupted_segments"].append({"bus": int(b), "first_frame": int(a), "last_frame": int(e)})
+# the instruction bounds every true value; project the estimate onto that box
+BOX = {"line": 0.10, "series": 0.10, "transformer": 0.05}
+for e in out["branches"]:
+    c = CANDS[e["id"] - 1]
+    for k in [k for k in ("r", "x", "tap") if k in e]:
+        lo_hi = 0.019 if k == "tap" else BOX[c["model"]] * abs(c["nominal"][k])
+        e[k] = float(np.clip(e[k], c["nominal"][k] - lo_hi, c["nominal"][k] + lo_hi))
+for v in out["channels"].values():
+    v["ratio_error"] = float(np.clip(v["ratio_error"], -0.01, 0.01))
+    v["phase_error"] = float(np.clip(v["phase_error"], -0.0105, 0.0105))
 json.dump(out, open(OUT, "w"), indent=1)
 print("topology", active, "segments", out["corrupted_segments"], flush=True)
