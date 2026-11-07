@@ -307,6 +307,32 @@ def exact_states(par, th, W):
     return x[:, :13] + 1j * x[:, 13:]
 
 
+def gram(par, th, X, W, chunk=1500):
+    """Golub-Pereyra Gram matrix H, gradient g and Gauss-Newton Gram Hu of the projected cost, summed over
+    chunks of frames (the states of different frames are independent), so memory stays bounded."""
+    global FR
+    full = FR
+    H = g = Hu = 0.0
+    try:
+        for s0 in range(0, len(full), chunk):
+            sl = slice(s0, s0 + chunk)
+            FR = full[sl]
+            R, *mc = residual(par, th, X[sl], W[sl])
+            Jx, Jt = jac(par, th, *mc, W[sl])
+            Axx = np.einsum("nij,nik->njk", Jx, Jx)
+            Axt = np.einsum("nij,nik->njk", Jx, Jt)
+            C = cross_term(par, th, *mc, W[sl], R)
+            Ai = np.linalg.inv(Axx + 1e-12 * np.eye(26))
+            AiAxt = Ai @ Axt
+            Hu_c = np.einsum("nij,nik->jk", Jt, Jt) - np.tensordot(Axt, AiAxt, axes=([0, 1], [0, 1]))
+            Hu = Hu + Hu_c
+            H = H + Hu_c + np.tensordot(C, Ai @ C, axes=([0, 1], [0, 1]))
+            g = g + np.einsum("nij,ni->j", Jt, R) - np.tensordot(AiAxt, np.einsum("nij,ni->nj", Jx, R), axes=([0, 1], [0, 1]))
+    finally:
+        FR = full
+    return H, g, Hu
+
+
 def vp(par, th, W, iters=40, tol=1e-10):
     """Variable projection: the states are re-solved exactly for every parameter value, and the step
     uses the Golub-Pereyra Gram matrix  H = Jt'(I - Px)Jt + C' Axx^-1 C  with C = sum r d2r/dx dtheta."""
@@ -315,15 +341,7 @@ def vp(par, th, W, iters=40, tol=1e-10):
     r, *mc = residual(par, th, X, W)
     cost = float(np.sum(r * r))
     for it in range(iters):
-        Jx, Jt = jac(par, th, *mc, W)
-        R = r.reshape(len(r), -1)
-        Axx = np.einsum("nij,nik->njk", Jx, Jx)
-        Axt = np.einsum("nij,nik->njk", Jx, Jt)
-        C = cross_term(par, th, *mc, W, R)
-        Ai = np.linalg.inv(Axx + 1e-12 * np.eye(26))
-        H = (np.einsum("nij,nik->jk", Jt, Jt) - np.tensordot(Axt, Ai @ Axt, axes=([0, 1], [0, 1]))
-             + np.tensordot(C, Ai @ C, axes=([0, 1], [0, 1])))
-        g = np.einsum("nij,ni->j", Jt, R) - np.tensordot(Ai @ Axt, np.einsum("nij,ni->nj", Jx, R), axes=([0, 1], [0, 1]))
+        H, g, Hu = gram(par, th, X, W)
         rel = 0.0
         while True:
             Hl = H + lam * np.diag(np.diag(H)) + 1e-12 * np.trace(H) / len(H) * np.eye(len(H))
@@ -349,7 +367,7 @@ def vp(par, th, W, iters=40, tol=1e-10):
             print(f"    vp it {it} cost/frame {cost / len(r):.4f} lam {lam:.1e}", flush=True)
         if lam > 1e10 or (rel < tol and lam < 1e-3):
             break
-    Hu = np.einsum("nij,nik->jk", Jt, Jt) - np.tensordot(Axt, Ai @ Axt, axes=([0, 1], [0, 1]))
+    _, _, Hu = gram(par, th, X, W)
     return th, X, cost, r, np.linalg.pinv(Hu)
 
 
