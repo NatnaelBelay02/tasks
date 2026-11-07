@@ -1,4 +1,4 @@
-Write a program, `/root/results/modes.py`, that finds the guided modes of lossy, layer-loaded rectangular waveguides. For each guide of a guide file, each of its test frequencies and each direction of propagation, it must report every mode whose attenuation is at most 200 dB/m, with its phase constant, its attenuation constant and how its power flow divides among the layers. The program is graded on four guide files that are not provided here. `/root/data/guides.json` is an example guide file with 18 guides; its modes are not given.
+Write a program, `/root/results/modes.py`, that finds the guided modes of lossy, layer-loaded rectangular waveguides. For each guide of a guide file, each of its test frequencies and each direction of propagation, it must report every mode whose attenuation is at most 200 dB/m, with its phase constant, its attenuation constant and how its power flow divides among the layers. The program must also handle four other guide files that are not provided here. `/root/data/guides.json` is an example guide file with 18 guides; its modes are not given.
 
 ## Input
 
@@ -53,9 +53,9 @@ In every guide, at every test frequency and in each direction:
 
 **Power split.** For a reported mode let $ P_i = \operatorname{Re} \iint (\mathbf E \times \mathbf H^*) \cdot \hat{\mathbf z}\; dx\, dy $ over the part of the cross-section occupied by layer $ i $ (at any fixed $ z $), and $ P = \sum_i P_i $ the total. The **power fractions** of the mode are $ p_i = P_i / P $, one per layer in the order of `layers`. They do not depend on the amplitude of the field, they add up to 1, and a fraction is negative where the power in that layer flows against the total. For a reverse mode they are the fractions of its own field (the one varying as $ e^{+\gamma_r z} $).
 
-## Held-out guides
+## The four other guide files
 
-The four guide files used for grading hold one or two guides each, with two to four test frequencies per guide. They are different guides from those of `/root/data/guides.json`: other waveguide cross-sections (including enclosures operated below the cutoff of their empty-guide modes), layer sequences, materials, thicknesses, bias fields, linewidths, plasma densities, collision frequencies and test frequencies. Every guide of every guide file is described by the model above and lies in these ranges:
+The four other guide files hold one or two guides each, with two to four test frequencies per guide. Their guides differ from those of `/root/data/guides.json`: other waveguide cross-sections (including enclosures operated below the cutoff of their empty-guide modes), layer sequences, materials, thicknesses, bias fields, linewidths, plasma densities, collision frequencies and test frequencies. Every guide of every guide file is described by the model above and lies in these ranges:
 
 - $ a $ from 8 mm to 110 mm, $ b $ from 4 mm to 55 mm; 1 to 12 layers, each at least 0.1 mm thick;
 - test frequencies from 2 GHz to 25 GHz;
@@ -63,7 +63,7 @@ The four guide files used for grading hold one or two guides each, with two to f
 - plasmas and magnetised plasmas: $ f_p \le 20 $ GHz, $ \nu \ge 2 \times 10^{7} $ s$ ^{-1} $; $ f_c \le 5 $ GHz;
 - ferrites: $ \varepsilon' \le 20 $, $ \tan\delta \le 0.005 $, $ 4\pi M_s \le 2000 $ G, $ \Delta H \ge 1 $ Oe, $ 200 \le H_0 \le 4000 $ Oe.
 
-The four guarantees listed under **Model** (simple zeros, no attenuation within 2 % of 200 dB/m, separation of modes, the bound on the power split) hold for every guide of the held-out files.
+The four guarantees listed under **Model** (simple zeros, no attenuation within 2 % of 200 dB/m, separation of modes, the bound on the power split) hold for every guide of the four other files.
 
 ## Program contract
 
@@ -90,7 +90,7 @@ Each `forward` or `reverse` object has at most 400 families, and every list at m
 
 ## Requirements
 
-The task is complete only if every requirement below holds on all four held-out guide files.
+The task is complete only if every requirement below holds on all four other guide files.
 
 1. The run exits with status 0 within the wall-clock limit and leaves `modes.json` as stated in the program contract.
 2. The file follows the output format above.
