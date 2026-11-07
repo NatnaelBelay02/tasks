@@ -1,0 +1,24 @@
+{
+ "id": "BP-EMC9K",
+ "description": "EMC-receiver preselector for CISPR bands A and B, 9 kHz-30 MHz, stopbands below 5 kHz and above 45 MHz (two zeros)",
+ "source_resistance_ohm": 50,
+ "passband_hz": [
+  9000,
+  30000000
+ ],
+ "return_loss_db": 20,
+ "degree": 12,
+ "transmission_zeros": {
+  "dc": 4,
+  "stopbands": [
+   {
+    "edge_hz": 5000,
+    "zeros": 1
+   },
+   {
+    "edge_hz": 45000000,
+    "zeros": 2
+   }
+  ]
+ }
+}

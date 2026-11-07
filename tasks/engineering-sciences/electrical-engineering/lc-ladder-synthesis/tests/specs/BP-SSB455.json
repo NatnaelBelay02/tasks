@@ -1,0 +1,24 @@
+{
+ "id": "BP-SSB455",
+ "description": "455 kHz SSB IF filter, 2.4 kHz bandwidth, stopbands below 452 kHz (carrier and opposite sideband, two zeros) and above 457.5 kHz",
+ "source_resistance_ohm": 50,
+ "passband_hz": [
+  453600,
+  456000
+ ],
+ "return_loss_db": 20,
+ "degree": 16,
+ "transmission_zeros": {
+  "dc": 2,
+  "stopbands": [
+   {
+    "edge_hz": 452000,
+    "zeros": 2
+   },
+   {
+    "edge_hz": 457500,
+    "zeros": 1
+   }
+  ]
+ }
+}

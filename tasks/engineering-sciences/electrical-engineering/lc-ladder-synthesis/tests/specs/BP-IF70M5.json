@@ -1,0 +1,20 @@
+{
+ "id": "BP-IF70M5",
+ "description": "70 MHz IF, 500 kHz bandwidth, stopband above 71 MHz (two zeros)",
+ "source_resistance_ohm": 50,
+ "passband_hz": [
+  69750000,
+  70250000
+ ],
+ "return_loss_db": 20,
+ "degree": 14,
+ "transmission_zeros": {
+  "dc": 2,
+  "stopbands": [
+   {
+    "edge_hz": 71000000,
+    "zeros": 2
+   }
+  ]
+ }
+}

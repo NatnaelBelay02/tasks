@@ -1,0 +1,24 @@
+{
+ "id": "BP-10M7",
+ "description": "10.7 MHz FM IF filter, 300 kHz bandwidth, stopbands below 10.25 MHz and above 11.15 MHz",
+ "source_resistance_ohm": 50,
+ "passband_hz": [
+  10550000,
+  10850000
+ ],
+ "return_loss_db": 20,
+ "degree": 10,
+ "transmission_zeros": {
+  "dc": 3,
+  "stopbands": [
+   {
+    "edge_hz": 10250000,
+    "zeros": 1
+   },
+   {
+    "edge_hz": 11150000,
+    "zeros": 1
+   }
+  ]
+ }
+}

@@ -1,0 +1,24 @@
+{
+ "id": "BP-IF45M",
+ "description": "45 MHz first IF of a VHF receiver, 150 kHz bandwidth, stopbands below 44.8 MHz and above 45.2 MHz",
+ "source_resistance_ohm": 50,
+ "passband_hz": [
+  44925000,
+  45075000
+ ],
+ "return_loss_db": 20,
+ "degree": 14,
+ "transmission_zeros": {
+  "dc": 4,
+  "stopbands": [
+   {
+    "edge_hz": 44800000,
+    "zeros": 1
+   },
+   {
+    "edge_hz": 45200000,
+    "zeros": 1
+   }
+  ]
+ }
+}

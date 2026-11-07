@@ -1,0 +1,24 @@
+{
+ "id": "BP-IF10M7N",
+ "description": "10.7 MHz IF of a narrow-band FM data receiver, 40 kHz bandwidth, stopbands below 10.65 MHz and above 10.75 MHz (two zeros)",
+ "source_resistance_ohm": 50,
+ "passband_hz": [
+  10680000,
+  10720000
+ ],
+ "return_loss_db": 20,
+ "degree": 16,
+ "transmission_zeros": {
+  "dc": 4,
+  "stopbands": [
+   {
+    "edge_hz": 10650000,
+    "zeros": 1
+   },
+   {
+    "edge_hz": 10750000,
+    "zeros": 2
+   }
+  ]
+ }
+}

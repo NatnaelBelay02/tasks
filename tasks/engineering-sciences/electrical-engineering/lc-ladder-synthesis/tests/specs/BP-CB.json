@@ -1,0 +1,15 @@
+{
+ "id": "BP-CB",
+ "description": "26.965-27.405 MHz CB-band transmitter filter, no finite transmission zeros",
+ "source_resistance_ohm": 50,
+ "passband_hz": [
+  26965000,
+  27405000
+ ],
+ "return_loss_db": 20,
+ "degree": 8,
+ "transmission_zeros": {
+  "dc": 4,
+  "stopbands": []
+ }
+}

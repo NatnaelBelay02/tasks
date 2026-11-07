@@ -1,0 +1,20 @@
+{
+ "id": "BP-IF21M4N",
+ "description": "21.4 MHz first IF of a 25 kHz-channel receiver, 30 kHz bandwidth, stopband above 21.43 MHz (two zeros)",
+ "source_resistance_ohm": 50,
+ "passband_hz": [
+  21385000,
+  21415000
+ ],
+ "return_loss_db": 20,
+ "degree": 16,
+ "transmission_zeros": {
+  "dc": 4,
+  "stopbands": [
+   {
+    "edge_hz": 21430000,
+    "zeros": 2
+   }
+  ]
+ }
+}

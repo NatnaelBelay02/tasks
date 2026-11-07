@@ -1,0 +1,20 @@
+{
+ "id": "LP-868",
+ "description": "868 MHz LoRa transmitter: low-pass, stopband from 1215 MHz (start of the GNSS L-bands)",
+ "source_resistance_ohm": 50,
+ "passband_hz": [
+  0,
+  870000000
+ ],
+ "return_loss_db": 18,
+ "degree": 8,
+ "transmission_zeros": {
+  "dc": 0,
+  "stopbands": [
+   {
+    "edge_hz": 1215000000,
+    "zeros": 3
+   }
+  ]
+ }
+}

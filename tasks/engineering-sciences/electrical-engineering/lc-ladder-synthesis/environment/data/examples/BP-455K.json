@@ -1,0 +1,15 @@
+{
+ "id": "BP-455K",
+ "description": "455 kHz AM IF selectivity filter, 10 kHz bandwidth, no finite transmission zeros",
+ "source_resistance_ohm": 50,
+ "passband_hz": [
+  450000,
+  460000
+ ],
+ "return_loss_db": 20,
+ "degree": 8,
+ "transmission_zeros": {
+  "dc": 4,
+  "stopbands": []
+ }
+}

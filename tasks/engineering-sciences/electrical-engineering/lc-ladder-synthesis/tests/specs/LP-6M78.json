@@ -1,0 +1,20 @@
+{
+ "id": "LP-6M78",
+ "description": "6.78 MHz wireless-power class-E amplifier: harmonic low-pass, stopband from the 2nd harmonic",
+ "source_resistance_ohm": 50,
+ "passband_hz": [
+  0,
+  7000000
+ ],
+ "return_loss_db": 20,
+ "degree": 7,
+ "transmission_zeros": {
+  "dc": 0,
+  "stopbands": [
+   {
+    "edge_hz": 13560000,
+    "zeros": 2
+   }
+  ]
+ }
+}

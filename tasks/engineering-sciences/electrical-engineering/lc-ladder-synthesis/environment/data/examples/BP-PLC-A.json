@@ -1,0 +1,20 @@
+{
+ "id": "BP-PLC-A",
+ "description": "G3-PLC CENELEC-A coupling filter, 35.9-90.6 kHz, upper stopband from 148.5 kHz (upper limit of the CENELEC bands)",
+ "source_resistance_ohm": 50,
+ "passband_hz": [
+  35900,
+  90600
+ ],
+ "return_loss_db": 16,
+ "degree": 8,
+ "transmission_zeros": {
+  "dc": 3,
+  "stopbands": [
+   {
+    "edge_hz": 148500,
+    "zeros": 1
+   }
+  ]
+ }
+}

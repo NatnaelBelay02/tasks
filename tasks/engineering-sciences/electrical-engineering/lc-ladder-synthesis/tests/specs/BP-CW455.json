@@ -1,0 +1,24 @@
+{
+ "id": "BP-CW455",
+ "description": "455 kHz CW IF filter, 1.2 kHz bandwidth, stopbands below 453.6 kHz (two zeros) and above 456.4 kHz",
+ "source_resistance_ohm": 50,
+ "passband_hz": [
+  454400,
+  455600
+ ],
+ "return_loss_db": 20,
+ "degree": 16,
+ "transmission_zeros": {
+  "dc": 2,
+  "stopbands": [
+   {
+    "edge_hz": 453600,
+    "zeros": 2
+   },
+   {
+    "edge_hz": 456400,
+    "zeros": 1
+   }
+  ]
+ }
+}

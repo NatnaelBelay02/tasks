@@ -1,0 +1,24 @@
+{
+ "id": "BP-30K30M",
+ "description": "LF-HF communications receiver front end, 30 kHz-30 MHz, stopbands below 20 kHz and above 45 MHz",
+ "source_resistance_ohm": 50,
+ "passband_hz": [
+  30000,
+  30000000
+ ],
+ "return_loss_db": 20,
+ "degree": 12,
+ "transmission_zeros": {
+  "dc": 3,
+  "stopbands": [
+   {
+    "edge_hz": 20000,
+    "zeros": 1
+   },
+   {
+    "edge_hz": 45000000,
+    "zeros": 1
+   }
+  ]
+ }
+}

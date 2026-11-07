@@ -1,0 +1,24 @@
+{
+ "id": "BP-15M",
+ "description": "21.0-21.45 MHz amateur receiver, stopbands below 20.5 MHz (two zeros) and above 22.0 MHz",
+ "source_resistance_ohm": 50,
+ "passband_hz": [
+  21000000,
+  21450000
+ ],
+ "return_loss_db": 20,
+ "degree": 12,
+ "transmission_zeros": {
+  "dc": 1,
+  "stopbands": [
+   {
+    "edge_hz": 20500000,
+    "zeros": 2
+   },
+   {
+    "edge_hz": 22000000,
+    "zeros": 1
+   }
+  ]
+ }
+}

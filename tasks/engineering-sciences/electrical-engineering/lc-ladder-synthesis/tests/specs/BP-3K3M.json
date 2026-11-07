@@ -1,0 +1,24 @@
+{
+ "id": "BP-3K3M",
+ "description": "VLF-MF wideband receiver front end, 3 kHz-3 MHz, stopbands below 2 kHz and above 4.5 MHz (two zeros)",
+ "source_resistance_ohm": 50,
+ "passband_hz": [
+  3000,
+  3000000
+ ],
+ "return_loss_db": 20,
+ "degree": 14,
+ "transmission_zeros": {
+  "dc": 4,
+  "stopbands": [
+   {
+    "edge_hz": 2000,
+    "zeros": 1
+   },
+   {
+    "edge_hz": 4500000,
+    "zeros": 2
+   }
+  ]
+ }
+}

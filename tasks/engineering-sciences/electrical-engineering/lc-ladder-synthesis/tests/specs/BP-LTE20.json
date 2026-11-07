@@ -1,0 +1,24 @@
+{
+ "id": "BP-LTE20",
+ "description": "LTE band 20 downlink receiver, 791-821 MHz, stopbands below 758 MHz (700 MHz band) and above 832 MHz (band 20 uplink)",
+ "source_resistance_ohm": 50,
+ "passband_hz": [
+  791000000,
+  821000000
+ ],
+ "return_loss_db": 20,
+ "degree": 12,
+ "transmission_zeros": {
+  "dc": 3,
+  "stopbands": [
+   {
+    "edge_hz": 758000000,
+    "zeros": 2
+   },
+   {
+    "edge_hz": 832000000,
+    "zeros": 1
+   }
+  ]
+ }
+}

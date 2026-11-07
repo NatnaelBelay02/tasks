@@ -1,0 +1,24 @@
+{
+ "id": "BP-SONAR",
+ "description": "sonar receiver input filter (600 ohm), 1 kHz-1 MHz, stopbands below 500 Hz and above 1.4 MHz",
+ "source_resistance_ohm": 600,
+ "passband_hz": [
+  1000,
+  1000000
+ ],
+ "return_loss_db": 26,
+ "degree": 10,
+ "transmission_zeros": {
+  "dc": 3,
+  "stopbands": [
+   {
+    "edge_hz": 500,
+    "zeros": 1
+   },
+   {
+    "edge_hz": 1400000,
+    "zeros": 1
+   }
+  ]
+ }
+}

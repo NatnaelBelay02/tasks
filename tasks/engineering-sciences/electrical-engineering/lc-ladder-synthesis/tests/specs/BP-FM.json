@@ -1,0 +1,24 @@
+{
+ "id": "BP-FM",
+ "description": "FM broadcast-band preselector, 87.5-108 MHz, stopbands below 72 MHz (top of TV channel 4) and above 118 MHz (VHF airband)",
+ "source_resistance_ohm": 50,
+ "passband_hz": [
+  87500000,
+  108000000
+ ],
+ "return_loss_db": 20,
+ "degree": 10,
+ "transmission_zeros": {
+  "dc": 3,
+  "stopbands": [
+   {
+    "edge_hz": 72000000,
+    "zeros": 1
+   },
+   {
+    "edge_hz": 118000000,
+    "zeros": 1
+   }
+  ]
+ }
+}

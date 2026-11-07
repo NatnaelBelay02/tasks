@@ -1,0 +1,24 @@
+{
+ "id": "BP-455ADJ",
+ "description": "455 kHz AM IF filter with adjacent-channel rejection, 450-460 kHz, stopbands below 440 kHz (two zeros) and above 470 kHz",
+ "source_resistance_ohm": 50,
+ "passband_hz": [
+  450000,
+  460000
+ ],
+ "return_loss_db": 20,
+ "degree": 12,
+ "transmission_zeros": {
+  "dc": 1,
+  "stopbands": [
+   {
+    "edge_hz": 440000,
+    "zeros": 2
+   },
+   {
+    "edge_hz": 470000,
+    "zeros": 1
+   }
+  ]
+ }
+}

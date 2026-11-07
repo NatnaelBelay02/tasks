@@ -1,0 +1,20 @@
+{
+ "id": "LP-POTS",
+ "description": "ADSL splitter low-pass (600 ohm), 4 kHz voice band, stopband from 25.875 kHz (first ADSL tone)",
+ "source_resistance_ohm": 600,
+ "passband_hz": [
+  0,
+  4000
+ ],
+ "return_loss_db": 14,
+ "degree": 5,
+ "transmission_zeros": {
+  "dc": 0,
+  "stopbands": [
+   {
+    "edge_hz": 25875,
+    "zeros": 2
+   }
+  ]
+ }
+}

@@ -1,0 +1,24 @@
+{
+ "id": "BP-10K10M",
+ "description": "LF-HF wideband receiver front end (75 ohm), 10 kHz-10 MHz, stopbands below 6 kHz and above 15 MHz (two zeros)",
+ "source_resistance_ohm": 75,
+ "passband_hz": [
+  10000,
+  10000000
+ ],
+ "return_loss_db": 20,
+ "degree": 16,
+ "transmission_zeros": {
+  "dc": 4,
+  "stopbands": [
+   {
+    "edge_hz": 6000,
+    "zeros": 1
+   },
+   {
+    "edge_hz": 15000000,
+    "zeros": 2
+   }
+  ]
+ }
+}

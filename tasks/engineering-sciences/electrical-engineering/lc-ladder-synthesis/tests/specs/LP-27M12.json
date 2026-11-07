@@ -1,0 +1,20 @@
+{
+ "id": "LP-27M12",
+ "description": "27.12 MHz ISM generator: harmonic low-pass, stopband from the 2nd harmonic",
+ "source_resistance_ohm": 50,
+ "passband_hz": [
+  0,
+  28000000
+ ],
+ "return_loss_db": 20,
+ "degree": 8,
+ "transmission_zeros": {
+  "dc": 0,
+  "stopbands": [
+   {
+    "edge_hz": 54240000,
+    "zeros": 2
+   }
+  ]
+ }
+}

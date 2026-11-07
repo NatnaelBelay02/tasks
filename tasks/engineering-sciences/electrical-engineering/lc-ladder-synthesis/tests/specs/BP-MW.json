@@ -1,0 +1,24 @@
+{
+ "id": "BP-MW",
+ "description": "AM medium-wave receiver preselector, 530-1700 kHz, stopbands below 283.5 kHz (top of the long-wave band) and above 2.3 MHz (120 m tropical band)",
+ "source_resistance_ohm": 50,
+ "passband_hz": [
+  530000,
+  1700000
+ ],
+ "return_loss_db": 20,
+ "degree": 8,
+ "transmission_zeros": {
+  "dc": 1,
+  "stopbands": [
+   {
+    "edge_hz": 283500,
+    "zeros": 1
+   },
+   {
+    "edge_hz": 2300000,
+    "zeros": 2
+   }
+  ]
+ }
+}

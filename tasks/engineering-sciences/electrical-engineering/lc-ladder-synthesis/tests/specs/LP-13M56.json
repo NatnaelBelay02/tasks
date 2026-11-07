@@ -1,0 +1,20 @@
+{
+ "id": "LP-13M56",
+ "description": "13.56 MHz plasma RF generator: harmonic low-pass, stopband from the 2nd harmonic",
+ "source_resistance_ohm": 50,
+ "passband_hz": [
+  0,
+  14000000
+ ],
+ "return_loss_db": 26,
+ "degree": 9,
+ "transmission_zeros": {
+  "dc": 0,
+  "stopbands": [
+   {
+    "edge_hz": 27120000,
+    "zeros": 3
+   }
+  ]
+ }
+}

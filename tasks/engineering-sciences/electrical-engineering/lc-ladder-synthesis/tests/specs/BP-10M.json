@@ -1,0 +1,24 @@
+{
+ "id": "BP-10M",
+ "description": "28.0-29.7 MHz amateur receiver, stopbands below 27.0 MHz (CB band, two zeros) and above 30.5 MHz",
+ "source_resistance_ohm": 50,
+ "passband_hz": [
+  28000000,
+  29700000
+ ],
+ "return_loss_db": 20,
+ "degree": 12,
+ "transmission_zeros": {
+  "dc": 1,
+  "stopbands": [
+   {
+    "edge_hz": 27000000,
+    "zeros": 2
+   },
+   {
+    "edge_hz": 30500000,
+    "zeros": 1
+   }
+  ]
+ }
+}

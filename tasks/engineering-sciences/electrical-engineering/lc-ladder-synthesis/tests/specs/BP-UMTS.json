@@ -1,0 +1,24 @@
+{
+ "id": "BP-UMTS",
+ "description": "UMTS band 1 downlink receiver, 2110-2170 MHz, stopbands below 2025 MHz (band 34, two zeros) and above 2200 MHz (satellite S-band)",
+ "source_resistance_ohm": 50,
+ "passband_hz": [
+  2110000000,
+  2170000000
+ ],
+ "return_loss_db": 20,
+ "degree": 12,
+ "transmission_zeros": {
+  "dc": 1,
+  "stopbands": [
+   {
+    "edge_hz": 2025000000,
+    "zeros": 2
+   },
+   {
+    "edge_hz": 2200000000,
+    "zeros": 1
+   }
+  ]
+ }
+}

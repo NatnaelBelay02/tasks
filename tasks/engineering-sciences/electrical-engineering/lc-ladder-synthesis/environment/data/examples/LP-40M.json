@@ -1,0 +1,20 @@
+{
+ "id": "LP-40M",
+ "description": "7.0-7.3 MHz amateur transmitter: harmonic low-pass, stopband from the 2nd harmonic of 7.0 MHz",
+ "source_resistance_ohm": 50,
+ "passband_hz": [
+  0,
+  7300000
+ ],
+ "return_loss_db": 20,
+ "degree": 5,
+ "transmission_zeros": {
+  "dc": 0,
+  "stopbands": [
+   {
+    "edge_hz": 14000000,
+    "zeros": 2
+   }
+  ]
+ }
+}

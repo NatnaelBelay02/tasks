@@ -1,0 +1,24 @@
+{
+ "id": "BP-915",
+ "description": "902-928 MHz receiver, stopbands below 894 MHz (GSM-850 downlink) and above 935 MHz (GSM-900 downlink)",
+ "source_resistance_ohm": 50,
+ "passband_hz": [
+  902000000,
+  928000000
+ ],
+ "return_loss_db": 20,
+ "degree": 10,
+ "transmission_zeros": {
+  "dc": 3,
+  "stopbands": [
+   {
+    "edge_hz": 894000000,
+    "zeros": 1
+   },
+   {
+    "edge_hz": 935000000,
+    "zeros": 1
+   }
+  ]
+ }
+}

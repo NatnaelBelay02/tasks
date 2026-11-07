@@ -1,0 +1,24 @@
+{
+ "id": "BP-DCF77",
+ "description": "DCF77 time-signal receiver, 76.5-78.5 kHz, stopbands below 75 kHz (two zeros) and above 81 kHz",
+ "source_resistance_ohm": 50,
+ "passband_hz": [
+  76500,
+  78500
+ ],
+ "return_loss_db": 20,
+ "degree": 12,
+ "transmission_zeros": {
+  "dc": 1,
+  "stopbands": [
+   {
+    "edge_hz": 75000,
+    "zeros": 2
+   },
+   {
+    "edge_hz": 81000,
+    "zeros": 1
+   }
+  ]
+ }
+}

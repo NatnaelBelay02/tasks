@@ -1,0 +1,24 @@
+{
+ "id": "BP-2M",
+ "description": "144-148 MHz amateur receiver, stopbands below 137 MHz (weather satellites, two zeros) and above 156 MHz (marine VHF)",
+ "source_resistance_ohm": 50,
+ "passband_hz": [
+  144000000,
+  148000000
+ ],
+ "return_loss_db": 20,
+ "degree": 12,
+ "transmission_zeros": {
+  "dc": 1,
+  "stopbands": [
+   {
+    "edge_hz": 137000000,
+    "zeros": 2
+   },
+   {
+    "edge_hz": 156000000,
+    "zeros": 1
+   }
+  ]
+ }
+}

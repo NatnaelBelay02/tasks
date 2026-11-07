@@ -1,0 +1,20 @@
+{
+ "id": "LP-2M",
+ "description": "144-148 MHz amateur transmitter: harmonic low-pass, stopband from the 2nd harmonic of 144 MHz",
+ "source_resistance_ohm": 50,
+ "passband_hz": [
+  0,
+  148000000
+ ],
+ "return_loss_db": 20,
+ "degree": 6,
+ "transmission_zeros": {
+  "dc": 0,
+  "stopbands": [
+   {
+    "edge_hz": 288000000,
+    "zeros": 2
+   }
+  ]
+ }
+}

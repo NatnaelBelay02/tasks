@@ -1,0 +1,24 @@
+{
+ "id": "BP-AUDIO",
+ "description": "audio band-limiting filter at a 48 kHz converter input (600 ohm), 20 Hz-20 kHz, stopbands below 8 Hz (infrasonic rumble) and above 28 kHz (alias band, two zeros)",
+ "source_resistance_ohm": 600,
+ "passband_hz": [
+  20,
+  20000
+ ],
+ "return_loss_db": 26,
+ "degree": 12,
+ "transmission_zeros": {
+  "dc": 4,
+  "stopbands": [
+   {
+    "edge_hz": 8,
+    "zeros": 1
+   },
+   {
+    "edge_hz": 28000,
+    "zeros": 2
+   }
+  ]
+ }
+}

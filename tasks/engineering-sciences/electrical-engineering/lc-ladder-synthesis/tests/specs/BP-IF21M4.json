@@ -1,0 +1,24 @@
+{
+ "id": "BP-IF21M4",
+ "description": "21.4 MHz first IF of a land-mobile receiver, 50 kHz bandwidth, stopbands below 21.35 MHz and above 21.45 MHz (two zeros)",
+ "source_resistance_ohm": 50,
+ "passband_hz": [
+  21375000,
+  21425000
+ ],
+ "return_loss_db": 20,
+ "degree": 16,
+ "transmission_zeros": {
+  "dc": 4,
+  "stopbands": [
+   {
+    "edge_hz": 21350000,
+    "zeros": 1
+   },
+   {
+    "edge_hz": 21450000,
+    "zeros": 2
+   }
+  ]
+ }
+}

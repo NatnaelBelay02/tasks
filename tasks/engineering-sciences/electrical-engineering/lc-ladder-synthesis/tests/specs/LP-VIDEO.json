@@ -1,0 +1,20 @@
+{
+ "id": "LP-VIDEO",
+ "description": "BT.601 luminance reconstruction filter (75 ohm), 5.75 MHz passband, stopband from 7.75 MHz (first image)",
+ "source_resistance_ohm": 75,
+ "passband_hz": [
+  0,
+  5750000
+ ],
+ "return_loss_db": 20,
+ "degree": 8,
+ "transmission_zeros": {
+  "dc": 0,
+  "stopbands": [
+   {
+    "edge_hz": 7750000,
+    "zeros": 2
+   }
+  ]
+ }
+}

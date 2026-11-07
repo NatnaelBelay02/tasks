@@ -1,0 +1,20 @@
+{
+ "id": "LP-433",
+ "description": "433.92 MHz ISM transmitter: harmonic low-pass, stopband from the 2nd harmonic",
+ "source_resistance_ohm": 50,
+ "passband_hz": [
+  0,
+  450000000
+ ],
+ "return_loss_db": 20,
+ "degree": 6,
+ "transmission_zeros": {
+  "dc": 0,
+  "stopbands": [
+   {
+    "edge_hz": 867840000,
+    "zeros": 2
+   }
+  ]
+ }
+}

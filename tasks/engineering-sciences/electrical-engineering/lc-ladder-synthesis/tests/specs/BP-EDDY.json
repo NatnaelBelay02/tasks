@@ -1,0 +1,24 @@
+{
+ "id": "BP-EDDY",
+ "description": "eddy-current instrument filter (75 ohm), 10 kHz-10 MHz, stopbands below 5 kHz (two zeros) and above 15 MHz",
+ "source_resistance_ohm": 75,
+ "passband_hz": [
+  10000,
+  10000000
+ ],
+ "return_loss_db": 20,
+ "degree": 12,
+ "transmission_zeros": {
+  "dc": 2,
+  "stopbands": [
+   {
+    "edge_hz": 5000,
+    "zeros": 2
+   },
+   {
+    "edge_hz": 15000000,
+    "zeros": 1
+   }
+  ]
+ }
+}

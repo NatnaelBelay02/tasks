@@ -1,0 +1,20 @@
+{
+ "id": "LP-CATV42",
+ "description": "cable-TV diplexer, 5-42 MHz upstream low-pass arm (75 ohm), stopband from 54 MHz (lower edge of channel 2)",
+ "source_resistance_ohm": 75,
+ "passband_hz": [
+  0,
+  42000000
+ ],
+ "return_loss_db": 20,
+ "degree": 9,
+ "transmission_zeros": {
+  "dc": 0,
+  "stopbands": [
+   {
+    "edge_hz": 54000000,
+    "zeros": 3
+   }
+  ]
+ }
+}

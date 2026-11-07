@@ -1,0 +1,24 @@
+{
+ "id": "BP-IF70M2",
+ "description": "70 MHz satellite-modem IF, 200 kHz bandwidth, stopbands below 69.8 MHz and above 70.2 MHz (two zeros)",
+ "source_resistance_ohm": 50,
+ "passband_hz": [
+  69900000,
+  70100000
+ ],
+ "return_loss_db": 20,
+ "degree": 16,
+ "transmission_zeros": {
+  "dc": 4,
+  "stopbands": [
+   {
+    "edge_hz": 69800000,
+    "zeros": 1
+   },
+   {
+    "edge_hz": 70200000,
+    "zeros": 2
+   }
+  ]
+ }
+}

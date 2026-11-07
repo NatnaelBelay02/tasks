@@ -1,0 +1,20 @@
+{
+ "id": "BP-IF10M7C",
+ "description": "10.7 MHz IF of a 25 kHz-channel receiver, 25 kHz bandwidth, stopband above 10.73 MHz (upper adjacent channel, two zeros)",
+ "source_resistance_ohm": 50,
+ "passband_hz": [
+  10687500,
+  10712500
+ ],
+ "return_loss_db": 20,
+ "degree": 16,
+ "transmission_zeros": {
+  "dc": 4,
+  "stopbands": [
+   {
+    "edge_hz": 10730000,
+    "zeros": 2
+   }
+  ]
+ }
+}
