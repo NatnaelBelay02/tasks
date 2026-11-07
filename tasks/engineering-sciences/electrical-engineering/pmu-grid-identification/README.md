@@ -157,23 +157,26 @@ On all five recordings it finds the true topology and every malfunction interval
 
 **Harbor runs.** v2 passed harbor 0.24.0 with `oracle` (reward 1, 24/24) and `nop` (reward 0, all 24 tests fail). The v3 results above come from the authoring container, where harbor and Docker are not available. There, `tests/test_identification.py` was run directly as root on the four held-out recordings, with the same sandbox: uid 65534, the stated environment, the read-only input directory, the self-check, and the process-group and uid kills. That container has Python 3.13 and numpy 2.5 rather than the grading image's Python 3.12 and numpy 1.26.4. Both programs use only basic numpy linear algebra, but the harbor `oracle` and `nop` runs should be repeated on the final package.
 
-**Calibration: what weaker methods score.** Each method below was run author-side on the four held-out recordings. Its four outputs were then graded by the verifier image through a replay program that writes the stored output for each recording. Cells give the worst |error|/σ over branch parameters and calibrations; "topology" means a wrong `in_service`, and "segments" means requirement 6 fails. Rows 1–2 rebuild two complete pipelines that solved an earlier version of this task with a steady recording. Both are given the true topology and the true malfunction intervals, padded by 10 frames, which favours them. Rows 3–8 are the reference program with one ingredient removed (author-side `make_ablations.py`, string patches of `identify.py`).
+**Calibration: what weaker methods score.** Rows 1–5 are the reference program with one ingredient removed (author-side `make_ablations.py`, string patches of `identify.py`). Each was run author-side on the four held-out recordings, with the reference program's clipping applied to its output. Its four outputs were then graded by the real verifier through a replay program that writes the stored output for each recording. Cells give the worst |error|/σ over branch parameters and calibrations; "topology" means a wrong `in_service`, and "segments" means requirement 6 fails. Rows 6–7 were not run: they fail by construction, as stated in their cells.
 
-| method | rec_a | rec_b | rec_c | rec_d | reward |
-|---|---|---|---|---|---|
-| 1. rectangular errors-in-variables fit, one noise covariance per channel for the whole recording | 6.3 | 4.9 | 3.4 | 2.7 | 0 |
-| 2. one 26 × 26 complex scatter matrix of the recording, one isotropic σ per channel, subspace fit | 3.3 | 6.2 | 4.6 | 2.1 | 0 |
-| 3. per-frame whitening, but at each channel's mean angle (time-invariant) | 4.8, topology, segments | 94.6, topology, segments | 2.7 | 2.6 | 0 |
-| 4. isotropic noise (one σ per channel, rms of magnitude and angle σ) | 3.7 | 6.1, segments | 5.0 | 2.4 | 0 |
-| 5. Kaufman approximation of the variable-projection Jacobian | 33.5, topology | 1.9 | 2.3 | 2.2 | 0 |
-| 6. superset fit from the nameplate start only | 2.2 | 5.6, topology | 2.3 | 2.2 | 0 |
-| 7. database topology trusted | 83.5, topology, segments | 112.9, topology, segments | 2.3 | 31.4, topology, segments | 0 |
-| 8. exact repeats only, no other malfunction detection | 75.4, topology, segments | 17.5, segments | 12.2, segments | 71.8, topology, segments | 0 |
-| reference program | 2.2 | 1.9 | 2.3 | 2.2 | 1 |
+| method | rec_a | rec_b | rec_c | rec_d | reward | verifier tests failed |
+|---|---|---|---|---|---|---|
+| 1. per-frame whitening, but at each channel's mean angle (one fixed covariance per channel) | 16.2, topology, segments | 262.2, topology, segments | 3.5 | 2.1 | 0 | topology, branch, calibration, segments on rec_a and rec_b |
+| 2. isotropic noise (one σ per channel, rms of magnitude and angle σ) | 3.4 | 11.0, segments | 2.5 | 2.3 | 0 | branch, calibration, segments on rec_b |
+| 3. Kaufman approximation of the variable-projection Jacobian | 2.3 | 5.5 | 3.5 | 2.0 | 0 | branch on rec_b |
+| 4. superset fit from the nameplate start only | 2.3 | 4.7 | 3.5 | 2.0 | 0 | calibration on rec_b |
+| 5. no plausibility check (pipeline step 5) | 36.8, topology | 1.8 | 3.5 | 2.0 | 0 | topology, branch, calibration on rec_a |
+| 6. database topology trusted | topology | topology | not run | topology | 0 | by construction: the database is wrong for 2 candidates on rec_a, rec_b and rec_d |
+| 7. exact repeats only, no other malfunction detection | segments | segments | segments | segments | 0 | by construction: every recording has a timing or ratio fault of 300–1200 frames, which repeats cannot reveal (stale intervals last 40–90 frames) |
+| reference program | 2.3 | 1.8 | 3.5 | 2.0 | 1 | none |
 
-Each ingredient of the reference program is needed on at least one held-out recording. With the Kaufman approximation, the staged start on rec_a stalls at a cost of 4606 per frame, against 76 with the exact Jacobian. The search then keeps an open corridor. The verifier's failed tests agree with this table for every row.
+Each ingredient of the reference program is needed on at least one held-out recording:
+- **Noise model (rows 1–2).** A fixed or isotropic covariance mis-weights the angle noise as the phasors rotate. The PMU-level malfunction statistic then sees spurious excess χ², so intervals are missed or invented, and the parameters follow.
+- **Exact Jacobian (row 3).** With the Kaufman approximation, every start of the superset fit on rec_b stops at a cost of at least 26.78 per search frame, against 25.87 with the exact Jacobian. The topology is still right, but the final fit stays in that basin and branch 21's resistance ends 5.5σ off.
+- **Several starts (row 4).** On rec_b the reference program's best superset fit comes from the admittance-first start; the nameplate start alone ends at 27.72 per search frame and fails on the V12 ratio error (4.7σ).
+- **Plausibility check (row 5).** See pipeline step 5 and the topology bullet under Difficulty.
 
 ## Version history
 
-- **v3 (this version).** Rework after review: the v2 load model was not physically faithful (fast per-bus and common load fluctuations and 4–8 %/min system ramps with no stated mechanism). The operating conditions are now the mechanisms of the "Operating conditions" table, each at a realistic rate. The recording is 75 minutes at 2 frames per second, so the frame count and the contract are unchanged. The recordings, the tolerances and the example's truth were regenerated; the planted truth of the held-out recordings, the topology errors, the malfunctions and the noise levels are those of v2. The verifier code is unchanged. The reference program gained the plausibility check of pipeline step 5. On the new rec_a, every start of the superset fit keeps the open corridor 6–13 alive with a negative resistance, and without the check the program fails. The independent program was rewritten for the new data.
+- **v3 (this version).** Rework after review: the v2 load model was not physically faithful (fast per-bus and common load fluctuations and 4–8 %/min system ramps with no stated mechanism). The operating conditions are now the mechanisms of the "Operating conditions" table, each at a realistic rate. The recording is 75 minutes at 2 frames per second, so the frame count and the contract are unchanged. The recordings, the tolerances and the example's truth were regenerated; the planted truth of the held-out recordings, the topology errors, the malfunctions and the noise levels are those of v2. The verifier code is unchanged. The reference program gained the plausibility check of pipeline step 5. On the new rec_a, every start of the superset fit keeps the open corridor 6–13 alive with a negative resistance, and without the check the program fails. The independent program was rewritten for the new data. The calibration table was recomputed on the v3 data. Two v2 rows were not recomputed and are dropped: two complete pipelines that had solved an earlier, steady-recording version of this task. Rows 1–2 of the new table cover the same noise-model weakness.
 - **v2.** 15-minute recording at 10 frames per second, with the load model the review found unfaithful.
