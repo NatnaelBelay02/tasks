@@ -111,7 +111,8 @@ def main():
     name, net_p, truth_p, out = sys.argv[1:5]
     net, tr = M.load_json(net_p), M.load_json(truth_p)
     cfg = CONFIG[name]
-    rng = np.random.default_rng(cfg["seed"])
+    import os
+    rng = np.random.default_rng(int(os.environ.get("PMU_SEED", cfg["seed"])))   # override: Monte Carlo reruns
     Y = M.ybus(net["candidates"], tr["status"], tr["params"], net["shunt"])
     t = np.arange(FRAMES) * DT
     s = profile(*cfg["profile"], t)

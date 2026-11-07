@@ -452,22 +452,30 @@ def detect(r, mask_frames):
     found = []
     for j, b in enumerate(PMU):
         x = np.where(mask_frames[:, j], 0.0, excess[:, j])
-        # Page CUSUM with reference 1.5 (in units of the median statistic), alarm at 60
-        s, start, runs = 0.0, None, []
-        for t in range(T):
-            s = max(0.0, s + x[t] - 1.5)
-            if s > 0 and start is None:
-                start = t
-            if s == 0:
+        # Page CUSUM with reference 1.5 (in units of the median statistic); a run starts where the sum leaves
+        # zero and ends where it peaks; it alarms if the peak exceeds 60
+        s_, start, peak, runs = 0.0, None, (0.0, None), []
+        for t in range(T + 1):
+            s_ = max(0.0, s_ + (x[t] if t < T else -np.inf) - 1.5)
+            if s_ > 0 and start is None:
+                start, peak = t, (0.0, None)
+            if s_ > peak[0]:
+                peak = (s_, t)
+            if s_ == 0 and start is not None:
+                if peak[0] > 60:
+                    runs.append([start, peak[1]])
                 start = None
-            if s > 60 and (not runs or runs[-1][1] < t - 1):
-                runs.append([start, t])
-            elif s > 60:
-                runs[-1][1] = t
         for a, e in runs:
             if e - a + 1 < 15:
                 continue
             a2, e2 = changepoints(x, a, e)
+            # extend each end while the local mean of the normalised statistic stays significant
+            # (ramped and out-and-back timing errors fade in gently)
+            zz = np.where(mask_frames[:, j], 1.0, z[:, j])
+            while a2 > 8 and zz[a2 - 9:a2].mean() > 2.0:
+                a2 -= 1
+            while e2 < T - 9 and zz[e2 + 1:e2 + 10].mean() > 2.0:
+                e2 += 1
             if e2 - a2 + 1 > 1300:                  # longer than any malfunction: model error, not a fault
                 continue
             gain = float(np.sum(x[a2:e2 + 1]))

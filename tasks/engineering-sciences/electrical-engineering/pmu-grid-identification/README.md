@@ -55,31 +55,51 @@ Measured in the grading container with nothing else running: all four held-out r
 
 Requirements 4 and 5 compare the exact decimal value written with the stored double, exactly and inclusive at the bound.
 
-**Where the data come from.** The author-side generator (`gen_recording.py`, with `model.py`, kept outside the package) starts from the IEEE 14-bus system (MATPOWER `case14`). Every frame is an exact AC power flow of randomly varying loads. Then:
+**Where the data come from.** The author-side generator (`gen_recording.py`, with `model.py`, kept outside the package) starts from the IEEE 14-bus system (MATPOWER `case14`: bus loads, generator and voltage set points). Every frame is an exact AC power flow (Newton–Raphson to 1e-13 pu) of that frame's loads and generation. Then:
 - all phasors of the frame are rotated by the accumulated frequency deviation;
 - the instrument errors and the polar noise are applied;
 - the malfunctions are injected;
 - angles are reported as principal values.
+
+The rebuilt model was checked against the v2 recordings before it was used: with the planted truth, the measured currents of rec_a agree with Y·V to within the noise (variance ratio 0.95–1.16 per channel on the clean frames).
 
 | item | value (all recordings) |
 |---|---|
 | network | bus 7 is the explicit star point of the three-winding transformer (4–7, 7–8, 7–9 known); extra corridors 1–4 and 3–5 (lines), 10–14 and 11–12 (cables) |
 | planted parameters | line and cable r, x within ±10 % of nameplate; transformer x within ±5 %; taps nameplate ± up to three 0.625 % steps; new draw per recording |
 | instrument errors | ratio uniform in ±1 %, phase uniform in ±10.5 mrad; buses 1 and 6 exact; new draw per recording |
-| loads | Ornstein–Uhlenbeck, 5 % per bus (τ = 1.5 s) plus 3 % common mode (τ = 20 s), times the system load profile; 10 frames/s for 15 min |
+| recording | 9000 frames at 2 frames per second (75 min), a decimated archive of the PMU stream |
+| operating conditions | see the next table |
 | frequency deviation | Ornstein–Uhlenbeck with τ = 30 s; its integral rotates every phasor of a frame |
 
-| recording | load profile | freq. deviation std | noise σ_m / σ_a, V; I | database errors | malfunctions (bus, frames, kind, size) |
-|---|---|---|---|---|---|
-| example (`/root/data`) | steady | 0 | 2e-4 / 3e-4; 5e-4 / 8e-4 | 6–13 listed closed, open; 10–14 listed open, closed | 10: 2400–2439, V stale |
-| rec_a | ramp 0.5 → 1.1 | 0.02 Hz (43 rad span) | 1e-4 / 5e-4; 2.5e-4 / 1.25e-3 | same two as the example | 12: 3100–3499 out-and-back timing error, peak 0.03 rad; 9: 5200–5899 phase shift 3e-3 rad; 4: 7000–7059 I stale |
-| rec_b | swing 0.5 … 1.1 … 0.5 | 0.03 Hz (37 rad) | 1e-4 / 8e-4; 3e-4 / 2.4e-3 | 1–4 listed open, closed; 10–11 listed closed, open | 3: 800–1399 V ratio +8e-4; 12: 4500–4799 timing ramp to 0.02 rad, then jump back; 10: 6000–6039 V stale |
-| rec_c | ramp 0.5 → 1.1 | 0 | 1.5e-4 / 7.5e-4; 4e-4 / 2e-3 | none | 13: 3000–4199 phase shift 4.5e-3 rad |
-| rec_d | steady | 0.02 Hz (41 rad) | 2e-4 / 4e-4; 5e-4 / 1e-3 | 3–5 and 11–12 listed open, closed | 2: 1000–1089 I stale; 14: 2500–3299 phase shift 2.4e-3 rad; 11: 4000–4599 V ratio +1.6e-3; 6: 6500–6899 out-and-back timing error, peak 0.025 rad |
+**Operating conditions** (v3; the v2 review found the earlier load model physically unfaithful). v2 drove the identification with loads that no bulk system shows: an independent 5 % per-bus Ornstein–Uhlenbeck component with τ = 1.5 s, a 3 % common component with τ = 20 s, and system load profiles from 0.5 to 1.1 and back within 15 minutes (4–8 %/min). v3 replaces them with the mechanisms that actually move a transmission system's operating point, each at a realistic rate, and lengthens the recording to 75 minutes, so that ordinary ramps supply the excitation:
 
-The example shows the format only. It has no frequency drift, nearly isotropic noise, a steady load and one stale interval. Every held-out property is stated in the instruction with its range, and the instruction's ranges were checked against the four recordings as staged. Malfunction sizes were set so that every interval is detectable. The part of the injected deviation that the per-frame states cannot absorb, in units of the noise (χ²), is at least 34 per frame at its largest and at least 1.8 × 10⁴ summed over the interval (author-side `detectability.py`).
+| mechanism | model | resulting rate | basis |
+|---|---|---|---|
+| system load level | steady; ramp up (morning pickup) or down (evening decline); or rise and fall (a peak passing) | at most 0.3 %/min | bulk-system ramps are sub-percent per minute |
+| aggregate demand of each load bus | OU on P and Q, σ = 2 %, τ = 300 s; OU on Q only, σ = 1 %, τ = 300 s (power-factor drift); fast component σ = 0.2 %, τ = 0.5 s (many small switching loads) | demand of all buses except the steel works: 1-min change 0.50–0.62 % rms, net ramp ≤ 0.33 %/min | minute-scale "regulation" variability of aggregated load [Hirst & Kirby]; OU load models [Milano & Zárate-Miñano] |
+| steel works at bus 3 | 30 MW / 24 MVAr AC electric arc furnace inside the 94.2 MW bus load: P fluctuates 8 % and Q 15 % of rating from frame to frame while the arc burns (OU, τ = 0.2 s); a 15-min power-off for back-charging in rec_a, rec_c and rec_d | bus 3 between 56 and 105 MW | the random, frame-to-frame P/Q fluctuation of arc furnaces [Montanari et al.]; power-off periods between heats are routine |
+| generator at bus 2 | 5-minute real-time dispatch: a new set point every 300 s (random step, σ = 4 MW, kept within 20–100 MW), reached at 8 MW/min; plus 25 % of the load deviation through AGC (first order, τ = 60 s); bus 1 is the slack | 7–97 MW over a recording | 5-minute security-constrained dispatch of real-time markets; AGC participation |
+| voltage control | buses 1, 2, 3, 6, 8 hold their set points (1.06, 1.045, 1.01, 1.07, 1.09 pu) | – | case14 |
+| frequency | OU, τ = 30 s, standard deviation 0, 20 or 30 mHz (largest deviation 0.1 Hz) | angles of a frame rotate by ≤ 0.62 rad/s, 58–99 rad over a recording | ordinary interconnection frequency wander |
 
-**Tolerances.** Each recording's tolerance file (`tolerances.json` for the example, `tests/data/rec_*/heldout_tolerances.json` for the held-out recordings) holds 4σ, where σ is the Cramér–Rao standard deviation. It is computed from the exact Fisher information of the measurement model at that recording's planted truth, over its frames free of malfunctions. The true states of every frame are treated as nuisance parameters and removed by a Schur complement. There are 86 unknowns; per recording, the Fisher matrix has smallest eigenvalue 60 to 201 and condition number 4.9e9 to 7.5e9, so every unknown is identifiable. On the held-out recordings the tolerances range from 5.4e-4 to 5.1e-2 pu for branch parameters, 1.2e-4 to 2.2e-2 for ratio errors and 1.4e-4 to 3.0e-2 rad for phase errors. Out-of-service candidates also get tolerances, so the example's file does not reveal the topology. These come from a counterfactual bound with the candidate in service at nameplate and are never used for grading. The bound is computed by an author-side pipeline (generator, model and Fisher information) that shares no code with the reference solution.
+The only fast, large variation is at the steel works, a named industrial load whose arc physically produces it. All other demand moves at sub-percent per minute.
+
+| recording | system load level | arc furnace off | freq. deviation std | noise σ_m / σ_a, V; I | database errors | malfunctions (bus, frames, kind, size) |
+|---|---|---|---|---|---|---|
+| example (`/root/data`) | steady 1.00 | – | 0 | 2e-4 / 3e-4; 5e-4 / 8e-4 | 6–13 listed closed, open; 10–14 listed open, closed | 10: 2400–2439, V stale |
+| rec_a | ramp 0.775 → 1.0 | 2600–3500 s | 20 mHz (99 rad span) | 1e-4 / 5e-4; 2.5e-4 / 1.25e-3 | same two as the example | 12: 3100–3499 out-and-back timing error, peak 0.03 rad; 9: 5200–5899 phase shift 3e-3 rad; 4: 7000–7059 I stale |
+| rec_b | 0.8875 → 1.0 → 0.8875 | – | 30 mHz (92 rad) | 1e-4 / 8e-4; 3e-4 / 2.4e-3 | 1–4 listed open, closed; 10–11 listed closed, open | 3: 800–1399 V ratio +8e-4; 12: 4500–4799 timing ramp to 0.02 rad, then jump back; 10: 6000–6039 V stale |
+| rec_c | ramp 1.0 → 0.775 | 750–1650 s | 0 | 1.5e-4 / 7.5e-4; 4e-4 / 2e-3 | none | 13: 3000–4199 phase shift 4.5e-3 rad |
+| rec_d | steady 1.00 | 3050–3950 s | 20 mHz (58 rad) | 2e-4 / 4e-4; 5e-4 / 1e-3 | 3–5 and 11–12 listed open, closed | 2: 1000–1089 I stale; 14: 2500–3299 phase shift 2.4e-3 rad; 11: 4000–4599 V ratio +1.6e-3; 6: 6500–6899 out-and-back timing error, peak 0.025 rad |
+
+The planted parameters, instrument errors, topology errors, noise levels and malfunctions of the four held-out recordings are those of v2 (`heldout_truth.json` is unchanged); only the operating conditions, the frame rate and therefore the recordings and the tolerances are new. The example's truth is a new draw under the same rules (it is not shipped).
+
+The example shows the format only. It has no frequency drift, nearly isotropic noise, a steady load level and one stale interval. Every held-out property is stated in the instruction with its range, and the instruction's ranges were checked against the four recordings as staged. Malfunction sizes were set so that every interval is detectable. The part of the injected deviation that the per-frame states cannot absorb, in units of the noise (χ²), is at least 17 per frame (the smallest ratio step, rec_b) and at least 9.1 × 10³ summed over the interval (author-side `detectability.py`).
+
+**Tolerances.** Each recording's tolerance file (`tolerances.json` for the example, `tests/data/rec_*/heldout_tolerances.json` for the held-out recordings) holds 4σ, where σ is the Cramér–Rao standard deviation. It is computed from the exact Fisher information of the measurement model at that recording's planted truth, over its frames free of malfunctions. The true states of every frame are treated as nuisance parameters and removed by a Schur complement. There are 78 unknowns (82 on rec_d); per recording, the Fisher matrix has smallest eigenvalue 1.7e3 to 5.4e3 and condition number 1.7e8 to 6.0e8, so every unknown is identifiable. On the held-out recordings the tolerances range from 2.0e-4 to 6.7e-2 pu for branch parameters, 1.4e-4 to 6.6e-2 for ratio errors and 2.9e-4 to 8.6e-2 rad for phase errors. Out-of-service candidates also get tolerances, so the example's file does not reveal the topology. These come from a counterfactual bound with the candidate in service at nameplate and are never used for grading. The bound is computed by an author-side pipeline (generator, model and Fisher information, `fisher.py`) that shares no code with the reference solution.
+
+**Why the recording is 75 minutes long.** With realistic rates, a 15-minute window does not move the operating point enough: at 10 frames per second over 15 minutes the bound on the calibrations grew by a median factor of 4–6 against v2, and the "default answer" (nameplate parameters, zero calibration) fell within tolerance for 46–60 of the ~80 graded quantities. Over 75 minutes ordinary ramps, dispatch steps and the furnace cycle provide the excitation: branch tolerances are back to the v2 level (median ratio to v2 0.86–1.14), calibration tolerances are 2.1–3.3 times the v2 ones (median), and the default answer passes 31, 47, 45 and 55 of the 78–82 quantities on rec_a–rec_d (v2: 30, 40, 44, 48), so it still fails every recording on the remaining ones, besides topology and malfunctions. The frame count, and with it every frame-indexed quantity of the contract (malfunction lengths, the 30-frame endpoint tolerance, the run time), is unchanged.
 
 **Monte Carlo calibration.** The reference program was re-run on recordings with the same planted truth and malfunctions and new noise, load and frequency realisations (two per held-out recording). Each was scored against its own tolerances:
 
