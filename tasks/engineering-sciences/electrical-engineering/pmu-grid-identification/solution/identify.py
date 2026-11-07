@@ -463,6 +463,34 @@ def select_topology(w, start_vals):
             break
         _, active, m, th, cov, c0, u = best
         log(f"   -> topology {active}")
+    # Physical plausibility.  The instruction bounds every unknown r and x to 10 % of nameplate; a corridor
+    # fitted with a non-positive resistance or reactance, or more than 50 % from nameplate, is a
+    # compensating artefact of a false minimum (an open corridor kept alive by its neighbours).  Refit
+    # without it from fresh starts and keep the result if the penalised likelihood improves.
+    while True:
+        best = None
+        for cid in active:
+            c = CANDS[cid - 1]
+            if c["model"] not in ("line", "series"):
+                continue
+            y = complex(th[m.names.index((cid, "g"))], th[m.names.index((cid, "bs"))])
+            nom = complex(c["nominal"]["r"], c["nominal"]["x"])
+            zz = 1 / y if abs(y) > 1e-9 else complex(np.inf, np.inf)
+            if zz.real > 0 and zz.imag > 0 and abs(zz - nom) <= 0.5 * abs(nom):
+                continue
+            act2 = [a for a in active if a != cid]
+            fresh = values(Model(act2, "adm"), Model(act2, "adm").theta0)
+            fresh.update({k: v for k, v in values(m, th).items() if k[0] == "cal"})
+            for name, vals in (("current", values(m, th)), ("nameplate", fresh)):
+                r = converge(act2, vals, w, 60)
+                d = (r[3] + PEN * len(act2)) - (c0 + PEN * len(active))
+                log(f"   implausible {cid} (z = {zz.real:.4f} + {zz.imag:.4f}j): removal from {name} start, penalised change {d:.1f}")
+                if d < 0 and (best is None or d < best[0]):
+                    best = (d, act2) + r
+        if best is None:
+            break
+        _, active, m, th, cov, c0, u = best
+        log(f"   -> topology {active}")
     return active, m, th, cov, u
 
 

@@ -15,7 +15,7 @@
   13,
   14
  ],
- "frame_rate": 10,
+ "frame_rate": 2,
  "frames": 9000,
  "zero_injection_bus": 7,
  "reference_pmus": [
