@@ -42,9 +42,16 @@ COND = 30          # guarantee stated in the instruction: sum |P_i| <= 30 |P| fo
 
 def with_power(G, n, f, lst, sign=1):
     """[beta, alpha, fractions] strings for the modes gamma in lst (fields of the zero sign * gamma)."""
+    import flint
     out, worst = [], 0.0
     for g in lst:
-        fr, cond = PW.fractions(G, n, g * sign, f)
+        prec0 = flint.ctx.prec
+        kap = math.hypot(float(g.abs_upper()), n * math.pi / float(G.b.mid()))
+        flint.ctx.prec = max(prec0, 256 + int(4 * kap * float(G.a.mid())))
+        try:
+            fr, cond = PW.fractions(G, n, g * sign, f)
+        finally:
+            flint.ctx.prec = prec0
         assert cond < COND, (G.id, n, 'power split too ill-conditioned', cond)
         for x in fr:
             assert float(x.rad()) < 1e-9, (G.id, n, 'power fraction not resolved', x)
@@ -200,7 +207,14 @@ def main():
     for rec in guides:
         if only and rec['id'] not in only:
             continue
+        # the inputs (thicknesses, material constants, frequencies) are converted to balls at 1024 bits, so
+        # that the refinement and the power split of slow waves (|gamma| a up to ~110, where errors grow
+        # like exp(2 |gamma| a)) can raise the working precision; the enumeration runs at 256 bits
+        ctx.prec = 1024
         G = Guide(rec)
+        # gyrotropic guides stay at 1024 bits: even a negation (reverse modes) rounds a ball to the working
+        # precision, and a certified gamma of a slow wave must keep ~ 0.9 kappa a extra digits
+        ctx.prec = 1024 if G.ferrite else 256
         G.rec = rec
         modes, dg = [], []
         for fs in rec['test_frequencies']:

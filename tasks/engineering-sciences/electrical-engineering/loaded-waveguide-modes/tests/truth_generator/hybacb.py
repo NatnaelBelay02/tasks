@@ -131,7 +131,11 @@ class HybGuide:
     def __init__(self, G, n):
         self.G = G
         self.n = n
+        import flint
+        prec0 = flint.ctx.prec
+        flint.ctx.prec = max(prec0, 1100)      # k_y at the precision of the inputs (see make_truth)
         self.ky = arb.pi() * n / G.b
+        flint.ctx.prec = prec0
 
     def params(self, f):
         return [tensors(L, f) for L in self.G.layers]
@@ -368,19 +372,27 @@ def _test(H, B, fa):
 
 
 def refine(H, B, fa, rounds=80):
+    """Refine a certified zero to a box of relative half-width 10^-(55 + 0.9 |gamma| a): the power split
+    carries the field across the guide, where the box radius grows like exp(2 |gamma| x)."""
+    import flint
     z = acb(B.real.mid(), B.imag.mid())
+    ga = math.hypot(float(z.abs_upper()), float(H.ky.mid())) * float(H.G.a.mid())   # kappa a
+    digits = 55 + int(0.9 * ga)
+    prec0 = flint.ctx.prec
+    flint.ctx.prec = max(prec0, int(3.33 * (digits + 30)) + int(3 * ga))
     for _ in range(rounds):
         v, dv = H.D(z, fa)
         step = v / dv
         z = acb((z - step).real.mid(), (z - step).imag.mid())
-        if float(step.abs_upper()) < 1e-70 * max(1.0, float(z.abs_upper())):
+        if float(step.abs_upper()) < 10.0 ** -(digits + 15) * max(1.0, float(z.abs_upper())):
             break
-    rr = arb(1e-55) * max(1.0, float(z.abs_upper()))
+    rr = arb(10) ** -digits * max(1.0, float(z.abs_upper()))
     T = acb(arb(z.real.mid(), rr), arb(z.imag.mid(), rr))
     vT, dT = H.D(T, fa)
     vz, dz = H.D(z, fa, mask=H.mask)
     Y = 1 / acb(dz.real.mid(), dz.imag.mid())
     K = z - Y * vz + (1 - Y * dT) * (T - z)
+    flint.ctx.prec = prec0
     assert T.contains_interior(K), 'hybrid refinement not certified'
     assert B.contains(K), 'hybrid refinement left the certified box'
     return K
@@ -437,16 +449,39 @@ def _enumerate(H, fa, stack, maxbox, f):
 
 
 def certify_point(H, z, f):
-    """Krawczyk certificate for a zero near the complex number z: a box of half-width
-    1e-10 .. 1e-6 |z| around z that holds exactly one simple zero, then refined to 1e-55."""
-    fa = acb(ARB(f) if not isinstance(f, arb) else f)
-    for rr in (1e-10, 1e-9, 1e-8, 1e-7, 1e-6):
-        h = rr * abs(z)
-        B = CZ.box(z.real - h, z.real + h, z.imag - h, z.imag + h)
-        res = _test(H, B, fa)
-        if isinstance(res, acb):
-            return refine(H, res, fa)
-    raise AssertionError('no Krawczyk certificate near %r (%s n=%d)' % (z, H.G.id, H.n))
+    """Krawczyk certificate for a zero near the complex number z: a box around z that holds exactly one
+    simple zero, then refined to 1e-55.  The slow waves of thin films have |gamma| a ~ 100, where D
+    loses ~ 2.9 |gamma| a bits to cancellation and the mean-value enclosure of D' over a box widens in
+    proportion to the box.  So the precision is raised to 256 + 3 |gamma| a bits, z is first refined by
+    Newton's method at the box centre, and the Krawczyk test is tried on boxes of half-width
+    1e-30 .. 1e-6 |z|."""
+    import flint
+    prec0 = flint.ctx.prec
+    a = float(H.G.a.mid()) if hasattr(H.G.a, 'mid') else float(H.G.a)
+    flint.ctx.prec = max(prec0, 256 + int(3 * math.hypot(abs(z), float(H.ky.mid())) * a))
+    try:
+        fa = acb(ARB(f) if not isinstance(f, arb) else f)
+        # Newton iteration at point values
+        c = acb(z.real, z.imag)
+        for _ in range(40):
+            v, dv = H.D(c, fa)
+            if dv.contains(0):
+                break
+            step = v / dv
+            c = acb((c - step).real.mid(), (c - step).imag.mid())
+            if float(step.abs_upper()) < 1e-35 * abs(z):
+                break
+        zc = complex(float(c.real.mid()), float(c.imag.mid()))
+        assert abs(zc - z) <= 1e-8 * abs(z), ('Newton moved away from the candidate', z, zc)
+        for rr in (1e-30, 1e-25, 1e-20, 1e-16, 1e-14, 1e-12, 1e-10, 1e-8, 1e-6):
+            h = arb(rr) * abs(z)
+            B = acb(arb(c.real.mid(), h), arb(c.imag.mid(), h))
+            res = _test(H, B, fa)
+            if isinstance(res, acb):
+                return refine(H, res, fa)
+        raise AssertionError('no Krawczyk certificate near %r (%s n=%d)' % (z, H.G.id, H.n))
+    finally:
+        flint.ctx.prec = prec0
 
 
 def reach(G, f):

@@ -1,0 +1,423 @@
+{
+ "H5": [
+  {
+   "f": "3500000000",
+   "kind": "TE (n = 0)",
+   "B_over_k0": 4.110711578848202,
+   "zeros": 0,
+   "boxes": 36,
+   "seconds": 0.4
+  },
+  {
+   "f": "3500000000",
+   "kind": "HYB1",
+   "method": "candidates of two solvers, Krawczyk-certified",
+   "zeros": 1,
+   "seconds": 8.9
+  },
+  {
+   "f": "3500000000",
+   "kind": "HYB2",
+   "method": "candidates of two solvers, Krawczyk-certified",
+   "zeros": 1,
+   "seconds": 21.5
+  },
+  {
+   "f": "3500000000",
+   "kind": "HYB3",
+   "method": "candidates of two solvers, Krawczyk-certified",
+   "zeros": 1,
+   "seconds": 24.5
+  },
+  {
+   "f": "3500000000",
+   "kind": "HYB4",
+   "method": "candidates of two solvers, Krawczyk-certified",
+   "zeros": 1,
+   "seconds": 34.0
+  },
+  {
+   "f": "3500000000",
+   "kind": "HYB5",
+   "method": "candidates of two solvers, Krawczyk-certified",
+   "zeros": 1,
+   "seconds": 45.6
+  },
+  {
+   "f": "3500000000",
+   "kind": "HYB6",
+   "method": "candidates of two solvers, Krawczyk-certified",
+   "zeros": 1,
+   "seconds": 58.0
+  },
+  {
+   "f": "3500000000",
+   "kind": "HYB7",
+   "method": "candidates of two solvers, Krawczyk-certified",
+   "zeros": 1,
+   "seconds": 70.6
+  },
+  {
+   "f": "3500000000",
+   "kind": "HYB8",
+   "method": "candidates of two solvers, Krawczyk-certified",
+   "zeros": 1,
+   "seconds": 89.4
+  },
+  {
+   "f": "3500000000",
+   "kind": "HYB9",
+   "method": "candidates of two solvers, Krawczyk-certified",
+   "zeros": 1,
+   "seconds": 101.9
+  },
+  {
+   "f": "3500000000",
+   "kind": "HYB10",
+   "method": "candidates of two solvers, Krawczyk-certified",
+   "zeros": 1,
+   "seconds": 118.7
+  },
+  {
+   "f": "3500000000",
+   "kind": "HYB11",
+   "method": "candidates of two solvers, Krawczyk-certified",
+   "zeros": 1,
+   "seconds": 128.4
+  },
+  {
+   "f": "3500000000",
+   "kind": "HYB12",
+   "method": "candidates of two solvers, Krawczyk-certified",
+   "zeros": 1,
+   "seconds": 155.2
+  },
+  {
+   "f": "3500000000",
+   "kind": "HYB13",
+   "method": "candidates of two solvers, Krawczyk-certified",
+   "zeros": 1,
+   "seconds": 177.5
+  },
+  {
+   "f": "3500000000",
+   "kind": "HYB14",
+   "method": "candidates of two solvers, Krawczyk-certified",
+   "zeros": 1,
+   "seconds": 190.6
+  },
+  {
+   "f": "3500000000",
+   "kind": "HYB15",
+   "method": "candidates of two solvers, Krawczyk-certified",
+   "zeros": 1,
+   "seconds": 207.7
+  },
+  {
+   "f": "3500000000",
+   "kind": "HYB16",
+   "method": "candidates of two solvers, Krawczyk-certified",
+   "zeros": 1,
+   "seconds": 222.7
+  },
+  {
+   "f": "3500000000",
+   "max_power_condition": 1.8214429943005446
+  },
+  {
+   "f": "3800000000",
+   "kind": "TE (n = 0)",
+   "B_over_k0": 3.888444428765827,
+   "zeros": 0,
+   "boxes": 36,
+   "seconds": 0.3
+  },
+  {
+   "f": "3800000000",
+   "kind": "HYB1",
+   "method": "candidates of two solvers, Krawczyk-certified",
+   "zeros": 1,
+   "seconds": 8.9
+  },
+  {
+   "f": "3800000000",
+   "kind": "HYB2",
+   "method": "candidates of two solvers, Krawczyk-certified",
+   "zeros": 1,
+   "seconds": 16.4
+  },
+  {
+   "f": "3800000000",
+   "kind": "HYB3",
+   "method": "candidates of two solvers, Krawczyk-certified",
+   "zeros": 1,
+   "seconds": 13.8
+  },
+  {
+   "f": "3800000000",
+   "kind": "HYB4",
+   "method": "candidates of two solvers, Krawczyk-certified",
+   "zeros": 1,
+   "seconds": 20.3
+  },
+  {
+   "f": "3800000000",
+   "kind": "HYB5",
+   "method": "candidates of two solvers, Krawczyk-certified",
+   "zeros": 1,
+   "seconds": 21.3
+  },
+  {
+   "f": "3800000000",
+   "kind": "HYB6",
+   "method": "candidates of two solvers, Krawczyk-certified",
+   "zeros": 1,
+   "seconds": 26.5
+  },
+  {
+   "f": "3800000000",
+   "kind": "HYB7",
+   "method": "candidates of two solvers, Krawczyk-certified",
+   "zeros": 1,
+   "seconds": 31.4
+  },
+  {
+   "f": "3800000000",
+   "kind": "HYB8",
+   "method": "candidates of two solvers, Krawczyk-certified",
+   "zeros": 1,
+   "seconds": 36.6
+  },
+  {
+   "f": "3800000000",
+   "kind": "HYB9",
+   "method": "candidates of two solvers, Krawczyk-certified",
+   "zeros": 1,
+   "seconds": 41.4
+  },
+  {
+   "f": "3800000000",
+   "kind": "HYB10",
+   "method": "candidates of two solvers, Krawczyk-certified",
+   "zeros": 1,
+   "seconds": 45.5
+  },
+  {
+   "f": "3800000000",
+   "kind": "HYB11",
+   "method": "candidates of two solvers, Krawczyk-certified",
+   "zeros": 1,
+   "seconds": 51.7
+  },
+  {
+   "f": "3800000000",
+   "kind": "HYB12",
+   "method": "candidates of two solvers, Krawczyk-certified",
+   "zeros": 1,
+   "seconds": 59.9
+  },
+  {
+   "f": "3800000000",
+   "kind": "HYB13",
+   "method": "candidates of two solvers, Krawczyk-certified",
+   "zeros": 1,
+   "seconds": 71.2
+  },
+  {
+   "f": "3800000000",
+   "kind": "HYB14",
+   "method": "candidates of two solvers, Krawczyk-certified",
+   "zeros": 1,
+   "seconds": 80.5
+  },
+  {
+   "f": "3800000000",
+   "kind": "HYB15",
+   "method": "candidates of two solvers, Krawczyk-certified",
+   "zeros": 1,
+   "seconds": 90.0
+  },
+  {
+   "f": "3800000000",
+   "kind": "HYB16",
+   "method": "candidates of two solvers, Krawczyk-certified",
+   "zeros": 1,
+   "seconds": 99.7
+  },
+  {
+   "f": "3800000000",
+   "kind": "HYB17",
+   "method": "candidates of two solvers, Krawczyk-certified",
+   "zeros": 1,
+   "seconds": 106.0
+  },
+  {
+   "f": "3800000000",
+   "kind": "HYB18",
+   "method": "candidates of two solvers, Krawczyk-certified",
+   "zeros": 1,
+   "seconds": 112.2
+  },
+  {
+   "f": "3800000000",
+   "max_power_condition": 1.0
+  },
+  {
+   "f": "4000000000",
+   "kind": "TE (n = 0)",
+   "B_over_k0": 3.8884444287658275,
+   "zeros": 0,
+   "boxes": 36,
+   "seconds": 0.3
+  },
+  {
+   "f": "4000000000",
+   "kind": "HYB1",
+   "method": "candidates of two solvers, Krawczyk-certified",
+   "zeros": 1,
+   "seconds": 10.4
+  },
+  {
+   "f": "4000000000",
+   "kind": "HYB2",
+   "method": "candidates of two solvers, Krawczyk-certified",
+   "zeros": 1,
+   "seconds": 21.0
+  },
+  {
+   "f": "4000000000",
+   "kind": "HYB3",
+   "method": "candidates of two solvers, Krawczyk-certified",
+   "zeros": 1,
+   "seconds": 26.5
+  },
+  {
+   "f": "4000000000",
+   "kind": "HYB4",
+   "method": "candidates of two solvers, Krawczyk-certified",
+   "zeros": 1,
+   "seconds": 33.3
+  },
+  {
+   "f": "4000000000",
+   "kind": "HYB5",
+   "method": "candidates of two solvers, Krawczyk-certified",
+   "zeros": 1,
+   "seconds": 45.4
+  },
+  {
+   "f": "4000000000",
+   "kind": "HYB6",
+   "method": "candidates of two solvers, Krawczyk-certified",
+   "zeros": 1,
+   "seconds": 57.5
+  },
+  {
+   "f": "4000000000",
+   "kind": "HYB7",
+   "method": "candidates of two solvers, Krawczyk-certified",
+   "zeros": 1,
+   "seconds": 65.3
+  },
+  {
+   "f": "4000000000",
+   "kind": "HYB8",
+   "method": "candidates of two solvers, Krawczyk-certified",
+   "zeros": 1,
+   "seconds": 77.8
+  },
+  {
+   "f": "4000000000",
+   "kind": "HYB9",
+   "method": "candidates of two solvers, Krawczyk-certified",
+   "zeros": 1,
+   "seconds": 96.8
+  },
+  {
+   "f": "4000000000",
+   "kind": "HYB10",
+   "method": "candidates of two solvers, Krawczyk-certified",
+   "zeros": 1,
+   "seconds": 112.0
+  },
+  {
+   "f": "4000000000",
+   "kind": "HYB11",
+   "method": "candidates of two solvers, Krawczyk-certified",
+   "zeros": 1,
+   "seconds": 122.2
+  },
+  {
+   "f": "4000000000",
+   "kind": "HYB12",
+   "method": "candidates of two solvers, Krawczyk-certified",
+   "zeros": 1,
+   "seconds": 140.0
+  },
+  {
+   "f": "4000000000",
+   "kind": "HYB13",
+   "method": "candidates of two solvers, Krawczyk-certified",
+   "zeros": 1,
+   "seconds": 149.6
+  },
+  {
+   "f": "4000000000",
+   "kind": "HYB14",
+   "method": "candidates of two solvers, Krawczyk-certified",
+   "zeros": 1,
+   "seconds": 175.2
+  },
+  {
+   "f": "4000000000",
+   "max_power_condition": 2.6413184107692205
+  }
+ ],
+ "H6": [
+  {
+   "f": "7500000000",
+   "kind": "TE (n = 0)",
+   "B_over_k0": 10.896776536148908,
+   "zeros": 4,
+   "boxes": 972,
+   "seconds": 7.2
+  },
+  {
+   "f": "7500000000",
+   "kind": "HYB1",
+   "method": "candidates of two solvers, Krawczyk-certified",
+   "zeros": 4,
+   "seconds": 17.7
+  },
+  {
+   "f": "7500000000",
+   "max_power_condition": 1.1018620475684213
+  },
+  {
+   "f": "9000000000",
+   "kind": "TE (n = 0)",
+   "B_over_k0": 16.01980928354405,
+   "zeros": 4,
+   "boxes": 782,
+   "seconds": 6.1
+  },
+  {
+   "f": "9000000000",
+   "kind": "HYB1",
+   "method": "candidates of two solvers, Krawczyk-certified",
+   "zeros": 4,
+   "seconds": 10.6
+  },
+  {
+   "f": "9000000000",
+   "kind": "HYB2",
+   "method": "candidates of two solvers, Krawczyk-certified",
+   "zeros": 2,
+   "seconds": 5.5
+  },
+  {
+   "f": "9000000000",
+   "max_power_condition": 1.755897372939891
+  }
+ ]
+}

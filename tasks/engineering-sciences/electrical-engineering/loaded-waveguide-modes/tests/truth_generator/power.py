@@ -11,6 +11,9 @@ The integrand is evaluated as e_x(t) c(h_y)(t) - e_y(t) c(h_x)(t) with c(g)(t) =
 which equals the conjugate on the real path and is entire in t, so acb.integral gives a rigorous
 enclosure.  Returned: the fractions P_i / sum_k P_k as arb balls, and sum |P_k| / |sum P_k|.
 """
+import math
+
+import numpy as np
 from flint import acb, acb_mat, arb
 
 from wgacb import TWO_PI_C, layer_funcs
@@ -55,26 +58,39 @@ def fractions(G, n, gamma, f, rel_tol=arb(2) ** -90):
             v0, v1 = -d, c
         s = acb_mat([[0], [0], [v0], [v1]])
     P = []
+    gc = acb(gamma.real.mid(), gamma.imag.mid())
     for L, t in zip(G.layers, ten):
         d = acb(L[0])
-        sc = s
+        # pieces over which the field grows by at most e (rate = largest |Re| eigenvalue of M at the ball
+        # centre): the integrand is entire, but over a whole layer with rate d ~ 40 the rigorous quadrature
+        # has to subdivide heavily; each piece starts from the state carried to its start
+        Mc, _, _, _ = H.m_rows(gc, k0, ky, t)
+        Mf = np.array([[complex(float(x.real.mid()), float(x.imag.mid())) for x in row] for row in Mc])
+        rate = float(np.abs(np.linalg.eigvals(Mf).real).max())
+        m = max(1, int(math.ceil(rate * float(L[0].mid() if hasattr(L[0], 'mid') else L[0]))))
+        h = d / m
+        tot = arb(0)
+        for k in range(m):
+            # start of piece k from the start of the layer (not by repeated products, whose enclosures
+            # would widen piece by piece)
+            Ek, _, _ = _state_exp(L, t, gamma, k0, ky, h * k)
+            sc = Ek * s if k else s
+            def integrand(x, analytic, L=L, t=t, sc=sc):
+                E, ex, hx = _state_exp(L, t, gamma, k0, ky, x)
+                Ec, exc, hxc = _state_exp(L, t, gamma, k0, ky, x.conjugate())
+                if E is None or Ec is None:
+                    return acb('nan')
+                p = E * sc
+                pc = Ec * sc
+                exv = _row(ex, p)
+                hxv_c = _row(hxc, pc).conjugate()
+                hy_c = pc[2, 0].conjugate()
+                return exv * hy_c - p[0, 0] * hxv_c
 
-        def integrand(x, analytic, L=L, t=t, sc=sc):
-            E, ex, hx = _state_exp(L, t, gamma, k0, ky, x)
-            Ec, exc, hxc = _state_exp(L, t, gamma, k0, ky, x.conjugate())
-            if E is None or Ec is None:
-                return acb('nan')
-            p = E * sc
-            pc = Ec * sc
-            exv = _row(ex, p)
-            hxv_c = _row(hxc, pc).conjugate()
-            hy_c = pc[2, 0].conjugate()
-            return exv * hy_c - p[0, 0] * hxv_c
-
-        Ii = acb.integral(integrand, 0, d, rel_tol=rel_tol)
-        P.append(Ii.real)
-        E, _, _ = _state_exp(L, t, gamma, k0, ky, d)
-        s = E * s
+            tot += acb.integral(integrand, 0, h, rel_tol=rel_tol).real
+        P.append(tot)
+        Ed, _, _ = _state_exp(L, t, gamma, k0, ky, d)
+        s = Ed * s
     tot = sum(P, arb(0))
     assert not tot.contains(0), (G.id, n, 'total power not certainly nonzero')
     return [p / tot for p in P], sum((abs(p) for p in P), arb(0)) / abs(tot)

@@ -1,0 +1,89 @@
+{
+ "guides": [
+  {
+   "id": "H5",
+   "description": "magnetised low-pressure discharge: 6 mm argon (500 G, -y) against a side wall behind a 4 mm fused-quartz window, WR-62-size guide",
+   "a": 0.015799,
+   "b": 0.007899,
+   "layers": [
+    {
+     "thickness": 0.006,
+     "material": {
+      "type": "magnetized_plasma",
+      "name": "magnetised argon discharge, n_e = 7.9e17 m^-3, 1 Pa, B0 = 500 G",
+      "f_p": 8000000000,
+      "collision_frequency": 24000000,
+      "cyclotron_frequency": 1400000000,
+      "bias_direction": "-y"
+     }
+    },
+    {
+     "thickness": 0.004,
+     "material": {
+      "type": "dielectric",
+      "name": "fused quartz",
+      "eps": 3.78,
+      "loss_tangent": 0.0001
+     }
+    },
+    {
+     "thickness": 0.005799,
+     "material": {
+      "type": "dielectric",
+      "name": "air",
+      "eps": 1,
+      "loss_tangent": 0
+     }
+    }
+   ],
+   "test_frequencies": [
+    3500000000,
+    3800000000,
+    4000000000
+   ]
+  },
+  {
+   "id": "H6",
+   "description": "WR-112 ferrite phase shifter: 2.54 mm RO3006 against a side wall, then 2.5 mm YIG (600 Oe, -y)",
+   "a": 0.028499,
+   "b": 0.012624,
+   "layers": [
+    {
+     "thickness": 0.00254,
+     "material": {
+      "type": "dielectric",
+      "name": "RO3006",
+      "eps": 6.15,
+      "loss_tangent": 0.002
+     }
+    },
+    {
+     "thickness": 0.0025,
+     "material": {
+      "type": "ferrite",
+      "name": "YIG (Trans-Tech G-113)",
+      "eps": 15,
+      "loss_tangent": 0.0002,
+      "saturation_magnetization_gauss": 1780,
+      "linewidth_oe": 45,
+      "bias_field_oe": 600,
+      "bias_direction": "-y"
+     }
+    },
+    {
+     "thickness": 0.023459,
+     "material": {
+      "type": "dielectric",
+      "name": "air",
+      "eps": 1,
+      "loss_tangent": 0
+     }
+    }
+   ],
+   "test_frequencies": [
+    7500000000,
+    9000000000
+   ]
+  }
+ ]
+}

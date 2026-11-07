@@ -1,5 +1,6 @@
 """Second, separately written solver, used to score a correct submission that does not come from
-the oracle or from the certified pipeline.
+the oracle or from the certified pipeline.  Shipped as a program: run as /root/results/modes.py it
+passes the verifier.
 
 usage: python3 alt_solver.py guides.json out.json [guide_id ...]
 
@@ -8,19 +9,25 @@ arithmetic:
   * multi-domain Chebyshev collocation of v'' + k0^2 eps(x) v = q v (complex eps), with the wall
     and interface conditions as algebraic rows, gives a generalised eigenproblem A x = q B x;
     the discretisation is solved twice (N and 1.5 N points per layer) and an eigenvalue is
-    kept if the two agree to 1e-4 (relative); the polishing below gives the accuracy;
-  * each kept eigenvalue is polished by complex Newton iteration on a determinant built from
-    2 x 2 matrix exponentials in mpmath (30 digits);
+    kept if the two agree to 1e-4 (relative);
+  * each kept eigenvalue is polished by secant iteration on a determinant built from 2 x 2 matrix
+    exponentials in mpmath (50 + |gamma| a / 2.3 digits); convergence is judged by the step, since
+    |D| grows like exp(|gamma| a);
   * gamma = sqrt(k_n^2 - q) with Re gamma > 0 for every family n; modes with attenuation
     <= 200 dB/m are reported.
 Guides with gyrotropic layers (ferrite, magnetised plasma): family LSE0 from a quadratic pencil of
-the TE problem as before; the hybrid families HYB<n> from a six-field collocation of the curl
-equations, which is linear in gamma (A x = gamma B x), polished by Newton iteration on a determinant
-of 4 x 4 matrix exponentials.
-Power split (every family, every guide): at the polished gamma the tangential state is carried
-through the guide in mpmath (30 digits) by exp(M t) of the 4 x 4 matrix obtained from the six curl
-equations, e_x and h_x follow from the two algebraic ones, and the Poynting flux is integrated by
-Clenshaw-Curtis quadrature on pieces of each layer short enough for the field's growth rate.  (The
+the TE problem; the hybrid families HYB<n> from a six-field collocation of the curl equations, which
+is linear in gamma (A x = gamma B x); every eigenvalue in the region is polished on a determinant of
+4 x 4 matrix exponentials and kept only if the polishing converges near it.  The grids are sized for a
+target |beta| (2 s sqrt((beta_t + k_y) d) + 16 points per layer, which resolves the exp(-kappa x) boundary layers
+on Chebyshev nodes): beta_t starts at the quasi-static scale 3 / d of the thinnest ferrite or plasma
+layer (slow magnetostatic and electrostatic surface waves have |beta| d of order one) and at twice the
+largest |beta| of the previous family, and is doubled while a zero lies beyond beta_t / 2.
+Power split (every family, every guide): at the polished gamma, kept to high precision, the tangential
+state is carried through the guide in mpmath (60 + |gamma| a / 2.3 digits: an error delta in gamma
+grows like delta exp(|gamma| x) across the guide) by exp(M t) of the 4 x 4 matrix obtained from the
+six curl equations, e_x and h_x follow from the two algebraic ones, and the Poynting flux is integrated
+by Clenshaw-Curtis quadrature on pieces of each layer short enough for the field's growth rate.  (The
 null vector of the collocation matrix itself gives the fractions only to about 1e-5.)
 """
 import json
@@ -133,12 +140,7 @@ def eigen_q(kind, rec, f, b):
 
 
 def polish(kind, rec, f, q):
-    with mp.workdps(30):
-        try:
-            r = mp.findroot(lambda x: det(kind, rec, x, f), mp.mpc(q.real, q.imag), tol=mp.mpf(10) ** -24)
-        except (ValueError, ZeroDivisionError):
-            return None
-        return complex(r)
+    return _root(lambda x: det(kind, rec, x, f), q, abs(np.sqrt(complex(q))) * float(rec['a']))
 
 
 # ------------------------------------------------------------------ ferrite guides
@@ -166,7 +168,7 @@ def eps_any(m, f, lib=np):
     return eps_of(m, f, lib)
 
 
-def te_pencil(rec, f, scale):
+def te_pencil(rec, f, scale, bt=0.0):
     """(A0 + g A1 + g^2 A2) x = 0 for E'' + (k0^2 eps mu_e + g^2) E = 0, E continuous,
     (E' - j tau g E)/mu_e continuous, E = 0 at the walls; linearised as a 2n x 2n pencil."""
     lay = rec['layers']
@@ -179,7 +181,7 @@ def te_pencil(rec, f, scale):
     bl = []
     for L, (em, _, _) in zip(lay, prm):
         d = float(L['thickness'])
-        N = int(min(140, max(20, scale * d * math.sqrt(k0sq * abs(em)) + 20)))
+        N = int(min(260, max(20, scale * d * math.sqrt(k0sq * abs(em)) + 20, 3 * scale * math.sqrt(bt * d) + 20)))
         D, _ = cheb(N)
         D1 = D * 2 / d
         bl.append((N, D1, D1 @ D1))
@@ -233,28 +235,63 @@ def te_det(rec, g, f):
     return st[0]
 
 
+SCALE = 2.5       # collocation resolution factor (n >= 1)
+EXACT = {}      # high-precision zeros (gamma or q), keyed by their double-precision values
+
+
+def _root(fun, g, a=0.0):
+    """Secant iteration (mpmath, 50 digits) from g.  |D| grows like exp(|gamma| a), so convergence is
+    judged by the step, not by |D|: the result is accepted if a second run from it moves it by less
+    than 1e-20 |r|.  Returns None if the iteration fails."""
+    dps = 50 + int(a / 2.3)
+    with mp.workdps(dps):
+        try:
+            x0 = mp.mpc(g.real, g.imag)
+            r = mp.findroot(fun, x0, tol=mp.mpf(10) ** (-dps - 10), verify=False, maxsteps=80)
+            r2 = mp.findroot(fun, r, tol=mp.mpf(10) ** (-dps - 10), verify=False, maxsteps=20)
+        except (ValueError, ZeroDivisionError):
+            return None
+        if abs(r2 - r) > mp.mpf(10) ** (20 - dps) * abs(r):
+            return None
+        EXACT[complex(r2)] = r2
+        return complex(r2)
+
+
+def qs_target(rec):
+    """Quasi-static |beta| scale 3 / d of the thinnest ferrite or plasma layer (0 without one): slow
+    magnetostatic and electrostatic surface waves have |beta| d of order one."""
+    ds = [float(L['thickness']) for L in rec['layers'] if L['material']['type'] != 'dielectric']
+    return 3.0 / min(ds) if ds else 0.0
+
+
 def te_solve(rec, f):
     k0 = 2 * math.pi * f / C
-    w1 = sla.eig(*te_pencil(rec, f, 3.0), right=False)
-    w2 = sla.eig(*te_pencil(rec, f, 4.5), right=False)
-    w1 = w1[np.isfinite(w1)]
-    w2 = w2[np.isfinite(w2)]
-    zs = []
-    for g in w2:
-        if abs(g.real) > 1.05 * A or abs(g) > 50 * k0:
-            continue
-        if np.min(np.abs(w1 - g)) > 1e-4 * max(abs(g), k0):
-            continue
-        with mp.workdps(30):
-            try:
-                r = complex(mp.findroot(lambda x: te_det(rec, x, f), mp.mpc(g.real, g.imag), tol=mp.mpf(10) ** -24))
-            except (ValueError, ZeroDivisionError):
-                continue
-        if all(abs(r - z) > 1e-8 * max(abs(r), 1) for z in zs):
-            zs.append(r)
+    bt = qs_target(rec)
+    while True:
+        zs = _te_zeros(rec, f, bt)
+        top = max([abs(z.imag) for z in zs] + [0.0])
+        if top <= bt / 2:
+            break
+        bt = 2 * max(bt, top)
     fwd = [[z.imag, z.real, power_split(rec, f, 0, z)] for z in zs if 0 < z.real <= A]
     rev = [[-z.imag, -z.real, power_split(rec, f, 0, z)] for z in zs if 0 < -z.real <= A]
     return fwd, rev
+
+
+def _te_zeros(rec, f, bt):
+    k0 = 2 * math.pi * f / C
+    w2 = sla.eig(*te_pencil(rec, f, 4.5, bt), right=False)
+    w2 = w2[np.isfinite(w2)]
+    zs = []
+    for g in w2:
+        if abs(g.real) > 1.05 * A or abs(g) > 50 * k0 + 1.5 * bt:
+            continue
+        r = _root(lambda x: te_det(rec, x, f), g, abs(g) * float(rec['a']))
+        if r is None or abs(r - g) > 1e-3 * max(abs(g), 1):
+            continue
+        if all(abs(r - z) > 1e-8 * max(abs(r), 1) for z in zs):
+            zs.append(r)
+    return zs
 
 
 # ------------------------------------------------------------------ six-field collocation
@@ -305,7 +342,7 @@ class Six:
     h_y' and h_z' equations at the left end of layers 1.., and those rows carry the wall conditions
     e_y = e_z = 0 and the continuity of e_y, e_z, h_y, h_z."""
 
-    def __init__(self, rec, f, n, scale):
+    def __init__(self, rec, f, n, scale, bt=0.0):
         self.lay = rec['layers']
         k0 = 2 * math.pi * f / C
         ky = n * math.pi / float(rec['b'])
@@ -314,7 +351,7 @@ class Six:
         for L, (e1, e3, e2, mu, ka) in zip(self.lay, self.ten):
             d = float(L['thickness'])
             ref = k0 * math.sqrt(max(abs(e1), abs(e3), abs(e1) + abs(e2)) * max(abs(mu), abs(mu) + abs(ka), 1.0))
-            N = int(min(90, max(16, scale * d * (ref + ky) + 16)))
+            N = int(min(200, max(16, scale * d * ref + 16, 2 * scale * math.sqrt((bt + ky) * d) + 16)))
             D, _ = cheb(N)
             self.bl.append((N, D * 2 / d, d))
         self.off = np.concatenate([[0], np.cumsum([6 * (N + 1) for N, _, _ in self.bl])])
@@ -440,8 +477,8 @@ def hyb_det(rec, g, f, n):
 
 def power_split(rec, f, n, g, nodes=24):
     """Per-layer fractions of Re int (e_x h_y* - e_y h_x*) dx for the mode gamma = g of family n."""
-    with mp.workdps(30):
-        gm = mp.mpc(g.real, g.imag)
+    with mp.workdps(60 + int(abs(g) * float(rec['a']) / 2.3)):
+        gm = EXACT.get(complex(g), mp.mpc(g.real, g.imag))
         lay = [(L, state_matrix(L, gm, f, n, rec['b']), mp.mpf(str(L['thickness']))) for L in rec['layers']]
         if n == 0:
             s = mp.matrix([[0], [0], [0], [1]])
@@ -462,37 +499,44 @@ def power_split(rec, f, n, g, nodes=24):
             h = d / pieces
             tot = mp.mpf(0)
             sp = s
+            Enode = [mp.expm(M * (h * (x + 1) / 2)) for x in xk]     # the same on every piece
+            Eh = mp.expm(M * h)
             for _ in range(pieces):
-                for x, w in zip(xk, wk):
-                    p = mp.expm(M * (h * (x + 1) / 2)) * sp
+                for En, w in zip(Enode, wk):
+                    p = En * sp
                     exv = sum(ex[k] * p[k] for k in range(4))
                     hxv = sum(hx[k] * p[k] for k in range(4))
                     tot += w * h / 2 * mp.re(exv * mp.conj(p[2]) - p[0] * mp.conj(hxv))
-                sp = mp.expm(M * h) * sp
+                sp = Eh * sp
             P.append(tot)
             s = mp.expm(M * d) * s
         T = sum(P)
         return [float(x / T) for x in P]
 
 
-def hyb_family(rec, f, n):
+def hyb_family(rec, f, n, bt0=0.0):
+    """Zeros of family n: the collocation is resolved for |beta| up to bt (at least the quasi-static target
+    and bt0, twice the largest |beta| of the previous family), and bt is doubled while a zero lies beyond
+    bt / 2."""
+    bt = max(qs_target(rec), bt0)
+    while True:
+        zs = _hyb_zeros(rec, f, n, bt)
+        top = max([abs(z.imag) for z in zs] + [0.0])
+        if top <= bt / 2:
+            return zs
+        bt = 2 * max(bt, top)
+
+
+def _hyb_zeros(rec, f, n, bt):
     k0 = 2 * math.pi * f / C
     ky = n * math.pi / float(rec['b'])
-    w1 = Six(rec, f, n, 3.0).gammas()
-    w2 = Six(rec, f, n, 4.5).gammas()
+    w2 = Six(rec, f, n, SCALE, bt).gammas()
     zs = []
     for g in w2:
-        if abs(g.real) > 1.05 * A or abs(g.real) < 1e-9 or abs(g) > 50 * k0 + 4 * ky:
+        if abs(g.real) > 1.05 * A or abs(g.real) < 1e-9 or abs(g) > 50 * k0 + 4 * ky + 1.5 * bt:
             continue
-        if np.min(np.abs(w1 - g)) > 1e-4 * max(abs(g), k0):
-            continue
-        with mp.workdps(30):
-            try:
-                r = complex(mp.findroot(lambda x: hyb_det(rec, x, f, n), mp.mpc(g.real, g.imag),
-                                        tol=mp.mpf(10) ** -24))
-            except (ValueError, ZeroDivisionError):
-                continue
-        if abs(r - g) > 1e-3 * max(abs(g), 1):
+        r = _root(lambda x: hyb_det(rec, x, f, n), g, abs(g) * float(rec['a']))
+        if r is None or abs(r - g) > 1e-3 * max(abs(g), 1):
             continue
         if all(abs(r - z) > 1e-8 * max(abs(r), 1) for z in zs):
             zs.append(r)
@@ -509,10 +553,11 @@ def gyro_solve(rec, f):
     for L in rec['layers']:
         e1, e3, e2, mu, ka = tensor6(L['material'], f)
         m = max(m, max(abs(e1), abs(e3), abs(e1) + abs(e2)) * max(abs(mu), abs(mu) + abs(ka), 1.0))
-    n, empty = 1, 0
+    n, empty, bt_prev = 1, 0, 0.0
     while True:
         ky = n * math.pi / b
-        zs = hyb_family(rec, f, n)
+        zs = hyb_family(rec, f, n, bt_prev)
+        bt_prev = 2 * max([abs(z.imag) for z in zs] + [bt_prev / 2])
         if zs:
             fw = sorted([[z.imag, z.real, power_split(rec, f, n, z)] for z in zs if 0 < z.real <= A])
             rv = sorted([[-z.imag, -z.real, power_split(rec, f, n, z)] for z in zs if 0 < -z.real <= A])
@@ -551,6 +596,11 @@ def solve(rec):
                         g = -g
                     if g.real <= A:
                         lst.append(g)
+                        qx = EXACT.get(q)
+                        if qx is not None:
+                            with mp.workdps(60 + int(abs(g) * float(rec['a']) / 2.3)):
+                                gx = mp.sqrt((n * mp.pi / mp.mpf(str(rec['b']))) ** 2 - qx)
+                                EXACT[g] = -gx if mp.re(gx) < 0 else gx
                 if lst:
                     entry['%s%d' % (kind, n)] = [[g.imag, g.real, power_split(rec, f, n, g)] for g in lst]
                 n += 1

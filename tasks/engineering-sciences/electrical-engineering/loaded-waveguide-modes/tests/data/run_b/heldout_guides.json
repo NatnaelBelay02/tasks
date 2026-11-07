@@ -1,0 +1,56 @@
+{
+ "guides": [
+  {
+   "id": "H2",
+   "description": "magnetostatic-wave delay line with a ground plane: 100 um YIG film (300 Oe, -y) 0.25 mm from a side wall, on a 0.5 mm GGG substrate, WR-34-size enclosure",
+   "a": 0.008636,
+   "b": 0.004318,
+   "layers": [
+    {
+     "thickness": 0.00025,
+     "material": {
+      "type": "dielectric",
+      "name": "air",
+      "eps": 1,
+      "loss_tangent": 0
+     }
+    },
+    {
+     "thickness": 0.0001,
+     "material": {
+      "type": "ferrite",
+      "name": "single-crystal YIG film (liquid-phase epitaxy)",
+      "eps": 15,
+      "loss_tangent": 0.0002,
+      "saturation_magnetization_gauss": 1780,
+      "linewidth_oe": 1.0,
+      "bias_field_oe": 300,
+      "bias_direction": "-y"
+     }
+    },
+    {
+     "thickness": 0.0005,
+     "material": {
+      "type": "dielectric",
+      "name": "gadolinium gallium garnet (GGG)",
+      "eps": 12.2,
+      "loss_tangent": 0.0003
+     }
+    },
+    {
+     "thickness": 0.007786,
+     "material": {
+      "type": "dielectric",
+      "name": "air",
+      "eps": 1,
+      "loss_tangent": 0
+     }
+    }
+   ],
+   "test_frequencies": [
+    2750000000,
+    2850000000
+   ]
+  }
+ ]
+}

@@ -1,0 +1,109 @@
+{
+ "guides": [
+  {
+   "id": "H3",
+   "description": "WR-284 loaded with two 5 mm titanate ceramic slabs, one against a side wall, one 20 mm from it",
+   "a": 0.072136,
+   "b": 0.034036,
+   "layers": [
+    {
+     "thickness": 0.005,
+     "material": {
+      "type": "dielectric",
+      "name": "zirconium tin titanate ceramic",
+      "eps": 37,
+      "loss_tangent": 0.0002
+     }
+    },
+    {
+     "thickness": 0.02,
+     "material": {
+      "type": "dielectric",
+      "name": "air",
+      "eps": 1,
+      "loss_tangent": 0
+     }
+    },
+    {
+     "thickness": 0.005,
+     "material": {
+      "type": "dielectric",
+      "name": "zirconium tin titanate ceramic",
+      "eps": 37,
+      "loss_tangent": 0.0002
+     }
+    },
+    {
+     "thickness": 0.042136,
+     "material": {
+      "type": "dielectric",
+      "name": "air",
+      "eps": 1,
+      "loss_tangent": 0
+     }
+    }
+   ],
+   "test_frequencies": [
+    3000000000,
+    3600000000
+   ]
+  },
+  {
+   "id": "H4",
+   "description": "WR-137 low-pressure discharge cell: 5 mm argon at 1 Pa between 4 mm fused-quartz plates, centred",
+   "a": 0.034849,
+   "b": 0.015799,
+   "layers": [
+    {
+     "thickness": 0.0109245,
+     "material": {
+      "type": "dielectric",
+      "name": "air",
+      "eps": 1,
+      "loss_tangent": 0
+     }
+    },
+    {
+     "thickness": 0.004,
+     "material": {
+      "type": "dielectric",
+      "name": "fused quartz",
+      "eps": 3.78,
+      "loss_tangent": 0.0001
+     }
+    },
+    {
+     "thickness": 0.005,
+     "material": {
+      "type": "plasma",
+      "name": "argon discharge, n_e = 7.9e17 m^-3, 1 Pa",
+      "f_p": 8000000000,
+      "collision_frequency": 24000000
+     }
+    },
+    {
+     "thickness": 0.004,
+     "material": {
+      "type": "dielectric",
+      "name": "fused quartz",
+      "eps": 3.78,
+      "loss_tangent": 0.0001
+     }
+    },
+    {
+     "thickness": 0.0109245,
+     "material": {
+      "type": "dielectric",
+      "name": "air",
+      "eps": 1,
+      "loss_tangent": 0
+     }
+    }
+   ],
+   "test_frequencies": [
+    3500000000,
+    3600000000
+   ]
+  }
+ ]
+}

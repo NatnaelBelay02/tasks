@@ -1,0 +1,165 @@
+{
+ "H3": [
+  {
+   "f": "3000000000",
+   "family": "LSE0",
+   "max_power_condition": 1.0
+  },
+  {
+   "f": "3000000000",
+   "family": "LSE1",
+   "max_power_condition": 1.0
+  },
+  {
+   "f": "3000000000",
+   "family": "LSE2",
+   "max_power_condition": 1.0
+  },
+  {
+   "f": "3000000000",
+   "kind": "LSE",
+   "Q_over_k0sq": 37.003952952606994,
+   "zeros": 2,
+   "boxes": 1032,
+   "seconds": 3.2
+  },
+  {
+   "f": "3000000000",
+   "family": "LSM1",
+   "max_power_condition": 1.0
+  },
+  {
+   "f": "3000000000",
+   "family": "LSM2",
+   "max_power_condition": 1.0
+  },
+  {
+   "f": "3000000000",
+   "kind": "LSM",
+   "Q_over_k0sq": 74.00000148000001,
+   "zeros": 3,
+   "boxes": 809,
+   "seconds": 2.1
+  },
+  {
+   "f": "3600000000",
+   "family": "LSE0",
+   "max_power_condition": 1.0
+  },
+  {
+   "f": "3600000000",
+   "family": "LSE1",
+   "max_power_condition": 1.0
+  },
+  {
+   "f": "3600000000",
+   "family": "LSE2",
+   "max_power_condition": 1.0
+  },
+  {
+   "f": "3600000000",
+   "family": "LSE3",
+   "max_power_condition": 1.0
+  },
+  {
+   "f": "3600000000",
+   "kind": "LSE",
+   "Q_over_k0sq": 37.00387566153262,
+   "zeros": 3,
+   "boxes": 901,
+   "seconds": 5.2
+  },
+  {
+   "f": "3600000000",
+   "family": "LSM1",
+   "max_power_condition": 1.0
+  },
+  {
+   "f": "3600000000",
+   "family": "LSM2",
+   "max_power_condition": 1.0
+  },
+  {
+   "f": "3600000000",
+   "family": "LSM3",
+   "max_power_condition": 1.0
+  },
+  {
+   "f": "3600000000",
+   "kind": "LSM",
+   "Q_over_k0sq": 74.00000147999997,
+   "zeros": 4,
+   "boxes": 1253,
+   "seconds": 4.1
+  }
+ ],
+ "H4": [
+  {
+   "f": "3500000000",
+   "kind": "LSE",
+   "Q_over_k0sq": 3.7805638427316617,
+   "zeros": 0,
+   "boxes": 19,
+   "seconds": 0.0
+  },
+  {
+   "f": "3500000000",
+   "family": "LSM1",
+   "max_power_condition": 6.189552341041127
+  },
+  {
+   "f": "3500000000",
+   "family": "LSM2",
+   "max_power_condition": 6.189617373922844
+  },
+  {
+   "f": "3500000000",
+   "family": "LSM3",
+   "max_power_condition": 6.190169643912958
+  },
+  {
+   "f": "3500000000",
+   "kind": "LSM",
+   "Q_over_k0sq": 216.53798414033483,
+   "zeros": 2,
+   "boxes": 11956,
+   "seconds": 7.9
+  },
+  {
+   "f": "3600000000",
+   "kind": "LSE",
+   "Q_over_k0sq": 3.780553661532627,
+   "zeros": 0,
+   "boxes": 19,
+   "seconds": 0.0
+  },
+  {
+   "f": "3600000000",
+   "family": "LSM1",
+   "max_power_condition": 15.548204996044618
+  },
+  {
+   "f": "3600000000",
+   "family": "LSM2",
+   "max_power_condition": 15.548541994054435
+  },
+  {
+   "f": "3600000000",
+   "family": "LSM3",
+   "max_power_condition": 15.549437695143308
+  },
+  {
+   "f": "3600000000",
+   "family": "LSM4",
+   "max_power_condition": 15.553021516272986
+  },
+  {
+   "f": "3600000000",
+   "kind": "LSM",
+   "Q_over_k0sq": 1021.9520985558861,
+   "zeros": 2,
+   "boxes": 38633,
+   "seconds": 22.4
+  }
+ ]
+}

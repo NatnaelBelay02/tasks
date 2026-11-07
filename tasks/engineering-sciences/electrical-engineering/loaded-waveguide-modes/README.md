@@ -1,29 +1,65 @@
 # loaded-waveguide-modes
 
-Mode analysis of 18 rectangular waveguides loaded, layer by layer across their width, with microwave laminates, argon discharge cells, magnetised YIG slabs and magnetised argon discharges. Every material is lossy and taken from a data sheet or a stated discharge.
+A program that finds the modes of rectangular waveguides loaded, layer by layer across their width, with microwave laminates and ceramics, argon discharge cells, magnetised YIG slabs and films, and magnetised argon discharges. Every material is lossy and taken from a data sheet or a stated discharge. The program is graded on six held-out guides in four guide files; `/root/data/guides.json` gives 18 example guides without their modes.
 
-For each guide, each of its four test frequencies and each direction of propagation, the agent must report every mode whose attenuation is at most 200 dB/m:
+For each guide, each of its test frequencies and each direction of propagation, the program must report every mode whose attenuation is at most 200 dB/m:
 - its propagation constant $ \gamma = \alpha + j\beta $ ($ \alpha > 0 $, fields $ \propto e^{\mp\gamma z} $ for the forward and reverse direction);
 - its **power split**: the fraction of the mode's time-averaged power flow that passes through each layer, $ p_i = P_i / P $ with $ P_i = \operatorname{Re}\iint_{\text{layer } i} (\mathbf E \times \mathbf H^*)\cdot\hat z\,dx\,dy $. The fractions add up to 1 and are negative in a layer where the power flows backwards.
 
-This is the transverse-resonance analysis of slab-loaded, plasma-loaded, ferrite-loaded and magnetoplasma-loaded guides [1–3, 14, 16–18]. It is used to design dielectric-slab and ferrite phase shifters, resonance isolators, field-displacement devices, plasma switches, limiters and phase shifters [7, 8, 14].
+This is the transverse-resonance analysis of slab-loaded, plasma-loaded, ferrite-loaded and magnetoplasma-loaded guides [1–3, 14, 16–18], and of shielded magnetostatic-wave lines [21–24]. It is used to design dielectric-slab and ferrite phase shifters, resonance isolators, field-displacement devices, plasma switches, limiters and phase shifters, and magnetostatic-wave delay lines and filters [7, 8, 14, 23].
 
 The instruction states the physics, not the answer's equations:
 - Maxwell's equations with perfectly conducting walls;
 - the four material models, including the Polder tensor of a y-biased ferrite and the gyroelectric tensor of a y-magnetised plasma, with their sign conventions;
-- the time convention, the branch of $ \gamma $, the two directions, and the definition of the power split.
+- the time convention, the branch of $ \gamma $, the two directions, and the definition of the power split;
+- the ranges within which the held-out guides lie.
 
-The agent derives the transverse problems itself: the LSE/LSM split and the interface conditions of the isotropic guides; for the gyrotropic guides the nonreciprocal TE problem ($ n = 0 $) and the coupled four-component hybrid problem of every family $ n \ge 1 $; and the transverse fields ($ E_x $, $ H_x $ follow algebraically from the tangential state) needed for the Poynting flux. It then finds every mode and integrates its power flow layer by layer.
+The agent derives the transverse problems itself: the LSE/LSM split and the interface conditions of the isotropic guides; for the gyrotropic guides the nonreciprocal TE problem ($ n = 0 $) and the coupled four-component hybrid problem of every family $ n \ge 1 $; and the transverse fields ($ E_x $, $ H_x $ follow algebraically from the tangential state) needed for the Poynting flux. It must also derive **where the modes can be**: how far in $ |\beta| $ and in the family index $ n $ a search has to go before no mode with $ \alpha \le 200 $ dB/m can remain. It then writes a program that finds every mode and integrates its power flow, on guides it has not seen.
 
 **Versions.**
 - **v1 (lossless).** The review of v1.2 found that its hardest answers (near-degenerate pairs, very slow surface waves) existed only without loss, that the plasma layers matched no real material, and that there were no references.
 - **v2.0 (lossy).** Every layer became a cited material at its real loss. The instruction still gave the two dispersion functions explicitly. GPT-6 solved it (see "Model runs") by complex root-finding on those functions, which shows that, with the equations given, the task reduced to numerics.
-- **v3.0.** The dispersion functions are no longer given, and four nonreciprocal ferrite guides are added (y-independent TE modes only). Their forward and reverse modes differ, so the usual $ \pm\gamma $ pairing and any search in $ q = k_n^2 - \gamma^2 $ do not apply to them. Calibration: GPT-6 failed, Opus 5.5 (low) passed (see "Model runs").
-- **v4.0 (this version).** Two changes, both aimed at what the passing v3.0 run did not have to do.
-  - **Hybrid modes of the gyrotropic guides.** The ferrite guides now ask for every mode, not only the y-independent ones: for each $ n \ge 1 $ the family HYB$ _n $, which is neither LSE nor LSM. It needs a four-component (e_y, e_z, h_y, h_z) transfer problem whose matrix is quadratic in $ \gamma $ and contains both off-diagonal tensor terms. Two guides with a **magnetised argon discharge** (gyroelectric tensor, G17, G18) are added. Their HYB modes are strongly nonreciprocal, and G18 carries one-way surface magnetoplasmons with no reverse partner under the limit.
-  - **Power split.** Every reported mode also carries its per-layer power fractions, to $ 10^{-6} \sum|p^*| $. A mode list can no longer be right by root-finding alone: the fields, including the algebraic $ E_x, H_x $ of the hybrid modes and the conjugate in $ \mathbf E \times \mathbf H^* $, must be reconstructed and integrated correctly.
+- **v3.0.** The dispersion functions are no longer given, and four nonreciprocal ferrite guides are added (y-independent TE modes only). Calibration: GPT-6 failed, Opus 5.5 (low) passed.
+- **v4.0.** The hybrid families HYB$ _n $ of the gyrotropic guides, two magnetised-discharge guides, and the per-layer power split of every mode. Calibration: GPT-6 (max) and Opus 5.5 (low) both passed (see "Model runs").
+- **v5.0 (this version).** The v4.0 runs show how both models passed: each graded guide was in the agent's own input file, so a search with a box sized by the material constants could be checked guide by guide and patched by hand. GPT-6's first pass missed five LSM1 pairs; a contour audit on the visible guides found them, and they were added by hand. v5.0 grades a **program on held-out guides**, which must therefore be right without inspection, and the held-out guides lie in regimes that the example guides do not show and that a material-sized search misses:
+  - **thin-film magnetostatic surface waves** (Damon–Eshbach waves of a 100 µm YIG film [21, 22]) at up to 178 $ k_0 $, in every family up to $ n = 12 $;
+  - **one-way surface magnetoplasmons** of a magnetised low-pressure discharge, in 14 to 18 consecutive families, backward waves at one frequency;
+  - **slow surface plasmons** of a low-pressure discharge behind thick quartz, at up to 12 $ k_0 $;
+  - a **ceramic-loaded** guide with up to 7 families per spectrum, and a conventional C-band ferrite phase shifter.
 
-## The guides
+  The model, the output format, the tolerances and the guarantees are those of v4.0. What changes is the deliverable (a program, run four times at once under a wall-clock limit) and the guides it is graded on.
+
+## The held-out guides
+
+Four guide files (`tests/data/run_a` … `run_d`, as `heldout_guides.json`), six guides, 13 test frequencies, 26 direction-spectra and 208 modes (142 of them hybrid).
+
+| file | id | guide | loading | test frequencies (GHz) |
+|---|---|---|---|---|
+| run_a | H1 | WR-42 cross-section (10.668 × 4.318 mm) | magnetostatic-wave delay line: 100 µm single-crystal YIG film (LPE, 300 Oe, $ +y $, $ \Delta H = 1 $ Oe) on a 0.5 mm GGG substrate, 3 mm from a side wall | 2.75, 2.85 |
+| run_b | H2 | WR-34 cross-section (8.636 × 4.318 mm) | the same film with a ground plane: 0.25 mm from a side wall, bias $ -y $, on 0.5 mm GGG | 2.75, 2.85 |
+| run_c | H3 | WR-284 | two 5 mm zirconium tin titanate slabs ($ \varepsilon' = 37 $, $ \tan\delta = 2\times10^{-4} $), one against a side wall, one 20 mm from it | 3.0, 3.6 |
+| run_c | H4 | WR-137 | low-pressure discharge cell: 5 mm argon at 1 Pa ($ n_e = 7.9\times10^{17} $ m$ ^{-3} $, $ f_p = 8 $ GHz, $ \nu = 2.4\times10^7 $ s$ ^{-1} $) between 4 mm fused-quartz plates, centred | 3.5, 3.6 |
+| run_d | H5 | WR-62 cross-section | magnetised low-pressure discharge: 6 mm argon (same plasma, $ B_0 = 500 $ G along $ -y $, $ f_c = 1.4 $ GHz) against a side wall behind a 4 mm fused-quartz window | 3.5, 3.8, 4.0 |
+| run_d | H6 | WR-112 | C-band ferrite phase shifter: 2.54 mm RO3006 against a side wall, then 2.5 mm YIG (Trans-Tech G-113, 600 Oe, $ -y $) | 7.5, 9.0 |
+
+**Materials.**
+- **YIG film** (H1, H2): single-crystal yttrium iron garnet grown by liquid-phase epitaxy on gadolinium gallium garnet, the standard medium of magnetostatic-wave devices [22, 23]. $ 4\pi M_s = 1780 $ G, $ \varepsilon' = 15 $, $ \tan\delta = 2\times10^{-4} $ as for the polycrystal; linewidth 1 Oe (LPE films: 0.3–1 Oe [22, 23]). The bias 300 Oe is an internal field.
+- **GGG substrate**: $ \varepsilon' = 12.2 $, $ \tan\delta = 3\times10^{-4} $ [24].
+- **Titanate ceramic** (H3): Zr–Sn–Ti oxide microwave ceramic, $ \varepsilon' = 37 $, $ \tan\delta = 2\times10^{-4} $ ($ Q \approx 5000 $ at 3–4 GHz) [25].
+- **Low-pressure discharges** (H4, H5): argon at 1 Pa, $ n_g = 2.4\times10^{20} $ m$ ^{-3} $ at 300 K, $ \nu = n_g K_m = 2.4\times10^7 $ s$ ^{-1} $; $ n_e = 7.9\times10^{17} $ m$ ^{-3} $ ($ f_p = 8 $ GHz), the density of an inductively coupled or ECR source at this pressure [5]. $ f_c = 2.799 $ MHz/G $ \times $ 500 G $ = 1.4 $ GHz.
+
+**What is in them.**
+- **H1, H2: thin-film magnetostatic surface waves.** Between $ \sqrt{f_0(f_0 + f_m)} = 2.21 $ GHz and $ f_0 + f_m/2 = 3.33 $ GHz ($ f_0 = 0.84 $, $ f_m = 4.98 $ GHz) a film magnetised in its plane carries the Damon–Eshbach surface wave [21], with $ \beta d $ of order one: $ \beta $ is 2 800–10 300 rad/m (49–178 $ k_0 $) for $ d = 100 $ µm. The enclosure is far below cutoff (its empty TE$ _{10} $ cutoff is 14 GHz), so these are the only modes under the limit. With $ k_y = n\pi/b $ the wave also propagates obliquely to the bias, so **every family** $ n = 0, 1, 2, \dots $ carries one forward and one reverse mode, with $ |\beta| $ and $ \alpha $ growing with $ n $, until the attenuation passes 200 dB/m: at 2.75 GHz families $ n = 0 $–12 (26 modes, 108–194 dB/m), at 2.85 GHz $ n = 0 $–9. In H1 the two directions are localised on the two film faces and differ by a few rad/m; in H2 the side wall 0.25 mm from one face makes them strongly nonreciprocal at low $ n $ (LSE0 at 2.75 GHz: 2 605.8 rad/m and 118.9 dB/m forward, 940.7 rad/m and 46.5 dB/m reverse).
+- **H3: many families.** With $ \varepsilon' = 37 $ the slabs carry LSE$ _n $ and LSM$ _n $ modes up to $ n = 3 $: 7 families and 11 modes per direction at 3.6 GHz.
+- **H4: slow surface plasmons.** Just below the plasma–quartz surface resonance $ f_p/\sqrt{1 + 3.78} = 3.66 $ GHz, the 4 mm quartz plates are thick on the scale $ 1/\beta $, and LSM$ _1 $–LSM$ _4 $ are surface plasmons at up to 921 rad/m (12.2 $ k_0 $) at 3.6 GHz, with 96–176 dB/m.
+- **H5: one-way surface magnetoplasmons.** The magnetised discharge supports a surface magnetoplasmon only in the forward direction (the reverse has no mode under the limit), in **every family** from $ n = 1 $ to 16 (3.5 GHz), 18 (3.8 GHz) and 14 (4.0 GHz). At 3.5 GHz they are backward waves ($ \beta $ from $ -119 $ to $ -2804 $ rad/m); at 3.8 GHz $ \beta $ stays between 64 and 78 rad/m while $ k_y $ reaches 7 160 rad/m; at 4.0 GHz $ \beta $ reaches 1 787 rad/m (21 $ k_0 $).
+- **H6:** an ordinary nonreciprocal phase shifter (LSE0, HYB1, HYB2), so the held-out set is not made only of unusual guides.
+
+**Why these break material-sized searches.** A search box set from the material constants, $ |\beta| \lesssim c\,k_0\sqrt{\max|\varepsilon|\max|\mu|} $, misses the slow waves: for H1 at 2.75 GHz $ 2k_0\sqrt{\max|\varepsilon|\max|\mu|} + 200 = 1\,600 $ rad/m against modes up to 10 271 rad/m; for H4 at 3.6 GHz $ 2k_0\sqrt{\max|\varepsilon|} + 200 = 500 $ rad/m against 921 rad/m. A family loop that stops at the first empty family beyond $ k_y^2 > k_0^2 \max|\varepsilon\mu| $, or after a fixed number of families, has to be right about where the ladders end. The scale that bounds the search is the quasi-static one: slow waves of a layer of thickness $ d $ have $ |\beta| d = O(1) $, and the instruction states $ d \ge 0.1 $ mm.
+
+**How the test frequencies were chosen.** Materials and geometries come from devices; the frequencies were then chosen inside the surface-wave bands so that every mode satisfies the stated guarantees, in particular that no attenuation lies within 2 % of 200 dB/m. In the thin-film guides consecutive families differ by 7–13 dB/m near the end of a ladder, so roughly half of the frequencies tried had a mode in the excluded band (H1: 2.6, 2.65, 2.7, 2.8, 2.9, 2.95, 3.0 GHz were rejected; H5: 3.3, 3.4 and 3.6 GHz).
+
+## The example guides (`/root/data/guides.json`)
 
 | id | guide | loading |
 |---|---|---|
@@ -46,7 +82,7 @@ The agent derives the transverse problems itself: the LSE/LSM split and the inte
 | G17 | WR-90 | magnetoplasma surface-wave guide: 4 mm RO3010, then a 4 mm magnetised argon cell (1500 G, +y) between 1 mm quartz plates |
 | G18 | WR-137 | magnetoplasma phase shifter: 6 mm magnetised argon discharge (1000 G, −y) against a side wall, behind a 1.5 mm quartz window, then 3 mm RO3006 |
 
-Waveguide inner dimensions are the EIA standard ones [9]. Thicknesses are stock laminate, plate and ferrite-slab thicknesses or the remainder of the guide width. Test frequencies are round values, chosen so that each guide's four frequencies sample different regimes of its spectrum. No number is tuned to a root.
+Waveguide inner dimensions are the EIA standard ones [9]. Thicknesses are stock laminate, plate and ferrite-slab thicknesses or the remainder of the guide width. Test frequencies are round values, chosen so that each guide's four frequencies sample different regimes of its spectrum. No number is tuned to a root. These guides were the graded guides of v4.0; in v5.0 they are examples, and their certified v4.0 modes are no longer shipped.
 
 **Dielectrics** (relative permittivity and loss tangent at 10 GHz, used at every test frequency):
 
@@ -95,6 +131,14 @@ The test frequencies lie above the electron cyclotron resonance and away from th
 
 ## Difficulty
 
+- **The program is graded on guides it has not seen** (new in v5.0). Every check an agent can make on `/root/data/guides.json` (argument-principle audits, larger boxes, a second method) has to be built into the program, because nothing can be inspected or patched for the held-out guides. The held-out guides are in the stated model and ranges, but in regimes the example guides do not show.
+- **The search region must be derived, not sized from the materials.**
+  - The magnetostatic surface waves of a 100 µm YIG film (H1, H2) have $ \beta d = O(1) $, i.e. $ \beta $ of 2 800–10 300 rad/m, 49–178 $ k_0 $, with $ |\mu_e| \approx 6 $ and $ \varepsilon' = 15 $. A box $ |\beta| \le c\,k_0\sqrt{\max|\varepsilon|\max|\mu|} $ with any $ c $ of the usual size misses all of them; so does any search that scales with $ k_0 $. The relevant scale is $ 1/d $ of the thinnest layer, which the instruction bounds ($ d \ge 0.1 $ mm).
+  - The surface plasmons of H4 (12 $ k_0 $) lie past $ k_0\sqrt{\max|\varepsilon|} $ because the plasma–quartz pair is near its surface resonance; the bound comes from $ k_0^2\varepsilon_p\varepsilon_d/(\varepsilon_p + \varepsilon_d) $, not from either permittivity.
+- **The family index has no small bound.** In H1 and H2 every family $ n = 0, \dots, 12 $ carries a mode, and in H5 every family $ n = 1, \dots, 18 $; their $ k_y $ (up to 7 160 rad/m in H5) exceeds $ k_0\sqrt{\max|\varepsilon\mu|} $ by a factor of 20 or more. A loop that stops on a fixed $ n $, or as soon as $ k_y $ passes the material wavenumber, ends early. The ladders end only where $ \alpha $ crosses 200 dB/m.
+- **One-way and backward slow waves together.** The H5 magnetoplasmons exist only forward, in 14–18 families, and are backward waves ($ \beta < 0 $) at 3.5 GHz, forward waves at 4.0 GHz, and nearly standing ($ \beta \approx 70 $ rad/m with $ k_y $ up to 7 160 rad/m) at 3.8 GHz.
+- **Stiffness at large $ |\gamma| $.** For the films $ |\gamma| a $ reaches 110 (H1), so $ e^{\pm\gamma x} $ spans $ e^{220} $ across the guide: a transfer-matrix evaluation must renormalise and keep its two state columns independent, a collocation must resolve boundary layers of width $ 1/\beta \approx 0.1 $ mm, and polishing must not judge convergence by $ |D| $.
+- **A correct $ \gamma $ does not give a correct power split.** The fields of a slow wave are found by carrying the tangential state from one wall across the guide. An error $ \delta $ in $ \gamma $ (or in the null vector of the wall condition) excites the growing solution, which grows like $ \delta\, e^{|\gamma| x} $ while the mode itself decays away from the film; its power grows like $ \delta^2 e^{2|\gamma| x} $. With $ \gamma $ rounded to double precision ($ \delta \approx 10^{-16} $) and $ |\gamma| a \approx 110 $, this artefact is $ 10^{63} $ times the far-layer power of the mode. Both programs written for v5.0 first made exactly this error: for the H2 mode HYB9 at 2.85 GHz they reported $ p = (0, 0, 0, 1) $ (all power in the far air gap) instead of $ (1.94, -0.98, 0.04, 10^{-6}) $, with $ \gamma $ correct to $ 10^{-16} $, and the v4.0 reference program does the same on 20 modes of H1, 26 of H2 and 27 of H5. The power split needs $ \gamma $ to about $ 0.87 |\gamma| a $ more digits than the required tolerance, or an integration from both walls.
 - **The transverse problems must be derived.**
   - For the isotropic guides: the LSE/LSM decomposition with respect to the layering direction, and the interface conditions. LSE needs $ E_y, E_z $ continuous ($ u, u' $); LSM needs $ H_y, H_z $ continuous, so $ v $ and $ v'/\varepsilon $ are continuous.
   - The relation $ \gamma^2 = k_n^2 - q $ links the transverse eigenvalue to the propagation constant.
@@ -126,122 +170,85 @@ The test frequencies lie above the electron cyclotron resonance and away from th
 
 **The answers are those of the lossy guide, not of an ideal one.** Halving all losses (dielectric, plasma) changes 4 of the 48 isotropic spectra, and doubling them changes 7. Only the most attenuated backward and surface waves cross the limit, as their attenuation scales with the loss. The backward waves of G08 at 4.8 GHz (61 dB/m) and G11 (37–45 dB/m) persist.
 
-A single wrong item in any of the 18 guides fails the task.
+A single wrong item in any held-out guide fails the task. The bullets after the first six describe the v4.0 difficulties, which the held-out guides H3, H4 and H6 keep and which the program must still handle on unseen guides.
 
 ## Reference solution
 
-`solution/solve.py` (dispersion functions and the isotropic search) and `solution/hybrid.py` (gyrotropic families and the power split) use numpy, scipy and mpmath.
+`solution/solve.sh` copies `solution/modes.py` to `/root/results/modes.py`. It is one file (numpy, scipy, mpmath) in two parts: the isotropic guides in the $ q = k_n^2 - \gamma^2 $ plane, and the gyrotropic guides in the $ \gamma $ plane.
 
-**Isotropic guides (G01–G12).** Per test frequency and kind:
-1. **Counting.** The zeros of $ D_{\rm LSE}(q) $ and $ D_{\rm LSM}(q) $ (transfer matrices, $ q = k_n^2 - \gamma^2 $) are counted with the argument principle [10] on rectangles covering the region $ \alpha \le 1.02 A $ of the $ q $ plane ($ A = 200 $ dB/m $ = 10\ln 10 $ Np/m).
-   - $ \arg D $ is followed with steps limited to 0.4 rad.
-   - The state is renormalised by positive real factors, which leave $ \arg D $ unchanged.
+**Isotropic guides.** Per test frequency and kind (LSE, LSM):
+1. **Counting.** The zeros of $ D_{\rm LSE}(q) $ and $ D_{\rm LSM}(q) $ (transfer matrices) are counted with the argument principle [10] on rectangles covering the region $ \alpha \le 1.02 A $ of the $ q $ plane ($ A = 200 $ dB/m $ = 10\ln 10 $ Np/m). $ \arg D $ is followed with steps limited to 0.4 rad; the state is renormalised by positive real factors, which leave $ \arg D $ unchanged.
 2. **Locating.** Each single zero is located by the contour moment and Newton's method on $ D'/D $, then polished in mpmath at 50 digits.
-3. **Bounds.** The Rayleigh bound for LSE. For LSM, beyond every interface surface-wave estimate and four times past the last zero.
+3. **Bounds.** The Rayleigh bound for LSE. For LSM, beyond every interface surface-wave estimate $ k_0^2\varepsilon_i\varepsilon_j/(\varepsilon_i + \varepsilon_j) $ and four times past the last zero; near a surface resonance ($ \varepsilon_i + \varepsilon_j \to 0 $, H4) the estimate grows and the search follows it.
 4. **Reporting.** Each zero gives $ \gamma = \sqrt{k_n^2 - q} $ ($ \operatorname{Re}\gamma > 0 $) for every family. These guides are reciprocal, so the reverse list equals the forward one.
 
-**Gyrotropic guides (G13–G18).** For $ n = 0, 1, 2, \dots $:
-1. **Dispersion function.** $ D_n(\gamma) $: for $ n = 0 $ the TE state $ (e_y, h_z) $, for $ n \ge 1 $ the $ 2 \times 2 $ determinant above. Isotropic layers use $ \cos(Kd) I + \sin(Kd)/K\,M $, gyrotropic layers `scipy.linalg.expm`; the state is renormalised by positive real factors.
-2. **Counting.** The argument principle on rectangles covering $ 0 < \operatorname{Re}\gamma \le 1.02A $ (forward) and $ -1.02A \le \operatorname{Re}\gamma < 0 $ (reverse), in 48 strips of $ |\operatorname{Im}\gamma| \le 4 k_0 \sqrt{m} + 2k_y + 200 $, $ m = \max|\varepsilon|\max(|\mu|, |\mu_e|, 1) $.
-3. **Locating.** Rectangles are bisected (off-centre) until each holds one zero and is $ 10^{-4} $ (relative) small, then the zero is polished in mpmath at 45 digits.
-4. **Stopping in $ n $.** After the first $ n \ge 1 $ without a zero once $ k_y^2 > k_0^2 m + A^2 $.
+**Gyrotropic guides.** For $ n = 0, 1, 2, \dots $:
+1. **Dispersion function.** $ D_n(\gamma) $: for $ n = 0 $ the TE state $ (e_y, h_z) $, for $ n \ge 1 $ the $ 2 \times 2 $ determinant of the $ e $-rows of $ T(a)[0; I] $. Isotropic layers use $ \cos(Kd) I + \sin(Kd)/K\,M $ scaled by $ e^{-|\operatorname{Re}\kappa| d} $; gyrotropic layers the eigendecomposition of $ Md $ (`scipy.linalg.expm` with substeps if the eigenvectors are ill-conditioned), scaled by $ e^{-\max\operatorname{Re}\lambda} $. After every layer the two state columns are re-orthonormalised by Gram–Schmidt (a unimodular column operation and positive scalings), so $ \arg D $ is unchanged and the columns stay independent for $ |\gamma| \gg k_0 $, where $ |\gamma| a $ reaches several hundred.
+2. **Counting.** The argument principle on rectangles covering $ 0 < \operatorname{Re}\gamma \le 1.02A $ (forward) and $ -1.02A \le \operatorname{Re}\gamma < 0 $ (reverse): first $ |\operatorname{Im}\gamma| \le B_0 = 4 k_0 \sqrt{m} + 2k_y + 200 $ ($ m = \max|\varepsilon|\max(|\mu|, |\mu_e|, 1) $) in 24 strips per sign, then **shells** $ B \le |\operatorname{Im}\gamma| \le 2B $ in 16 strips each, doubling $ B $ until a shell is empty **and** $ B $ is past the quasi-static scale $ 20/d_{\min} $ of the thinnest ferrite or plasma layer. Slow quasi-static waves have $ |\beta| d = O(1) $; beyond $ 20/d_{\min} $ every interface is decoupled from the next, and the last, empty shell excludes a single-interface resonance.
+3. **Locating.** Rectangles are bisected (off-centre) until each holds one zero and is $ 10^{-4} $ (relative) small, then the zero is polished in mpmath at $ 45 + |\gamma| a/2.3 $ digits (secant iteration judged by its step, since $ |D| $ grows like $ e^{|\gamma| a} $); the polished value is kept for the power split.
+4. **Stopping in $ n $.** After the first $ n \ge 1 $ without a zero once $ k_y^2 > k_0^2 m + A^2 $. The thin-film and magnetoplasmon ladders are contiguous in $ n $ and end where $ \alpha $ passes $ A $; the author-side scans below search 40–60 families further and to $ |\beta| = 4\times10^5 $ rad/m.
 5. **Reporting.** A reverse zero $ \gamma $ is reported as $ -\gamma $, with the power split of its own field.
 
-**Power split (every guide).** At the polished $ \gamma $ the null vector of the $ 2 \times 2 $ wall condition gives $ \psi(0) $; $ \psi $ is carried through each layer by $ \exp(M t) $ in mpmath (40 digits), $ e_x $ and $ h_x $ follow algebraically, and $ \operatorname{Re}(e_x h_y^* - e_y h_x^*) $ is integrated by 24-point Gauss–Legendre quadrature per layer.
+**Power split (every guide).** At the polished $ \gamma $ (its high-precision value, not the double reported) the null vector of the $ 2 \times 2 $ wall condition gives $ \psi(0) $; $ \psi $ is carried through each layer by $ \exp(M t) $ in mpmath at $ 40 + G/2.3 $ digits, $ G = \sum_i \max|\operatorname{Re}\lambda_i| d_i $ the growth of the field across the guide; $ e_x $ and $ h_x $ follow algebraically, and $ \operatorname{Re}(e_x h_y^* - e_y h_x^*) $ is integrated by 24-point Gauss–Legendre quadrature on pieces over which the field grows by at most $ e^{0.5} $. With $ \gamma $ rounded to double precision instead, the far-layer fractions of the slow waves are dominated by the excited growing solution (Difficulty).
 
-All 18 guides take about 130 s on one core, most of it in the six gyrotropic guides; the output is deterministic.
+**Run time.** Through the real verifier, with the four held-out files run at once on 4 cores, all four runs finish within 186 s (alone: 7 s for run_c, 2.5–3.3 min for the others). The 18 example guides take 7.5 min and reproduce the certified v4.0 values (worst $ |\Delta\gamma|/|\gamma| $ $ 6\times10^{-14} $, power $ 10^{-15} $). The output is deterministic.
 
 ## Verification
 
-`tests/test_modes.py` reads only `/root/results/modes.json`, and only as data.
+**How the program is run** (`tests/test_modes.py`). The grading container holds Python 3.11 with numpy 2.2.6, scipy 1.15.3, sympy 1.13.3 and mpmath 1.3.0 (the agent environment's versions), the four held-out guide files and their certified modes (`/tests/data/run_*/heldout_guides.json`, `heldout_truth.json`; `test.sh` makes `/tests` mode 700), and the submitted program.
+- The verifier opens `/root/results/modes.py` without following symlinks and without blocking (a FIFO is rejected at once), requires a regular file and copies its content.
+- For each guide file, in shuffled order, it stages a fresh run directory: a read-only input directory with a random name holding only `guides.json`, and a working directory (mode 1777) holding only the copy of the program. It first checks, as the sandbox user, that the working directory and `/tmp` are writable, the input directory is not, and `/tests` is unreadable.
+- It starts all four runs at once as uid/gid 65534 in their own sessions, with the environment stated in the instruction and stdout/stderr going to unlinked files. Each run must exit with status 0 within 3600 s; a run past the limit has its process group killed. Afterwards every process of uid 65534 is killed (a helper that has become uid 65534 calls `kill(-1, SIGKILL)` until `/proc` shows none).
+- The output is opened the same way as the program and must be a regular file of at most 16 MiB. It is parsed as data, never executed: NaN, Infinity and repeated keys are rejected, and the whole output contract is checked before any value.
 
-**Reading the file safely.**
-- It uses `lstat`, a non-blocking `O_NOFOLLOW` open and a read capped at 16 MiB.
-- It rejects NaN, Infinity and repeated keys.
-- It checks the whole output contract before any value: guide ids, the single key `modes`, one entry per test frequency with exactly `forward` and `reverse`, family names that fully match `LSE<n>` ($ n \ge 0 $), `LSM<n>` or `HYB<n>` ($ n \ge 1 $), at most 400 families and 1000 modes, and modes `[beta, alpha, power]` of finite numbers with $ \alpha > 0 $ and `power` a list of exactly one number per layer.
+**The tests**, each parametrised over the four runs (20 tests; reward 1 only if all pass):
+- **`test_run_completes`** (requirement 1): exit status 0 within the limit, output a regular file.
+- **`test_output_contract`** (requirement 2): guide ids, the single key `modes`, one entry per test frequency with exactly `forward` and `reverse`, family names that fully match `LSE<n>` ($ n \ge 0 $), `LSM<n>` or `HYB<n>` ($ n \ge 1 $), at most 400 families and 1000 modes, modes `[beta, alpha, power]` of finite numbers with $ \alpha > 0 $ and one fraction per layer.
+- **`test_mode_families`** (requirement 3): for every guide, test frequency and direction the families and their mode counts equal the reference.
+- **`test_propagation_constants`** (requirement 4): the reported $ \gamma $ pair one-to-one with the reference within $ |\gamma - \gamma^*| \le 10^{-7}|\gamma^*| $.
+- **`test_power_split`** (requirement 5): for each pair, every fraction satisfies $ |p_i - p_i^*| \le 10^{-6} \sum_k |p_k^*| $.
 
-**The value tests**, for every guide, test frequency and direction:
-- **`test_mode_families`.** The families present and their mode counts equal the reference.
-- **`test_propagation_constants`.** The reported $ \gamma $ pair one-to-one with the reference within $ |\gamma - \gamma^*| \le 10^{-7}|\gamma^*| $.
-- **`test_power_split`.** For each pair, every fraction satisfies $ |p_i - p_i^*| \le 10^{-6} \sum_k |p_k^*| $.
-
-**Why the tolerance is what it is.**
-- **Correct solvers pass easily.** Both correct solvers reproduce the certified values to about $ 10^{-12} $. Every $ \gamma $ scaled by $ 1 + 5\times10^{-8} $ passes; one off by $ 3 \times 10^{-7} $ fails.
-- **The textbook approximation fails.** The tolerance is coarse enough for any double-precision solution of the stated model, and fine enough to reject first-order loss perturbation. That approximation is off by $ 1.3 \times 10^{-7} $ to 0.3 for the laminate guides and up to 1 for the plasma guides.
-- **The nonreciprocity is far above the tolerance.** The smallest forward–reverse difference, in G14 at 12 GHz, is 0.4 rad/m out of 626, $ 6 \times 10^{-4} $ relative, which is 6000 tolerances.
+**Why the tolerances are what they are** (unchanged from v4.0, rechecked on the held-out guides).
+- **Correct solvers pass easily.** The two correct programs reproduce the certified values of the held-out guides to $ 10^{-14} $ in $ \gamma $ and $ 6\times10^{-16} $ in the fractions. Every $ \gamma $ scaled by $ 1 + 5\times10^{-8} $ passes; one off by $ 3 \times 10^{-7} $ fails.
 - **Pairing is unambiguous.** Modes of a family and direction are at least $ 10^{-4}|\gamma| $ apart (certified, stated in the instruction).
-- **Membership never depends on rounding.** No mode is within 2 % of the limit (certified, stated); limits of 200 and 220 dB/m give the same answer.
-- **The power tolerance.** The certified fractions are enclosed to better than $ 10^{-9} $, and both correct solvers reproduce them to $ 3\times10^{-14} $ (relative to $ \sum|p^*| $). Every fraction scaled by $ 1 + 3\times10^{-7} $ passes; one fraction off by $ 3\times10^{-6}\sum|p^*| $ fails. Scaling by $ \sum|p^*| $ keeps the test meaningful where the fractions are large and of opposite sign; the instruction guarantees $ \sum|P_i| \le 30|P| $ (largest certified value 4.6).
+- **Membership never depends on rounding.** No mode is within 2 % of the limit (certified, stated in the instruction).
+- **The power tolerance.** The certified fractions are enclosed to better than $ 10^{-9} $. Every fraction scaled by $ 1 + 3\times10^{-7} $ passes; one fraction off by $ 3\times10^{-6}\sum|p^*| $ fails. The instruction guarantees $ \sum|P_i| \le 30|P| $ (largest certified value on the held-out guides 15.6, H4).
+- **The wall-clock limit.** The reference program needs at most 186 s for a guide file and the second correct program 734 s, against 3600 s; the four runs share the 4 CPUs of the grading container.
 
-**Where the guides come from** (`tests/truth_generator/gen_guides.py`). The script writes `guides.json` exactly as shipped; the agent copy `environment/data/guides.json` is identical to `tests/data/guides.json`. Its docstring repeats the sources above.
+**Where the held-out guides come from** (`tests/truth_generator/gen_heldout.py`). The script writes the four guide files exactly as shipped; its docstring repeats the sources above. The example file `environment/data/guides.json` is written by `gen_guides.py` (v4.0, unchanged).
 
-**Where the reference values come from** (`make_truth.py`, `certify2.py`, `wgacb.py`, `hybacb.py`, `power.py`). The generator is separate from `solution/` and never uses the argument principle. It certifies everything with ball arithmetic (Arb, through python-flint, 256 bits) [11].
+**Where the reference values come from** (`make_truth.py`, `certify2.py`, `wgacb.py`, `hybacb.py`, `power.py`). The generator is separate from `solution/` and never uses the argument principle. It certifies with ball arithmetic (Arb, through python-flint, 256 bits) [11].
+- **Isotropic guides** (H3, H4): branch-and-bound over the region $ \alpha \le 1.02A $ of the $ q $ plane, with mean-value exclusion, complex Krawczyk acceptance [12] and refinement to $ 10^{-55} $ boxes; the Rayleigh bound for LSE and, for LSM, a proof that $ D_{\rm LSM} \ne 0 $ for $ \operatorname{Re} q \ge Q $ (impedance recursion $ t \mapsto (t + T)/(1 + tT) $, $ T = \tanh\kappa d $, on narrow boxes and an explicit bound for the unbounded rest). This is exhaustive: every mode of H3 and H4 is found and certified without reference to any solver.
+- **Gyrotropic guides, $ n = 0 $** (H1, H2, H6): the same branch-and-bound in the $ \gamma $ plane over $ |\operatorname{Re}\gamma| \le 1.02A $, $ |\operatorname{Im}\gamma| \le B $, with $ B $ proved by the recursion for $ \sigma = \kappa E/E' $ across layers and interfaces (including the nonreciprocal interface term) to the unbounded rest. For the films $ B $ is 179–199 $ k_0 $ (10 700–11 400 rad/m), past their LSE0 surface waves at 2 600–3 300 rad/m. Exhaustive as well.
+- **Hybrid families, $ n \ge 1 $.** From candidates: every mode reported by the reference program and by `alt_solver.py` (which must agree on every family, every count, and every $ \gamma $ to $ 10^{-9} $) is certified individually by a Krawczyk box (existence and uniqueness of a simple zero), refined to $ 10^{-55} $, and checked against the guarantees.
+- **Completeness of the hybrid families** is checked author-side by `exhaust.py`, which is independent of both programs' stopping rules: for every gyrotropic held-out guide and frequency it counts zeros with the argument principle over $ |\operatorname{Re}\gamma| \le 1.02A $ and $ |\operatorname{Im}\gamma| \le 4\times10^5 $ rad/m (twice the quasi-static scale $ 20/d $ of the film, 40 times the largest mode) in families $ n = 0 $ to 60 (H1, H2) or 80 (H5, H6), and compares them with the certified list. It finds exactly the certified modes, 158 of 158, and no other zero with $ \alpha \le A $; the closest approach to the limit is 2.4 % (H5 at 3.8 GHz, HYB18, 195.1 dB/m).
+- **Power split** (`power.py`): the null vector of the certified wall condition, then $ P_i = \operatorname{Re}\int (e_x\, \overline{h_y(\bar t)} - e_y\, \overline{h_x(\bar t)})\,dt $ by `acb.integral` to relative accuracy $ 2^{-90} $, on pieces of each layer over which the field grows by at most $ e $, each started from the state carried to its start.
+- **Precision for the slow waves.** With $ \kappa a $ up to 116 ($ \kappa = \sqrt{|\gamma|^2 + k_y^2} $), $ D $ loses about $ 2.9\kappa a $ bits to cancellation and the enclosures of the fields grow like $ e^{2\kappa x} $. For the gyrotropic guides the generator therefore converts the inputs to balls at 1024 bits and works at 1024 bits; a candidate is first refined by Newton's method and certified on a box of $ 10^{-30} $ to $ 10^{-6} $ relative size (at $ 10^{-11} $ the enclosure of $ D' $ is already 0.2 of $ |D'| $ for the film modes), then refined to $ 10^{-(55 + 0.9\kappa a)} $; the power split runs at $ 256 + 4\kappa a $ bits. Without these steps the certificate fails for the film modes from $ n = 2 $ on, and the power of the highest families is not resolved to $ 10^{-9} $.
+- **Guarantees.** The generator stops unless, for every mode, $ \operatorname{Re}\gamma $ is certainly nonzero and $ |\alpha - A| > 0.02A $, modes of a family and direction are at least $ 10^{-4}|\gamma| $ apart, $ \sum|P_i|/|P| < 30 $, and every fraction is enclosed to $ 10^{-9} $. All 26 held-out direction-spectra pass, in about 5 200 s of certified computation, most of it the power split of the 48 H5 magnetoplasmons; run_d was certified in four parallel parts (H5 at each frequency, and H6) whose results were merged, which is the same computation (`tests/data/run_*/truth_diagnostics.json`).
 
-- **Evaluation.**
-  - $ D $ and its derivatives are carried as dual numbers with complex-ball coefficients.
-  - The layer functions $ \cosh(\kappa d) $ and $ \sinh(\kappa d)/\kappa $ are evaluated as entire functions: by Taylor series with a remainder bound near 0, and elsewhere with a square-root branch that avoids its cut on the ball.
-  - Layers certainly evanescent on a box are divided by $ \cosh(\kappa d) $. That factor is analytic and nonzero, so the zeros are unchanged and the balls stay tight.
-- **Isotropic guides.**
-  - Branch-and-bound over the region $ \alpha \le 1.02A $ of the $ q $ plane: mean-value exclusion, complex Krawczyk acceptance [12], and refinement to $ 10^{-55} $ boxes.
-  - Bounds: the Rayleigh bound for LSE. For LSM, a proof that $ D_{\rm LSM} \ne 0 $ for $ \operatorname{Re} q \ge Q $, by the impedance recursion $ t \mapsto (t + T)/(1 + tT) $, $ T = \tanh\kappa d $, on narrow boxes and an explicit bound for the unbounded rest.
-- **Ferrite guides.**
-  - The same branch-and-bound in the $ \gamma $ plane over $ |\operatorname{Re}\gamma| \le 1.02A $, $ |\operatorname{Im}\gamma| \le B $.
-  - $ B $ ($ 14 $–$ 64\,k_0 $) is proved by the recursion for $ \sigma = \kappa E/E' $: $ \sigma \mapsto (\sigma + T)/(1 + \sigma T) $ across a layer, and $ \sigma \mapsto \sigma/(a + b\sigma) $ across an interface, with $ a = \mu_{eR}\kappa_L/(\mu_{eL}\kappa_R) $ and the nonreciprocal term $ b = j(\tau_R - \tau_L\mu_{eR}/\mu_{eL})\gamma/\kappa_R $.
-  - It is evaluated with $ \kappa = \pm(\gamma/j)\sqrt{1 + k_0^2\varepsilon\mu_e/\gamma^2} $ for tight enclosures. $ D = 0 $ only if $ \sigma(a) = 0 $.
-- **Hybrid families** (`hybacb.py`).
-  - Exhaustive mode: the same branch-and-bound in the $ \gamma $ plane over $ |\operatorname{Re}\gamma| \le 1.02A $, $ |\operatorname{Im}\gamma| \le 4k_0\sqrt m + 2k_y + 400 $, family by family until two consecutive families have no zero in the region past $ k_y^2 > k_0^2 m + A_1^2 $.
-  - $ D_n $ is evaluated on the **second compound** (exterior square) of the layer matrices [19]: the 6-vector $ \psi_1 \wedge \psi_2 $ started from $ h_y \wedge h_z $ is carried through the layers and $ D_n $ is its $ e_y \wedge e_z $ component. The two growing states are never formed separately, so their near-parallelism costs nothing.
-  - Isotropic layers: $ \wedge^2(C I + S M) = C^2 I + CS\,M^{[2]} + S^2 \wedge^2 M $, with the $ \cosh^2(\kappa d) $ scaling where the layer is certainly evanescent. Gyrotropic layers: $ \exp(M^{[2]}d) $ and its $ \gamma $-derivative by a $ 12 \times 12 $ block exponential taken in the (numerical, exactly inverted) eigenbasis of $ M^{[2]} $ at the box centre, and the mean-value form $ E(c) + E'(\text{box})(\gamma - c) $. All matrices are balanced by exact powers of two [20].
-  - Without these steps a box at $ |\gamma| \approx 30k_0 $ in G13 at 8 GHz, $ n = 3 $, overestimates $ D' $ by a factor of 500, and the search had passed 400 000 boxes after 20 minutes; with them it takes 12 630 boxes.
-  - The exhaustive search is still slow for the stiff multi-layer cases (tens of thousands of boxes per family). The shipped values of the hybrid families are therefore produced with `--candidates`: every mode reported by the oracle and by `alt_solver.py` (which must agree on every family, every count, and every $ \gamma $ to $ 10^{-9} $) is certified individually by a Krawczyk box around it (existence and uniqueness of a simple zero), refined to $ 10^{-55} $, and checked against the guarantees below. The exhaustive search was run for 20 families (G13 at 8 and 12 GHz, G14 at 8.5 GHz, G15 at 9 GHz for $ n = 1..11 $, G16 at 5 GHz, G18 at 4.5 GHz including its one-way HYB1) and finds exactly the certified modes in each (`truth_diagnostics.json`, `exhaustive_hybrid_checks`).
-- **Power split** (`power.py`). The null vector of the certified wall condition, then $ P_i = \operatorname{Re}\int (e_x\, \overline{h_y(\bar t)} - e_y\, \overline{h_x(\bar t)})\,dt $ by `acb.integral` (rigorous Gauss–Legendre with error bounds on the entire integrand) to relative accuracy $ 2^{-90} $.
-- **Guarantees.** The generator stops unless, for every mode, $ \operatorname{Re}\gamma $ is certainly nonzero and $ |\alpha - A| > 0.02A $, modes of a family and direction are at least $ 10^{-4}|\gamma| $ apart, $ \sum|P_i|/|P| < 30 $, and every fraction is enclosed to $ 10^{-9} $. All 144 direction-spectra pass, in 174 s of certified computation (159 187 boxes for the exhaustive families, up to 27 686 per run, plus the hybrid certificates). `truth_diagnostics.json` records every run.
+**Score of an independent correct submission.** `tests/truth_generator/alt_solver.py` shares no code or method with the reference program or the generator: multi-domain Chebyshev collocation [13] (isotropic: $ v'' + k_0^2\varepsilon v = qv $; $ n = 0 $: the TE problem as a quadratic eigenproblem; $ n \ge 1 $: all six curl equations as a linear pencil $ A_0 x + \gamma A_1 x = 0 $), eigenvalues kept if two grids agree, polished by secant iteration on determinants of matrix exponentials in mpmath, and the power split from the collocation fields by Clenshaw–Curtis quadrature. For v5.0 its grids are sized for a target $ |\beta| $ that starts at the quasi-static scale $ 3/d_{\min} $ and doubles while a zero lies beyond half of it (each layer gets $ 2s\sqrt{\beta_t d} + 16 $ points, which resolves the $ e^{-\beta x} $ boundary layers on Chebyshev nodes), and its polishing is judged by the step. Run as `/root/results/modes.py` through the real verifier it passes all 20 tests (all four runs at once finish within 734 s).
 
-**Score of an independent correct submission.** `tests/truth_generator/alt_solver.py` shares no code or method with the oracle or the generator.
-- **Isotropic guides.** Multi-domain Chebyshev collocation [13] of $ v'' + k_0^2\varepsilon v = qv $.
-- **Gyrotropic guides, $ n = 0 $.** Collocation of $ E'' + (k_0^2\varepsilon\mu_e + \gamma^2)E = 0$ with the interface rows linear in $ \gamma $. This is a quadratic eigenproblem, solved by companion linearisation.
-- **Gyrotropic guides, $ n \ge 1 $.** Collocation of all six curl equations in the six field components, which is a linear pencil $ A_0 x + \gamma A_1 x = 0 $ (no elimination of $ e_x, h_x $, no transfer matrix).
-- **Polishing.** Eigenvalues are polished by Newton's method on determinants of $ 2\times2 $ (and, for the hybrids, $ 4 \times 4 $) matrix exponentials in mpmath.
-- **Power split.** From the same six-field collocation at the polished $ \gamma $: three steps of inverse iteration give the fields on the Chebyshev nodes, and the Poynting flux is integrated by Clenshaw–Curtis quadrature.
+**Ablations** (`tests/truth_generator/ablate5.py` for edited outputs; whole programs through the real verifier).
 
-Scored with the real verifier logic, it passes all 18 guides.
+*Whole programs*, each run as `/root/results/modes.py` through the real verifier (20 tests):
 
-While it was being developed, it missed the even–odd LSM1 pair of G03 at 18 GHz. A strict reproducibility filter between two collocation grids removed it; the filter now only screens.
+| program | result | tests failed |
+|---|---|---|
+| reference program (`solution/modes.py`) | reward 1 | none (within 186 s) |
+| second correct program (`alt_solver.py`) | reward 1 | none (within 734 s) |
+| no program | reward 0 | all 20 |
+| the v4.0 reference program (material-sized search, power split from double-precision $ \gamma $) | reward 0 | 7: families, $ \gamma $ and power of run_a and run_b (the LSE0 surface waves of H1 and H2 at 2.85 GHz are missed); power of run_d (27 H5 modes) |
+| the reference with the search box of the passing v4.0 Opus run, $ |\beta| \le 2k_0\sqrt{\max|\varepsilon|\max|\mu|} + 200 $, in every family and for the isotropic $ q $ search | reward 0 | 12: every run (no film mode, the slow plasmons of H4, the H5 families from $ n = 4 $ on at 3.5 and 4.0 GHz) |
+| the reference with the widest box of the passing v4.0 GPT-6 run, $ |\beta| \le 16k_0 $ | reward 0 | 9: run_a, run_b, run_d |
 
-**Ablations** (`tests/truth_generator/ablate.py`): 63 of 63 behave as expected.
-- **These pass:** the oracle; the second implementation; every $ \gamma $ scaled by $ 1 + 5\times10^{-8} $; every power fraction scaled by $ 1 + 3\times10^{-7} $; a 220 dB/m limit.
-- **Gyrotropic shortcuts fail:**
-  - the hybrid families left out (the v3.0 contract), or only HYB$ _1 $ searched;
-  - the off-diagonal tensor terms dropped ($ \kappa = g = 0 $, solved again);
-  - the magnetised plasma taken as an isotropic Drude plasma (solved again);
-  - gyrotropic guides treated as reciprocal (reverse copied from forward), everywhere or only for the twin-slab G14;
-  - the wrong sign of $ \kappa $ and $ g $ (forward and reverse swapped), or of $ g $ only (G17, G18);
-  - the isolated reverse direction of G15 at 11 GHz given the forward mode;
-  - the ferrite linewidth ignored (G13, G14, G16);
-  - the hybrid families named LSE$ _n $; a hybrid family reported for an isotropic guide.
-- **Power-split shortcuts fail:**
-  - the TE expression $ -e_y h_x^* $ used for every mode, or the conjugate dropped (both solved again);
-  - reverse modes given the split of the field $ e^{-\gamma_r z} $, or the forward split of the same family;
-  - $ |P_i| / \sum|P_k| $ (unsigned backward power);
-  - fractions proportional to the layer widths;
-  - one fraction off by $ 3\times10^{-6}\sum|p^*| $.
-- **Other physics shortcuts fail:**
-  - $ \beta > 0 $ for every mode, or for the backward waves of G11 only;
-  - the opposite time convention;
-  - evanescent modes below cutoff left out, everywhere or only in G06;
-  - surface waves above $ k_0^2\max\varepsilon' $ not searched, or only G12's 5.15 GHz wave left out;
-  - one of three LSM1 modes of G04 left out;
-  - a mode above the limit reported;
-  - LSM2 reported as LSM1;
-  - one $ \gamma $ off by $ 3\times10^{-7} $;
-  - first-order loss perturbation of the nearly lossless guide (isotropic guides);
-  - the limit read as 200 Np/m (isotropic guides);
-  - a 300 dB/m limit.
-- **Format and safety cases fail cleanly:**
-  - malformed structure: an extra key, a missing guide, an extra guide key, a missing `reverse` key, an entry without the forward/reverse level, an LSM0 or HYB0 family, an empty list, a mode without its power list, a power list one number short, a missing test-frequency entry;
-  - bad values: $ \alpha < 0 $, a family name with a trailing newline or a leading zero, a string or a boolean as a number, NaN, a repeated key;
-  - bad files: a symlink, a FIFO, a file over 16 MiB, no file, an empty file;
-  - a large file with 400 families of 1000 modes.
+*Edited correct outputs* (`ablate.py`, judged by the verifier's own functions): 23 of 23 behave as expected.
+- **These pass:** the correct outputs; every $ \gamma $ scaled by $ 1 + 5\times10^{-8} $; every fraction scaled by $ 1 + 3\times10^{-7} $; families and modes listed in another order.
+- **Search region and families fail:** modes beyond a material box $ 10k_0\sqrt{\max\varepsilon'} + 200 $ dropped; modes beyond $ 50k_0 $ dropped; the last family of each H1 spectrum dropped; families beyond $ n = 8 $ dropped; the slow plasmons of H4 dropped; the LSM families of H3 dropped; the most attenuated mode of each H1 spectrum dropped.
+- **Nonreciprocity fails:** H5 treated as reciprocal; H2 treated as reciprocal; the bias sign ignored in H2 and H5; $ \beta > 0 $ forced (the backward waves of H5 at 3.5 GHz).
+- **Values fail:** one $ \gamma $ off by $ 3\times10^{-7} $; unsigned fractions $ |P_i|/\sum|P_k| $; reverse modes of H2 given the forward split; one fraction off by $ 3\times10^{-6}\sum|p^*| $.
+- **Format fails:** a guide missing; NaN; an HYB0 family; a power list one number short.
+
+The first versions of both v5.0 programs, which computed the power split from $ \gamma $ rounded to double precision, reproduced every $ \gamma $ to $ 10^{-15} $ but failed `test_power_split` on runs a, b and d (37, 35 and 27 modes off by up to 1.9 $ \sum|p^*| $).
 
 **Model runs.**
 - **v1.2 (lossless):** both models failed.
@@ -254,8 +261,13 @@ While it was being developed, it missed the even–odd LSM1 pair of G03 at 18 GH
   - **Opus 5.5 (low) passed** (reward 1). It derived the LSE/LSM transfer equations and the nonreciprocal ferrite TE problem with the right sign of $ \kappa $, counted zeros with a tiled argument principle, checked the counts on boxes four times larger, and cross-checked with a finite-element solver.
   - What the passing run shows: every v3.0 answer was a zero of a scalar dispersion function that a careful agent can derive from textbook LSE/LSM and ferrite-slab theory, and the answer was only the list of zeros. v4.0 therefore adds the hybrid families (a coupled four-component problem with both off-diagonal tensor terms, no textbook closed form) and the magnetised-plasma guides, and asks for a field quantity, the power split, that is wrong unless the fields themselves are right.
 - **Calibration runs on v4.0:** pending.
+- **v4.0 calibration (run #7064700): both models passed** (reward 1, 4 of 4 tests).
+  - **GPT-6 (max)**, 20 min. It wrote a 4 × 4 transfer-matrix solver for every family, located zeros from seeds on a grid of $ |\gamma| \le 5k_0 $ ($ 7k_0 $ for gyrotropic guides), and then audited the counts with the argument principle on boxes $ |\operatorname{Re}(\gamma/k_0)| \le 10 $, later 16. The audit found five LSM1 pairs that its search had missed (G08 at 4.4 GHz, G09 at 2.75 and 2.9 GHz, G12 at 5 and 5.15 GHz); it found them again by local searches and added them to the file by hand.
+  - **Opus 5.5 (low)**, 36 min. It counted zeros with the argument principle over $ |\operatorname{Im}\gamma| \le 2k_0\sqrt{m} + 200 $ ($ m = \max|\varepsilon|\max|\mu| $), stopped in $ n $ after four empty families, and reran with a finer contour to check the counts. It did not check the hybrid modes or the power split independently.
+  - What the passing runs show: the graded guides were the agent's own input, so a solver whose search box comes from the material constants could be audited and repaired guide by guide. v5.0 therefore grades a program on held-out guides, whose slow waves lie far outside such boxes (H1 and H2 up to 178 $ k_0 $, H4 12 $ k_0 $, H5 in up to 18 consecutive families). Both v4.0 search strategies, reimplemented on the reference program, fail the held-out guides (ablations above).
+- **Calibration runs on v5.0:** pending.
 
-**Harbor runs** (v4.0): pending; the authoring sandbox cannot run Docker. Run directly, `solution/solve.py` followed by `tests/test_modes.py` passes 4 of 4 tests, and no output file fails (the "no file (nop)" ablation).
+**Harbor runs** (v5.0): pending; the authoring sandbox cannot run Docker. Run directly as root with the real verifier (`tests/test_modes.py`, sandboxed runs as uid 65534; Python 3.13 there instead of the image's 3.11, with numpy 2.2.6, scipy 1.15.3 and mpmath 1.3.0 as in the image), the reference program passes all 20 tests and no program fails all 20 (nop: all 20 tests fail; the second correct program passes all 20).
 
 ## References
 
@@ -284,3 +296,9 @@ While it was being developed, it missed the even–odd LSM1 pair of G03 at 18 GH
 18. Z. Yu, G. Veronis, Z. Wang and S. Fan, "One-way electromagnetic waveguide formed at the interface between a plasmonic metal under a static magnetic field and a photonic crystal," *Phys. Rev. Lett.* 100 (2008) 023902.
 19. B. S. Ng and W. H. Reid, "An initial value method for eigenvalue problems using compound matrices," *J. Comput. Phys.* 30 (1979) 125–136.
 20. B. N. Parlett and C. Reinsch, "Balancing a matrix for calculation of eigenvalues and eigenvectors," *Numer. Math.* 13 (1969) 293–304.
+21. R. W. Damon and J. R. Eshbach, "Magnetostatic modes of a ferromagnet slab," *J. Phys. Chem. Solids* 19 (1961) 308–320.
+22. D. D. Stancil and A. Prabhakar, *Spin Waves: Theory and Applications*, Springer, 2009: magnetostatic surface waves of in-plane magnetised films, oblique propagation, YIG films on GGG, linewidths.
+23. W. S. Ishak, "Magnetostatic wave technology: a review," *Proc. IEEE* 76 (1988) 171–187: LPE YIG films, ground planes, delay lines and filters.
+24. Gadolinium gallium garnet substrate data sheets (supplier data): $ \varepsilon_r \approx 12.2 $, low microwave loss.
+25. Zirconium tin titanate dielectric-resonator ceramics (e.g. Trans-Tech D-8300 series): $ \varepsilon_r \approx 36\text{–}37 $, $ Q \cdot f \ge 2\times10^{4} $ GHz.
+26. J. J. Brion, R. F. Wallis, A. Hartstein and E. Burstein, "Theory of surface magnetoplasmons in semiconductors," *Phys. Rev. Lett.* 28 (1972) 1455–1458.

@@ -1,13 +1,13 @@
 schema_version = "1.4"
 
-artifacts = ["/root/results/modes.json"]
+artifacts = ["/root/results/modes.py"]
 
 [task]
 name = "turing/loaded-waveguide-modes"
-description = "Mode analysis of rectangular waveguides loaded with lossy microwave laminates, argon discharge cells, magnetised YIG slabs and magnetised argon discharges: every mode with attenuation at most 200 dB/m at each test frequency and in each direction, as alpha + j beta with its per-layer power split (dispersion relations and fields to be derived; nonreciprocal hybrid modes of gyrotropic guides, one-way surface magnetoplasmons, backward waves, evanescent modes, lossy surface waves)."
-version = "4.0.0"
+description = "A program that finds every mode with attenuation at most 200 dB/m of lossy, layer-loaded rectangular waveguides (microwave laminates and ceramics, argon discharges, magnetised YIG slabs and films, magnetised discharges), at each test frequency and in each direction, as alpha + j beta with its per-layer power split; graded on held-out guides (dispersion relations, fields and search bounds to be derived; nonreciprocal hybrid modes, slow magnetostatic and plasma surface waves, one-way magnetoplasmons, backward and evanescent waves)."
+version = "5.0.0"
 authors = [{ name = "Abdrahim Temami", email = "abdrahim.t@turing.com" }]
-keywords = ["waveguides", "microwave-engineering", "lse-lsm-modes", "transverse-resonance", "lossy-waveguides", "plasma-loaded-waveguides", "ferrite-devices", "magnetoplasma", "hybrid-modes", "poynting-flux", "nonreciprocal-waveguides", "surface-waves", "backward-waves", "complex-modes", "electromagnetics"]
+keywords = ["waveguides", "microwave-engineering", "lse-lsm-modes", "transverse-resonance", "lossy-waveguides", "plasma-loaded-waveguides", "ferrite-devices", "magnetoplasma", "hybrid-modes", "poynting-flux", "nonreciprocal-waveguides", "surface-waves", "magnetostatic-waves", "backward-waves", "complex-modes", "electromagnetics"]
 
 [metadata]
 author_name = "Abdrahim Temami"
@@ -15,21 +15,21 @@ author_email = "abdrahim.t@turing.com"
 domain = "engineering-sciences"
 category = "electrical-engineering"
 subcategory = "electromagnetics"
-tags = ["waveguides", "microwave-engineering", "lse-lsm-modes", "transverse-resonance", "lossy-waveguides", "plasma-loaded-waveguides", "ferrite-devices", "magnetoplasma", "hybrid-modes", "poynting-flux", "nonreciprocal-waveguides", "surface-waves", "backward-waves", "complex-modes", "electromagnetics"]
+tags = ["waveguides", "microwave-engineering", "lse-lsm-modes", "transverse-resonance", "lossy-waveguides", "plasma-loaded-waveguides", "ferrite-devices", "magnetoplasma", "hybrid-modes", "poynting-flux", "nonreciprocal-waveguides", "surface-waves", "magnetostatic-waves", "backward-waves", "complex-modes", "electromagnetics"]
 expert_time_estimate_hours = 30.0
 reward_type = "binary"
 source = "Written by PhD annotators"
 public_overlap = "None"
 
 [verifier]
-timeout_sec = 600
+timeout_sec = 4500
 environment_mode = "separate"
 network_mode = "no-network"
 
 [verifier.environment]
 network_mode = "no-network"
-cpus = 1
-memory_mb = 2048
+cpus = 4
+memory_mb = 8192
 
 [agent]
 timeout_sec = 18000

@@ -445,19 +445,27 @@ def _test_te(G, B, fa):
 
 
 def refine_te(G, B, fa, rounds=80):
+    """Refine a certified TE zero to a box of relative half-width 10^-(55 + 0.9 |gamma| a) (see
+    hybacb.refine)."""
+    import flint
     z = acb(B.real.mid(), B.imag.mid())
+    ga = float(z.abs_upper()) * float(G.a.mid())
+    digits = 55 + int(0.9 * ga)
+    prec0 = flint.ctx.prec
+    flint.ctx.prec = max(prec0, int(3.33 * (digits + 30)) + int(3 * ga))
     for _ in range(rounds):
         d = DTE(G, z, fa)
         step = d.v / d.q
         z = acb((z - step).real.mid(), (z - step).imag.mid())
-        if float(step.abs_upper()) < 1e-70 * max(1.0, float(z.abs_upper())):
+        if float(step.abs_upper()) < 10.0 ** -(digits + 15) * max(1.0, float(z.abs_upper())):
             break
-    r = arb(1e-55) * max(1.0, float(z.abs_upper()))
+    r = arb(10) ** -digits * max(1.0, float(z.abs_upper()))
     T = acb(arb(z.real.mid(), r), arb(z.imag.mid(), r))
     DT = DTE(G, T, fa)
     Dz = DTE(G, z, fa, mask=G.mask)
     Y = 1 / acb(Dz.q.real.mid(), Dz.q.imag.mid())
     K = z - Y * Dz.v + (1 - Y * DT.q) * (T - z)
+    flint.ctx.prec = prec0
     assert T.contains_interior(K), 'TE refinement not certified'
     assert B.contains(K), 'TE refinement left the certified box'
     return K

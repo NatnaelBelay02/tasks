@@ -16,7 +16,9 @@ from flint import acb, arb
 
 flint.ctx.prec = 256
 C_LIGHT = 299792458
+flint.ctx.prec = 1100                 # constants at high precision (see make_truth: slow-wave refinement)
 TWO_PI_C = 2 * arb.pi() / C_LIGHT
+flint.ctx.prec = 256
 
 
 def A(x):
