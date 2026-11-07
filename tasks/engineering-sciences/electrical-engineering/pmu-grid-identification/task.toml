@@ -3,8 +3,8 @@ artifacts = ["/root/results/identify.py"]
 
 [task]
 name = "turing/pmu-grid-identification"
-description = "Write a program that, from a 15-minute noisy synchrophasor recording of a 14-bus transmission network, identifies which candidate branches are in service, every unknown branch impedance and transformer tap, the ratio and phase error of every non-reference instrument channel, and the PMU malfunction intervals, to Cramer-Rao-level accuracy; graded on four held-out recordings."
-version = "2.0.0"
+description = "Write a program that, from a 75-minute noisy synchrophasor recording of a 14-bus transmission network under realistic operating conditions (slow load and dispatch variation, an arc-furnace load, frequency wander), identifies which candidate branches are in service, every unknown branch impedance and transformer tap, the ratio and phase error of every non-reference instrument channel, and the PMU malfunction intervals, to Cramer-Rao-level accuracy; graded on four held-out recordings."
+version = "3.0.0"
 keywords = ["synchrophasor", "pmu", "parameter-estimation", "errors-in-variables", "instrument-transformer-calibration", "topology-identification", "bad-data-detection"]
 
 [metadata]

@@ -25,6 +25,13 @@ P["kaufman"] = [('            J -= Qc @ yv                                      
 # no plausibility check (the v2 program)
 P["no_plausibility"] = [('    while True:\n        best = None\n        for cid in active:\n            c = CANDS[cid - 1]\n',
                          '    while False:\n        best = None\n        for cid in active:\n            c = CANDS[cid - 1]\n')]
+# per-frame whitening, but at each channel's mean angle over the recording (time-invariant)
+P["mean_angle_whitening"] = [('        r, a = np.abs(z[:, k]), np.angle(z[:, k])\n',
+                              '        r, a = np.abs(z[:, k]), np.full(len(z), np.angle(np.sum(Z[:, k])))\n')]
+# isotropic noise: one sigma per channel, the rms of the magnitude and angle sigmas
+P["isotropic_noise"] = [('        sm, sa = NOI[c]["magnitude_rel_std"], NOI[c]["angle_std_rad"]\n',
+                         '        sm, sa = NOI[c]["magnitude_rel_std"], NOI[c]["angle_std_rad"]\n'
+                         '        sm = sa = np.sqrt((sm * sm + sa * sa) / 2)\n')]
 for name, edits in P.items():
     s = src
     for a, b in edits:
