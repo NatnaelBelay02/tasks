@@ -225,7 +225,8 @@ def runs():
     outputs: {run: {'error': str} or {'returncode', 'elapsed', 'raw'}}."""
     program = _read_regular(PROGRAM, MAX_PROGRAM_BYTES)
     if program is None:
-        return {r: {'error': '%s is missing, not a regular file, or a symlink' % PROGRAM} for r in RUNS}
+        return {r: {'error': '%s is missing, not a regular file, a symlink, or larger than %d bytes' % (PROGRAM, MAX_PROGRAM_BYTES)}
+                for r in RUNS}
     root = tempfile.mkdtemp(prefix='wgm_')
     os.chmod(root, 0o755)
     order = list(RUNS)
