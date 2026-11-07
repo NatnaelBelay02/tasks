@@ -1,0 +1,37 @@
+schema_version = "1.4"
+artifacts = ["/root/results/identify.py"]
+
+[task]
+name = "turing/pmu-grid-identification"
+description = "Write a program that, from a 15-minute noisy synchrophasor recording of a 14-bus transmission network, identifies which candidate branches are in service, every unknown branch impedance and transformer tap, the ratio and phase error of every non-reference instrument channel, and the PMU malfunction intervals, to Cramer-Rao-level accuracy; graded on four held-out recordings."
+version = "2.0.0"
+keywords = ["synchrophasor", "pmu", "parameter-estimation", "errors-in-variables", "instrument-transformer-calibration", "topology-identification", "bad-data-detection"]
+
+[metadata]
+domain = "engineering-sciences"
+category = "electrical-engineering"
+subcategory = "power-system-measurement-and-identification"
+reward_type = "binary"
+source = "Written by PhD annotators"
+public_overlap = "The network is the public IEEE 14-bus test system (MATPOWER case14); the planted parameters, instrument errors, topology errors, measurements and malfunctions are new and synthetic."
+
+[verifier]
+timeout_sec = 4500
+environment_mode = "separate"
+network_mode = "no-network"
+
+[verifier.environment]
+network_mode = "no-network"
+cpus = 4
+memory_mb = 8192
+
+[agent]
+timeout_sec = 18000
+network_mode = "public"
+
+[environment]
+build_timeout_sec = 1800
+cpus = 4
+memory_mb = 8192
+storage_mb = 10240
+network_mode = "public"

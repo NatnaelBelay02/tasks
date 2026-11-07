@@ -1,0 +1,335 @@
+{
+ "buses": [
+  1,
+  2,
+  3,
+  4,
+  5,
+  6,
+  7,
+  8,
+  9,
+  10,
+  11,
+  12,
+  13,
+  14
+ ],
+ "frame_rate": 10,
+ "frames": 9000,
+ "zero_injection_bus": 7,
+ "reference_pmus": [
+  1,
+  6
+ ],
+ "noise": {
+  "V": {
+   "magnitude_rel_std": 0.0002,
+   "angle_std_rad": 0.0004
+  },
+  "I": {
+   "magnitude_rel_std": 0.0005,
+   "angle_std_rad": 0.001
+  }
+ },
+ "shunt": {
+  "bus": 9,
+  "nominal_b": 0.19
+ },
+ "candidates": [
+  {
+   "id": 1,
+   "from_bus": 1,
+   "to_bus": 2,
+   "model": "line",
+   "known": false,
+   "database_status": "closed",
+   "nominal": {
+    "r": 0.01938,
+    "x": 0.05917,
+    "b": 0.0528
+   }
+  },
+  {
+   "id": 2,
+   "from_bus": 1,
+   "to_bus": 5,
+   "model": "line",
+   "known": false,
+   "database_status": "closed",
+   "nominal": {
+    "r": 0.05403,
+    "x": 0.22304,
+    "b": 0.0492
+   }
+  },
+  {
+   "id": 3,
+   "from_bus": 2,
+   "to_bus": 3,
+   "model": "line",
+   "known": false,
+   "database_status": "closed",
+   "nominal": {
+    "r": 0.04699,
+    "x": 0.19797,
+    "b": 0.0438
+   }
+  },
+  {
+   "id": 4,
+   "from_bus": 2,
+   "to_bus": 4,
+   "model": "line",
+   "known": false,
+   "database_status": "closed",
+   "nominal": {
+    "r": 0.05811,
+    "x": 0.17632,
+    "b": 0.034
+   }
+  },
+  {
+   "id": 5,
+   "from_bus": 2,
+   "to_bus": 5,
+   "model": "line",
+   "known": false,
+   "database_status": "closed",
+   "nominal": {
+    "r": 0.05695,
+    "x": 0.17388,
+    "b": 0.0346
+   }
+  },
+  {
+   "id": 6,
+   "from_bus": 3,
+   "to_bus": 4,
+   "model": "line",
+   "known": false,
+   "database_status": "closed",
+   "nominal": {
+    "r": 0.06701,
+    "x": 0.17103,
+    "b": 0.0128
+   }
+  },
+  {
+   "id": 7,
+   "from_bus": 4,
+   "to_bus": 5,
+   "model": "series",
+   "known": false,
+   "database_status": "closed",
+   "nominal": {
+    "r": 0.01335,
+    "x": 0.04211
+   }
+  },
+  {
+   "id": 8,
+   "from_bus": 4,
+   "to_bus": 7,
+   "model": "transformer",
+   "known": true,
+   "database_status": "closed",
+   "nominal": {
+    "x": 0.20912,
+    "tap": 0.978
+   }
+  },
+  {
+   "id": 9,
+   "from_bus": 4,
+   "to_bus": 9,
+   "model": "transformer",
+   "known": false,
+   "database_status": "closed",
+   "nominal": {
+    "x": 0.55618,
+    "tap": 0.969
+   }
+  },
+  {
+   "id": 10,
+   "from_bus": 5,
+   "to_bus": 6,
+   "model": "transformer",
+   "known": false,
+   "database_status": "closed",
+   "nominal": {
+    "x": 0.25202,
+    "tap": 0.932
+   }
+  },
+  {
+   "id": 11,
+   "from_bus": 6,
+   "to_bus": 11,
+   "model": "series",
+   "known": false,
+   "database_status": "closed",
+   "nominal": {
+    "r": 0.09498,
+    "x": 0.1989
+   }
+  },
+  {
+   "id": 12,
+   "from_bus": 6,
+   "to_bus": 12,
+   "model": "series",
+   "known": false,
+   "database_status": "closed",
+   "nominal": {
+    "r": 0.12291,
+    "x": 0.25581
+   }
+  },
+  {
+   "id": 13,
+   "from_bus": 6,
+   "to_bus": 13,
+   "model": "series",
+   "known": false,
+   "database_status": "open",
+   "nominal": {
+    "r": 0.06615,
+    "x": 0.13027
+   }
+  },
+  {
+   "id": 14,
+   "from_bus": 7,
+   "to_bus": 8,
+   "model": "reactance",
+   "known": true,
+   "database_status": "closed",
+   "nominal": {
+    "x": 0.17615
+   }
+  },
+  {
+   "id": 15,
+   "from_bus": 7,
+   "to_bus": 9,
+   "model": "reactance",
+   "known": true,
+   "database_status": "closed",
+   "nominal": {
+    "x": 0.11001
+   }
+  },
+  {
+   "id": 16,
+   "from_bus": 9,
+   "to_bus": 10,
+   "model": "series",
+   "known": false,
+   "database_status": "closed",
+   "nominal": {
+    "r": 0.03181,
+    "x": 0.0845
+   }
+  },
+  {
+   "id": 17,
+   "from_bus": 9,
+   "to_bus": 14,
+   "model": "series",
+   "known": false,
+   "database_status": "closed",
+   "nominal": {
+    "r": 0.12711,
+    "x": 0.27038
+   }
+  },
+  {
+   "id": 18,
+   "from_bus": 10,
+   "to_bus": 11,
+   "model": "series",
+   "known": false,
+   "database_status": "closed",
+   "nominal": {
+    "r": 0.08205,
+    "x": 0.19207
+   }
+  },
+  {
+   "id": 19,
+   "from_bus": 12,
+   "to_bus": 13,
+   "model": "series",
+   "known": false,
+   "database_status": "closed",
+   "nominal": {
+    "r": 0.22092,
+    "x": 0.19988
+   }
+  },
+  {
+   "id": 20,
+   "from_bus": 13,
+   "to_bus": 14,
+   "model": "series",
+   "known": false,
+   "database_status": "closed",
+   "nominal": {
+    "r": 0.17093,
+    "x": 0.34802
+   }
+  },
+  {
+   "id": 21,
+   "from_bus": 1,
+   "to_bus": 4,
+   "model": "line",
+   "known": false,
+   "database_status": "open",
+   "nominal": {
+    "r": 0.0482,
+    "x": 0.1845,
+    "b": 0.041
+   }
+  },
+  {
+   "id": 22,
+   "from_bus": 3,
+   "to_bus": 5,
+   "model": "line",
+   "known": false,
+   "database_status": "open",
+   "nominal": {
+    "r": 0.0612,
+    "x": 0.1899,
+    "b": 0.039
+   }
+  },
+  {
+   "id": 23,
+   "from_bus": 10,
+   "to_bus": 14,
+   "model": "series",
+   "known": false,
+   "database_status": "closed",
+   "nominal": {
+    "r": 0.1025,
+    "x": 0.2173
+   }
+  },
+  {
+   "id": 24,
+   "from_bus": 11,
+   "to_bus": 12,
+   "model": "series",
+   "known": false,
+   "database_status": "open",
+   "nominal": {
+    "r": 0.144,
+    "x": 0.249
+   }
+  }
+ ]
+}
