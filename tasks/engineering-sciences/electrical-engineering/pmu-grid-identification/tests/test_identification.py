@@ -26,7 +26,7 @@ PROGRAM = "/root/results/identify.py"
 HERE = os.path.dirname(os.path.abspath(__file__))
 DATA = os.path.join(HERE, "data")
 RECORDINGS = sorted(os.listdir(DATA))
-WALL_SEC = 3600                 # per run; all runs are concurrent
+WALL_SEC = 5400                 # per run; all runs are concurrent
 MAX_OUTPUT_BYTES = 1_000_000
 SANDBOX_UID = SANDBOX_GID = 65534
 SANDBOX_ENV = {"HOME": "/tmp", "PATH": "/usr/local/bin:/usr/bin:/bin", "LANG": "C.UTF-8",

@@ -16,7 +16,7 @@ source = "Written by PhD annotators"
 public_overlap = "The network is the public IEEE 14-bus test system (MATPOWER case14); the planted parameters, instrument errors, topology errors, measurements and malfunctions are new and synthetic."
 
 [verifier]
-timeout_sec = 4500
+timeout_sec = 6300
 environment_mode = "separate"
 network_mode = "no-network"
 

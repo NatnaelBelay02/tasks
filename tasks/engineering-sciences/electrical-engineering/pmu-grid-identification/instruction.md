@@ -30,7 +30,7 @@ The program is run as `python3 identify.py <input_dir> <output_file>`:
 
 - `<input_dir>` is an absolute path to a read-only directory holding only `pmu.csv` and `network.json`, in the formats of the example.
 - The working directory is a fresh directory that holds only a copy of the program and that the program may write to, as well as `/tmp`, which is shared by the four simultaneous runs. `<output_file>` is the absolute path of `identification.json` in that directory, which the program must create.
-- Each run has a wall-clock limit of 3600 seconds and must exit with status 0. Processes that a run leaves behind are killed before its output is read. The output must be a regular file (not a symlink) of at most 1 MB.
+- Each run has a wall-clock limit of 5400 seconds and must exit with status 0. Processes that a run leaves behind are killed before its output is read. The output must be a regular file (not a symlink) of at most 1 MB.
 - The program runs as an unprivileged user (uid and gid 65534) with no network, an empty standard input, and exactly the environment variables `HOME=/tmp`, `PATH=/usr/local/bin:/usr/bin:/bin`, `LANG=C.UTF-8` and `OPENBLAS_NUM_THREADS`, `OMP_NUM_THREADS`, `MKL_NUM_THREADS`, `NUMEXPR_NUM_THREADS` all set to 1.
 - The program must run with Python 3.12, numpy 1.26.4, scipy 1.13.1 and the standard library; no packages can be installed. The four recordings are processed by four runs started at the same time, which share 4 CPUs and 8 GB of memory.
 

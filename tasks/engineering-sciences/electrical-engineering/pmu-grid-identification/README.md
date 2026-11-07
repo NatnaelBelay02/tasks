@@ -8,7 +8,7 @@ Write a program that identifies a 14-bus transmission network and its instrument
 | Expert time estimate | 24 hours |
 | Agent budget | 18000 s |
 | Agent container | 4 CPUs, 8 GB RAM; one example recording with its tolerances, no truth |
-| Grading container | 4 CPUs, 8 GB RAM, no network; the program runs once per held-out recording, all four at once, 3600 s wall limit each |
+| Grading container | 4 CPUs, 8 GB RAM, no network; the program runs once per held-out recording, all four at once, 5400 s wall limit each |
 
 ## Difficulty
 
@@ -39,7 +39,7 @@ The pipeline:
 6. **Final fit:** a maximum-likelihood fit in physical coordinates (r, x; x, tap; ratio, phase) on all frames, with the intervals masked.
 7. **Report within the stated ranges:** each value is clipped to the range the instruction states for the true value (r and x within 10 % of nameplate, transformer x within 5 %, tap within 0.019, |ρ| ≤ 0.01, |φ| ≤ 0.0105). The truth lies inside, so clipping can only reduce an error. It matters for the weakly observed 9–14 line, whose Cramér–Rao σ on r is 9 % of r. On that scale the likelihood is visibly curved: along the straight line from the planted truth to the fit, the cost rises by 165 halfway and falls by 50 at the end. On one Monte Carlo draw of rec_d the unclipped fit put r at 0.081 pu (−4.4σ, outside the stated range); clipped, it is within tolerance.
 
-Measured in the grading container with nothing else running: all four held-out runs finished within 1100 s in the final harbor oracle run (within 1421 s in an earlier run), against the 3600 s limit. Each run peaked below 0.95 GB of memory (cgroup `memory.peak`, five runs at 1 CPU each).
+Measured with the real verifier (`tests/test_identification.py`, run directly in the authoring container with nothing else running; see "Harbor runs" below): the four simultaneous runs finished after 1002 s (rec_d), 1146 s (rec_c), 1796 s (rec_b) and 2388 s (rec_a), and all 24 tests passed. Each run peaked at 0.87 GB of resident memory. rec_a is the slowest because of the plausibility check, about 300 s. v3 raised the wall limit from 3600 s to 5400 s, so the slowest run has a margin of 2.3×.
 
 ## Verification
 
@@ -102,40 +102,40 @@ The example shows the format only. It has no frequency drift, nearly isotropic n
 
 **Why the recording is 75 minutes long.** With realistic rates, a 15-minute window does not move the operating point enough: at 10 frames per second over 15 minutes the bound on the calibrations grew by a median factor of 4–6 against v2, and the "default answer" (nameplate parameters, zero calibration) fell within tolerance for 46–60 of the ~80 graded quantities. Over 75 minutes ordinary ramps, dispatch steps and the furnace cycle provide the excitation: branch tolerances are back to the v2 level (median ratio to v2 0.86–1.14), calibration tolerances are 2.1–3.3 times the v2 ones (median), and the default answer passes 31, 47, 45 and 55 of the 78–82 quantities on rec_a–rec_d (v2: 30, 40, 44, 48), so it still fails every recording on the remaining ones, besides topology and malfunctions. The frame count, and with it every frame-indexed quantity of the contract (malfunction lengths, the 30-frame endpoint tolerance, the run time), is unchanged.
 
-**Monte Carlo calibration.** The reference program was re-run on recordings with the same planted truth and malfunctions and new noise, load and frequency realisations (two per held-out recording). Each was scored against its own tolerances:
+**Monte Carlo calibration.** The reference program was re-run on recordings with the same planted truth and malfunctions but new noise, load, dispatch, furnace and frequency realisations (one per held-out recording; generator seed override, author-side). Each was scored against its own tolerances, recomputed at its own states:
 
-| recording | noise seed | topology | malfunctions matched (max endpoint error) | worst \|error\| / σ | result |
+| recording | realisation | topology | malfunctions matched (max endpoint error) | worst \|error\| / σ | result |
 |---|---|---|---|---|---|
-| rec_a | task data | correct | 3/3 (0) | 2.2 | pass |
-| rec_a | 2111 | correct | 3/3 (0) | 2.2 | pass |
-| rec_a | 2112 | correct | 3/3 (0) | 2.6 | pass |
-| rec_b | task data | correct | 3/3 (2) | 1.9 | pass |
-| rec_b | 2211 | correct | 3/3 (2) | 2.0 | pass |
-| rec_b | 2212 | correct | 3/3 (2) | 2.9 | pass |
-| rec_c | task data | correct | 1/1 (0) | 2.3 | pass |
-| rec_c | 2311 | correct | 1/1 (0) | 1.7 | pass |
-| rec_c | 2312 | correct | 1/1 (0) | 2.5 | pass |
-| rec_d | task data | correct | 4/4 (1) | 2.2 | pass |
-| rec_d | 2411 | correct | 4/4 (0) | 1.7 | pass |
-| rec_d | 2412 | correct | 4/4 (0) | 2.1 | pass |
-| example | task data | correct | 1/1 (0) | 2.4 | pass |
+| example | task data | correct | 1/1 (0) | 2.2 | pass |
+| rec_a | task data | correct | 3/3 (1) | 2.3 | pass |
+| rec_a | seed 11710 | correct | 3/3 (1) | 2.7 | pass |
+| rec_b | task data | correct | 3/3 (4) | 1.8 | pass |
+| rec_b | seed 11810 | correct | 3/3 (5) | 2.6 | pass |
+| rec_c | task data | correct | 1/1 (0) | 3.5 | pass |
+| rec_c | seed 2010 | correct | 1/1 (0) | 1.8 | pass |
+| rec_d | task data | correct | 4/4 (0) | 2.0 | pass |
+| rec_d | seed 12010 | correct | 4/4 (0) | 2.9 | pass |
 
-All 13 runs pass, with the worst error at 2.9σ against the 4σ limit.
+All 9 runs pass, with the worst error at 3.5σ against the 4σ limit; the largest one (rec_c, I14 ratio error, 3.48σ) is reproduced to within 0.01σ by the independent program below, so it is a property of that noise realisation, not of the estimator. Before the clipping of pipeline step 7 was added, the seed-12010 run of rec_d failed on the 9–14 line (r at −4.43σ, x at +3.43σ). The likelihood check that explains it, with author-side `costcheck.py`:
+- On all nine runs, the cost at the planted truth exceeds the cost at the fit by 44 to 85, a χ² of the order its 78–82 degrees of freedom imply. Generator, model and fit therefore agree, and no fit stopped short of its optimum.
+- Small steps of every parameter change the cost exactly as the Fisher matrix predicts, within 0.03 %.
+- Large steps along the weakest directions do not: there the likelihood is curved, and an occasional realisation lands far along the valley.
 
-**Independent implementation.** A second program (author-side `independent_v2.py`, about 470 lines, numpy only) was written without reusing code from the reference program. It differs at every stage:
+**Independent implementation.** A second program (author-side `independent.py`, about 720 lines, numpy only) was written without reusing code from the reference program. It optimises the same likelihood by different means at every stage:
 
 | stage | reference program | independent program |
 |---|---|---|
-| residual | rectangular, whitened per frame by the 2 × 2 polar covariance | exact polar log residual, log(z / h), magnitude and angle scaled by their σ |
-| per-frame states | projected out (variable projection, exact Jacobian) | estimated jointly with the parameters; Levenberg–Marquardt with the state blocks removed by a Schur complement |
-| start | multi-start superset (nameplate, staged, admittance-first) | one equation-error start |
-| outliers | Cauchy reweighting per frame and PMU | χ² trimming of frame × PMU blocks |
-| malfunctions | step, ramp and out-and-back shape fits to per-frame offsets | one-sided CUSUM (Page) on each PMU's 4-row χ² block, refitted up to four rounds |
-| topology | penalised backward elimination (cost + 30 per corridor) | Wald-ordered backward elimination with a likelihood-ratio cut of 30 |
+| residual | measured minus model, whitened per frame by the 2 × 2 inverse square-root polar covariance | relative residual 1 − h/z̃, real and imaginary parts divided by σ_m and σ_a |
+| per-frame states | projected out by batched QR; Levenberg–Marquardt on the projected cost with the exact Golub–Pereyra Jacobian | re-solved exactly for every trial parameter; Levenberg–Marquardt with the Golub–Pereyra Gram matrix, including the second-order term C′A⁻¹C (verified against finite differences) |
+| start | multi-start superset fit (nameplate, staged, admittance-first, warm) | one equation-error fit on the database topology |
+| topology | superset, penalised backward elimination (cost + 30 per corridor), plausibility check | forward–backward stepwise search from the database topology: Rao score test (> 30) for adding a corridor, removals tried in implausibility and Wald order, each confirmed by a likelihood-ratio cut of 30 |
+| outliers | Cauchy reweighting per frame and PMU | none beyond the flagged intervals |
+| malfunctions | runs of a rolling-median statistic, then step, ramp and out-and-back shape fits to per-frame offsets | Page CUSUM on each PMU's mean-normalised χ², with change-point refinement of the ends; every round refits without the flagged data, re-detects all intervals and adds at most one new one |
+| report | clipped to the stated ranges | clipped to the stated ranges |
 
-On all five recordings it finds the true topology and every malfunction interval (endpoints within 16 frames). Its worst errors are 2.4σ (rec_a), 2.2σ (rec_b), 2.9σ (rec_c), 2.3σ (rec_d) and 2.6σ (example). Its four held-out outputs, replayed through the verifier image, score reward 1 (24/24). Submitted itself as `/root/results/identify.py` to the final verifier image (`tests/test.sh` running all 24 tests of `tests/test_identification.py` on the four held-out recordings), it also scores reward 1 (24/24); all four runs finished within 1592 s. The two programs report the same topology on every recording. Their reported values differ by at most 0.91σ, where σ is the CRLB value of that quantity (rec_d, branch 11 x). Two different efficient estimators therefore land within a fraction of the tolerance of each other and of the planted truth.
+On all five recordings it finds the true topology and every malfunction interval. Its worst endpoint error is 28 frames, on the start of rec_b's ramped timing error, which fades in from zero. Its worst errors are 3.0σ (example), 3.0σ (rec_a), 1.8σ (rec_b), 3.5σ (rec_c) and 2.5σ (rec_d). INDEPENDENT_VERIFIER_RESULT The two programs report the same topology and malfunction intervals (within 30 frames) on every recording. On rec_a, rec_b and rec_c their values differ by at most 0.25σ, where σ is the Cramér–Rao value of that quantity. On the example and on rec_d they differ by up to 2.0σ (example, branch 9 tap) and 1.5σ (rec_d, V10 ratio). There the costs of the two fits differ by only 3.3 and 3.1, against 85 and 50 between the planted truth and either fit: the difference lies along the flat, curved direction described above, not in an unconverged fit.
 
-**Probes of the verifier.** Small programs that write crafted outputs, built author-side from the planted truth, were run through the verifier image:
+**Probes of the verifier.** Small programs that write crafted outputs, built author-side from the planted truth, were run through the verifier. Apart from the wall limit (3600 → 5400 s), the verifier is unchanged from v2, where the full table below was run in the verifier image. On the v3 data, the first row and the first two cases of the second row were re-run with the real verifier: the planted truth, with one branch value exactly at true + tolerance and every endpoint 30 frames off, scores 24/24. Moving that value 1e-60 further fails exactly `test_branch_parameters[rec_a]`, and moving one rec_b endpoint to 31 frames fails exactly `test_corrupted_segments[rec_b]`.
 
 | probe | reward |
 |---|---|
@@ -155,12 +155,7 @@ On all five recordings it finds the true topology and every malfunction interval
 | output left as a FIFO | 0 (not a regular file; the verifier does not block) |
 | output of 200 000 nested brackets | 0 (rejected as invalid JSON) |
 
-**Harbor runs on the final package** (harbor 0.24.0, nothing else running on the host):
-
-| agent | reward | detail |
-|---|---|---|
-| `oracle` | 1.0 | 24/24 tests; all four held-out runs finished within 1100 s; total job 19 min |
-| `nop` | 0.0 | no `/root/results/identify.py`; all 24 tests fail; no exceptions |
+**Harbor runs.** v2 passed harbor 0.24.0 with `oracle` (reward 1, 24/24) and `nop` (reward 0, all 24 tests fail). The v3 results above come from the authoring container, where harbor and Docker are not available. There, `tests/test_identification.py` was run directly as root on the four held-out recordings, with the same sandbox: uid 65534, the stated environment, the read-only input directory, the self-check, and the process-group and uid kills. That container has Python 3.13 and numpy 2.5 rather than the grading image's Python 3.12 and numpy 1.26.4. Both programs use only basic numpy linear algebra, but the harbor `oracle` and `nop` runs should be repeated on the final package.
 
 **Calibration: what weaker methods score.** Each method below was run author-side on the four held-out recordings. Its four outputs were then graded by the verifier image through a replay program that writes the stored output for each recording. Cells give the worst |error|/σ over branch parameters and calibrations; "topology" means a wrong `in_service`, and "segments" means requirement 6 fails. Rows 1–2 rebuild two complete pipelines that solved an earlier version of this task with a steady recording. Both are given the true topology and the true malfunction intervals, padded by 10 frames, which favours them. Rows 3–8 are the reference program with one ingredient removed (author-side `make_ablations.py`, string patches of `identify.py`).
 

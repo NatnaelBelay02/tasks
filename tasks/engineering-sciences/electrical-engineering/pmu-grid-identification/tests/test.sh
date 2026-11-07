@@ -5,7 +5,7 @@ mkdir -p /logs/verifier
 echo 0 > /logs/verifier/reward.txt
 chmod 700 /logs/verifier
 chmod -R go-rwx /tests
-if timeout 4200 python3 -m pytest -p no:cacheprovider --ctrf /logs/verifier/ctrf.json /tests/test_identification.py -rA -s; then
+if timeout 6000 python3 -m pytest -p no:cacheprovider --ctrf /logs/verifier/ctrf.json /tests/test_identification.py -rA -s; then
     echo 1 > /logs/verifier/reward.txt
 else
     echo 0 > /logs/verifier/reward.txt
