@@ -119,6 +119,31 @@ SPECS = [
      600, (1 * K, 1 * M), 26, 10, 3, [(500, 1), (1.4 * M, 1)]),
     ('hid', 'BP-AUDIO', 'audio band-limiting filter at a 48 kHz converter input (600 ohm), 20 Hz-20 kHz, stopbands below 8 Hz (infrasonic rumble) and above 28 kHz (alias band, two zeros)',
      600, (20, 20 * K), 26, 12, 4, [(8, 1), (28 * K, 2)]),
+    # low-pass filters of degree 10 to 16 (one without finite zeros, one with a single zero)
+    ('hid', 'LP-6M', '50-54 MHz amateur transmitter: all-pole (Chebyshev) harmonic low-pass, no finite transmission zeros',
+     50, (0, 54 * M), 20, 10, 0, []),
+    ('hid', 'LP-AUDIO96', 'anti-alias filter of a 96 kHz audio converter (600 ohm): 40 kHz passband, stopband from 56 kHz (first frequency aliased into the passband)',
+     600, (0, 40 * K), 26, 11, 0, [(56 * K, 2)]),
+    ('hid', 'LP-ADC50', 'anti-alias low-pass of a 50 MSPS ADC: 20 MHz passband, stopband from 30 MHz (one zero)',
+     50, (0, 20 * M), 20, 12, 0, [(30 * M, 1)]),
+    ('hid', 'LP-HF30', 'HF direct-sampling receiver anti-alias low-pass: 30 MHz passband, stopband from 46.8 MHz (aliased into the passband at 76.8 MSPS)',
+     50, (0, 30 * M), 20, 13, 0, [(46.8 * M, 3)]),
+    ('hid', 'LP-DOCSIS85', 'DOCSIS 3.0 mid-split diplexer, 5-85 MHz upstream low-pass arm (75 ohm), stopband from 108 MHz (start of the downstream band)',
+     75, (0, 85 * M), 20, 14, 0, [(108 * M, 3)]),
+    ('hid', 'LP-ADC122', 'anti-alias low-pass of a 122.88 MSPS ADC: 50 MHz passband, stopband from 72.88 MHz (aliased into the passband)',
+     50, (0, 50 * M), 20, 15, 0, [(72.88 * M, 3)]),
+    ('hid', 'LP-DAC2G5', 'reconstruction filter of a 2.5 GSPS DAC: 1 GHz passband, stopband from 1.5 GHz (first image)',
+     50, (0, 1000 * M), 20, 16, 0, [(1500 * M, 2)]),
+    # band-pass filters with a single finite zero (degree 6, 8 and 10; one with only a lower stopband)
+    ('hid', 'BP-49M', '49 m broadcast-band preselector, 5.9-6.2 MHz, stopband above 7.2 MHz (41 m band, one zero)',
+     50, (5.9 * M, 6.2 * M), 20, 6, 3, [(7.2 * M, 1)]),
+    ('hid', 'BP-ADSB', '1090 MHz ADS-B receiver, 1085-1095 MHz, stopband below 1030 MHz (SSR interrogations, one zero)',
+     50, (1085 * M, 1095 * M), 20, 8, 2, [(1030 * M, 1)]),
+    ('hid', 'BP-GPSL1', 'GPS L1 receiver preselector, 1565-1586 MHz, stopband above 1610 MHz (Globalstar and Iridium uplinks, one zero)',
+     50, (1565 * M, 1586 * M), 20, 10, 3, [(1610 * M, 1)]),
+    # the narrowest band: a 500 Hz CW filter at 455 kHz (0.11 %)
+    ('hid', 'BP-CW455N', '455 kHz CW IF filter, 500 Hz bandwidth, stopbands below 454.25 kHz and above 455.75 kHz (two zeros)',
+     50, (454.75 * K, 455.25 * K), 20, 14, 4, [(454.25 * K, 1), (455.75 * K, 2)]),
 ]
 
 

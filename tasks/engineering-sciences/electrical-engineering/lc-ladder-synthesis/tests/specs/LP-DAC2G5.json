@@ -1,0 +1,20 @@
+{
+ "id": "LP-DAC2G5",
+ "description": "reconstruction filter of a 2.5 GSPS DAC: 1 GHz passband, stopband from 1.5 GHz (first image)",
+ "source_resistance_ohm": 50,
+ "passband_hz": [
+  0,
+  1000000000
+ ],
+ "return_loss_db": 20,
+ "degree": 16,
+ "transmission_zeros": {
+  "dc": 0,
+  "stopbands": [
+   {
+    "edge_hz": 1500000000,
+    "zeros": 2
+   }
+  ]
+ }
+}

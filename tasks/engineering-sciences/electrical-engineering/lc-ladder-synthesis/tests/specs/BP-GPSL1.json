@@ -1,0 +1,20 @@
+{
+ "id": "BP-GPSL1",
+ "description": "GPS L1 receiver preselector, 1565-1586 MHz, stopband above 1610 MHz (Globalstar and Iridium uplinks, one zero)",
+ "source_resistance_ohm": 50,
+ "passband_hz": [
+  1565000000,
+  1586000000
+ ],
+ "return_loss_db": 20,
+ "degree": 10,
+ "transmission_zeros": {
+  "dc": 3,
+  "stopbands": [
+   {
+    "edge_hz": 1610000000,
+    "zeros": 1
+   }
+  ]
+ }
+}

@@ -1,0 +1,20 @@
+{
+ "id": "BP-49M",
+ "description": "49 m broadcast-band preselector, 5.9-6.2 MHz, stopband above 7.2 MHz (41 m band, one zero)",
+ "source_resistance_ohm": 50,
+ "passband_hz": [
+  5900000,
+  6200000
+ ],
+ "return_loss_db": 20,
+ "degree": 6,
+ "transmission_zeros": {
+  "dc": 3,
+  "stopbands": [
+   {
+    "edge_hz": 7200000,
+    "zeros": 1
+   }
+  ]
+ }
+}

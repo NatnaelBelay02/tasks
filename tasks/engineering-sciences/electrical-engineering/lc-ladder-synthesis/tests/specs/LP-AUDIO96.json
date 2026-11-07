@@ -1,0 +1,20 @@
+{
+ "id": "LP-AUDIO96",
+ "description": "anti-alias filter of a 96 kHz audio converter (600 ohm): 40 kHz passband, stopband from 56 kHz (first frequency aliased into the passband)",
+ "source_resistance_ohm": 600,
+ "passband_hz": [
+  0,
+  40000
+ ],
+ "return_loss_db": 26,
+ "degree": 11,
+ "transmission_zeros": {
+  "dc": 0,
+  "stopbands": [
+   {
+    "edge_hz": 56000,
+    "zeros": 2
+   }
+  ]
+ }
+}

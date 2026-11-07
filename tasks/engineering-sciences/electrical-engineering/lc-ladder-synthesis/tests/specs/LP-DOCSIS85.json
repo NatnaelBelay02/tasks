@@ -1,0 +1,20 @@
+{
+ "id": "LP-DOCSIS85",
+ "description": "DOCSIS 3.0 mid-split diplexer, 5-85 MHz upstream low-pass arm (75 ohm), stopband from 108 MHz (start of the downstream band)",
+ "source_resistance_ohm": 75,
+ "passband_hz": [
+  0,
+  85000000
+ ],
+ "return_loss_db": 20,
+ "degree": 14,
+ "transmission_zeros": {
+  "dc": 0,
+  "stopbands": [
+   {
+    "edge_hz": 108000000,
+    "zeros": 3
+   }
+  ]
+ }
+}

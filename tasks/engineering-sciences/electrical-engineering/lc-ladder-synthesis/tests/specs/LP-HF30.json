@@ -1,0 +1,20 @@
+{
+ "id": "LP-HF30",
+ "description": "HF direct-sampling receiver anti-alias low-pass: 30 MHz passband, stopband from 46.8 MHz (aliased into the passband at 76.8 MSPS)",
+ "source_resistance_ohm": 50,
+ "passband_hz": [
+  0,
+  30000000
+ ],
+ "return_loss_db": 20,
+ "degree": 13,
+ "transmission_zeros": {
+  "dc": 0,
+  "stopbands": [
+   {
+    "edge_hz": 46800000,
+    "zeros": 3
+   }
+  ]
+ }
+}

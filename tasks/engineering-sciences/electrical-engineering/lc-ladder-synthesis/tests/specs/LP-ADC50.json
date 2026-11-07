@@ -1,0 +1,20 @@
+{
+ "id": "LP-ADC50",
+ "description": "anti-alias low-pass of a 50 MSPS ADC: 20 MHz passband, stopband from 30 MHz (one zero)",
+ "source_resistance_ohm": 50,
+ "passband_hz": [
+  0,
+  20000000
+ ],
+ "return_loss_db": 20,
+ "degree": 12,
+ "transmission_zeros": {
+  "dc": 0,
+  "stopbands": [
+   {
+    "edge_hz": 30000000,
+    "zeros": 1
+   }
+  ]
+ }
+}

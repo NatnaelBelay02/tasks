@@ -1,0 +1,20 @@
+{
+ "id": "LP-ADC122",
+ "description": "anti-alias low-pass of a 122.88 MSPS ADC: 50 MHz passband, stopband from 72.88 MHz (aliased into the passband)",
+ "source_resistance_ohm": 50,
+ "passband_hz": [
+  0,
+  50000000
+ ],
+ "return_loss_db": 20,
+ "degree": 15,
+ "transmission_zeros": {
+  "dc": 0,
+  "stopbands": [
+   {
+    "edge_hz": 72880000,
+    "zeros": 3
+   }
+  ]
+ }
+}

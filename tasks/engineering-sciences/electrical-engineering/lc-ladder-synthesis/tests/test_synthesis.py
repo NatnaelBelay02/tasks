@@ -198,9 +198,11 @@ def near_zero_window(spec):
 
 def _frequencies(spec, rec):
     """1001 passband points (401 uniform, 600 spaced geometrically towards f1 and f2); 120
-    log-spaced points from f2 up to 30 f2 and, for a band-pass filter, 120 from f1 down to f1 / 30; the stopband edges; points within w of a reference zero omitted
-    (w = 0.5 %, smaller for bands narrower than 1.6 %, see near_zero_window); and points 2 w and
-    6 w (1 % and 3 % when w = 0.5 %) on either side of each reference transmission zero."""
+    log-spaced points from f2 up to 30 f2 and, for a band-pass filter, 120 from f1 down to f1 / 30;
+    grid points within w of a reference zero omitted (w = 0.5 %, smaller for bands narrower than
+    1.6 %, see near_zero_window); points 2 w and 6 w (1 % and 3 % when w = 0.5 %) on either side of
+    each reference transmission zero; and the stopband edges, which are always checked, also when
+    an edge lies within w of a zero."""
     w = near_zero_window(spec)
     f1, f2 = float(spec['passband_hz'][0]), float(spec['passband_hz'][1])
     fs = [f1 + (f2 - f1) * k / 400 for k in range(401)]
@@ -214,13 +216,14 @@ def _frequencies(spec, rec):
     else:
         fs += [f1 * 30 ** (-k / 120) for k in range(1, 121)]
     fs += [f2 * 30 ** (k / 120) for k in range(1, 121)]
-    fs += [float(b['edge_hz']) for b in spec['transmission_zeros']['stopbands']]
     zs = rec['transmission_zeros_hz']
     fs = [f for f in fs if all(abs(f / fz - 1) >= w for fz in zs)]
     for fz in zs:
         fs += [fz * (1 + e) for e in (-6 * w, -2 * w, 2 * w, 6 * w)]
     # a point placed next to one zero must not fall inside the window of another
-    return [f for f in fs if all(abs(f / fz - 1) >= w * (1 - 1e-9) for fz in zs)]
+    fs = [f for f in fs if all(abs(f / fz - 1) >= w * (1 - 1e-9) for fz in zs)]
+    # the stopband edges are required points (the instruction names them): never omitted
+    return fs + [float(b['edge_hz']) for b in spec['transmission_zeros']['stopbands']]
 
 
 def check_network(spec, rec, RL, arms):

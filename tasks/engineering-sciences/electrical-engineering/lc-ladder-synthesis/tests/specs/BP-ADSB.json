@@ -1,0 +1,20 @@
+{
+ "id": "BP-ADSB",
+ "description": "1090 MHz ADS-B receiver, 1085-1095 MHz, stopband below 1030 MHz (SSR interrogations, one zero)",
+ "source_resistance_ohm": 50,
+ "passband_hz": [
+  1085000000,
+  1095000000
+ ],
+ "return_loss_db": 20,
+ "degree": 8,
+ "transmission_zeros": {
+  "dc": 2,
+  "stopbands": [
+   {
+    "edge_hz": 1030000000,
+    "zeros": 1
+   }
+  ]
+ }
+}
