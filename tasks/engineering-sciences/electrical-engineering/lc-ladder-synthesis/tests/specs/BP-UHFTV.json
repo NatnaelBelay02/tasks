@@ -1,0 +1,24 @@
+{
+ "id": "BP-UHFTV",
+ "description": "UHF TV tuner preselector (75 ohm), 470-862 MHz, stopbands below 400 MHz and above 960 MHz (aeronautical DME band; three zeros each)",
+ "source_resistance_ohm": 75,
+ "passband_hz": [
+  470000000,
+  862000000
+ ],
+ "return_loss_db": 20,
+ "degree": 16,
+ "transmission_zeros": {
+  "dc": 3,
+  "stopbands": [
+   {
+    "edge_hz": 400000000,
+    "zeros": 3
+   },
+   {
+    "edge_hz": 960000000,
+    "zeros": 3
+   }
+  ]
+ }
+}

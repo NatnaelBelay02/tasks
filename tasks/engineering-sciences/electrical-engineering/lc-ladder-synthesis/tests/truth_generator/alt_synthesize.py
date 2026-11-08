@@ -211,15 +211,20 @@ def main():
             if abs(10*mp.log10(G*(1+K2))) > 1e-7: return False
         return True
     sys.setrecursionlimit(10000)
+    best = [None]           # (inductors, arms, R) of the best ladder so far
+    def nind(arms): return sum(1 for e in arms if e[1] in ('L', 'series_LC', 'parallel_LC'))
     def dfs(N, D, isZ, ninf, ndc, fin, arms):
         N = trim(N); D = trim(D)
         if len(N) == 1 and len(D) == 1:
             if ninf or ndc or fin: return None
             R = N[0]/D[0] if isZ else D[0]/N[0]
             if R <= 0 or not (0.5 <= R <= 2): return None
-            if verify(arms, R): return (arms, R)
+            if (best[0] is None or nind(arms) < best[0][0]) and verify(arms, R):
+                best[0] = (nind(arms), arms, R)
             return None
         if len(arms) > n+m: return None
+        # branch and bound: each remaining finite zero still needs a resonator (one inductor)
+        if best[0] is not None and nind(arms) + len(fin) >= best[0][0]: return None
         for kindZ in (isZ, not isZ):
             num, den = (N, D) if kindZ == isZ else (D, N)
             pinf = len(num) == len(den)+1
@@ -250,32 +255,27 @@ def main():
                     else: el2 = ('series', 'parallel_LC', kr/w2, 1/kr)
                     fl = list(fin); fl.remove(w2)
                     res = dfs(newnum, qn, not kindZ, ninf, ndc, tuple(fl), arms+[el, el2])
-                    if res: return res
             if pinf and ninf > 0:
                 k = num[-1]/den[-1]
                 n2 = padd(num, psc([0]+den, -k))[:-1]
                 el = ('series', 'L', k, None) if kindZ else ('shunt', 'C', None, k)
                 if k > 0:
                     res = dfs(n2, den, kindZ, ninf-1, ndc, fin, arms+[el])
-                    if res: return res
             if pdc and ndc > 0:
                 d1 = den[1:]; k = num[0]/d1[0]
                 n2 = padd(num, psc(d1, -k))[1:]
                 el = ('series', 'C', None, 1/k) if kindZ else ('shunt', 'L', 1/k, None)
                 if k > 0:
                     res = dfs(n2, d1, kindZ, ninf, ndc-1, fin, arms+[el])
-                    if res: return res
         return None
-    res = None
     for sg in (1, -1):
         Fs = psc(F, sg)
-        N = trim(padd(E, Fs)); D = padd(E, psc(Fs, -1))
-        D = D[:n] if len(D) > n else D
-        res = dfs(N, D, True, Ninf, a, tuple(yk), [])
-        if res: break
-    if not res:
+        # E and F have the same leading coefficient, so one of E + F, E - F loses its top term
+        N = trim(padd(E, Fs)); D = trim(padd(E, psc(Fs, -1)))
+        dfs(N, D, True, Ninf, a, tuple(yk), [])
+    if best[0] is None:
         sys.exit('synthesis failed')
-    arms, R = res
+    _, arms, R = best[0]
     out = []
     for pos, typ, L, Cc in arms:
         o = {'position': pos, 'type': typ}

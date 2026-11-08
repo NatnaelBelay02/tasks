@@ -21,11 +21,13 @@ stopbands) is computed here independently of the reference solution:
      minimum over the band must be attained at exactly m_b + 1 points (the edge and one
      between consecutive zeros, or between the last zero and dc or infinity), all equal to
      1e-30.
-If a solution directory is given, its ladder search is used to enumerate the canonical
-ladders of the reference function, for the statistics in the README; one ladder with an
-admissible load is stored as a witness that every specification is realisable (the ablation
-script checks it with the verifier's own network analysis).  The verifier uses only the
-characteristic function.
+If a solution directory is given, its ladder search is run as a branch and bound over every
+canonical ladder of the reference function with an admissible load: the smallest number of
+inductors is stored as min_inductors (requirement 4 of the instruction), and a ladder that attains
+it as the witness that the minimum is realisable (the ablation script checks the witness with the
+verifier's own network analysis).  The minimum is confirmed by a second, separately written search
+(alt_synthesize.py, see check_min_inductors.py).  Apart from min_inductors the verifier uses only
+the characteristic function.
 """
 import json
 import math
@@ -450,18 +452,19 @@ def main():
             spec['id'], P['d'], nat, ['%.6g' % x for x in rec['transmission_zeros_hz']],
             ['%.2f' % x for x in rec['stopband_min_attenuation_db']])
         if soldir:
-            # every canonical ladder up to degree 12; above that the first 40 with an admissible load
-            full = P['n'] <= 12
-            SY.ADMISSIBLE_ONLY = not full
-            ap, sols = SY.synthesize(spec) if full else SY.synthesize(spec, limit=40)
+            # branch and bound over every canonical ladder with an admissible load (both signs of F):
+            # the minimum number of inductors, and a ladder that attains it as the witness
+            SY.ADMISSIBLE_ONLY = True
+            SY.BOUND = [math.inf]
+            ap, sols = SY.synthesize(spec)
+            SY.BOUND = None
             dz = max([abs(mp.mpf(q) - p) / p for q, p in zip(sorted(rho) + sorted(z), sorted(ap.ur) + sorted(ap.uz))]
                      + [mp.mpf(0)])
             best = SY.choose(spec, sols)
-            adm = [R for _, p, R in sols if 0.5 <= R <= 2]
+            assert best is not None, (spec['id'], 'no ladder with an admissible load')
             rec['witness'] = SY.denormalise(spec, best[1], best[2])
-            rec['ladders'] = {'canonical': len(sols), 'admissible_load': len(adm)} if full else \
-                {'canonical': None, 'admissible_load': None}
-            line += '  |dzero| vs solution %.1e  ladders %s, admissible load %s' % (float(dz), rec['ladders']['canonical'], rec['ladders']['admissible_load'])
+            rec['min_inductors'] = SY.inductors(best[1])
+            line += '  |dzero| vs solution %.1e  min inductors %d' % (float(dz), rec['min_inductors'])
         mp.mp.dps = DPS
         print(line, flush=True)
         truth[spec['id']] = rec

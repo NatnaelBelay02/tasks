@@ -1,0 +1,24 @@
+{
+ "id": "BP-BANDIII",
+ "description": "TV band III preselector for the lower channels, 174-192.29 MHz, stopbands below 170.84 MHz (one zero) and above 194.62 MHz (six zeros)",
+ "source_resistance_ohm": 50,
+ "passband_hz": [
+  174000000,
+  192291700
+ ],
+ "return_loss_db": 20,
+ "degree": 16,
+ "transmission_zeros": {
+  "dc": 1,
+  "stopbands": [
+   {
+    "edge_hz": 170841200,
+    "zeros": 1
+   },
+   {
+    "edge_hz": 194616400,
+    "zeros": 6
+   }
+  ]
+ }
+}

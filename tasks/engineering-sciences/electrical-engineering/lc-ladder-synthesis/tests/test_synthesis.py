@@ -4,7 +4,8 @@ The agent's program /root/results/synthesize.py is run on each held-out specific
 /tests/specs (never shown to the agent) as an unprivileged user, without network, in an
 empty working directory, and the network file it writes is read as data.  The network is analysed
 here in 40-digit arithmetic and compared with the reference characteristic function in
-/tests/truth.json (generated and certified by /tests/truth_generator/make_truth.py).
+/tests/truth.json (generated and certified by /tests/truth_generator/make_truth.py); its number of
+inductors is compared with the minimum stored there (found by two separate exhaustive searches).
 """
 import json
 import math
@@ -249,6 +250,10 @@ def check_network(spec, rec, RL, arms):
     if worst > TOL_DB:
         raise AssertionError('insertion loss off by %.3g dB at %.9g Hz (reference %.6f dB, network %.6f dB)'
                              % (worst, where[0], where[1], where[2]))
+    n_ind = sum(1 for _, t, _ in arms if 'L' in TYPES[t])
+    if n_ind > int(rec['min_inductors']):
+        raise AssertionError('%d inductors; this specification has a ladder that meets requirements 1 to 3 '
+                             'with %d' % (n_ind, int(rec['min_inductors'])))
     return worst
 
 
@@ -262,7 +267,8 @@ def test_program_present():
 @pytest.mark.parametrize('spec_id', SPEC_IDS)
 def test_filter(spec_id):
     """The program's ladder for a held-out specification has the reference insertion loss to 1e-5 dB,
-    at most the canonical number n + m of elements, and a load in [R_s / 2, 2 R_s]."""
+    at most the canonical number n + m of elements, a load in [R_s / 2, 2 R_s], and no more inductors
+    than the minimum-inductor ladder of the specification."""
     spec = json.load(open(os.path.join(SPECS, spec_id + '.json')))
     rec = json.load(open(TRUTH))[spec_id]
     path = run_program(spec_id)

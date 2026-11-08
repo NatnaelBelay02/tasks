@@ -32,7 +32,7 @@ The specification is a UTF-8 JSON object with these keys:
 
 Examples are in `/root/data/examples/*.json`. `/root/data/examples/reference_insertion_loss.json` gives the reference insertion loss (dB) of each example at sample frequencies, as `[f_hz, loss_db]` pairs.
 
-The program must also handle other specifications of the same kind: low-pass and band-pass filters of degree 5 to 16, band-pass filters with 1 to 4 transmission zeros at dc, up to 3 finite transmission zeros in total, passbands from audio frequencies to GHz, and band-pass bandwidths from 0.1 % of the centre frequency to more than three decades ($ f_2 / f_1 $ up to 3500).
+The program must also handle other specifications of the same kind: low-pass and band-pass filters of degree 5 to 16, band-pass filters with 1 to 4 transmission zeros at dc, up to 7 finite transmission zeros in total (as many as $ n - a - 2m \ge 1 $ allows), passbands from audio frequencies to GHz, and band-pass bandwidths from 0.1 % of the centre frequency to more than three decades ($ f_2 / f_1 $ up to 3500).
 
 ## The required response
 
@@ -71,6 +71,7 @@ There are no transformers, coupled coils or resistors other than $ R_s $ and $ R
 1. Its insertion loss $ -10 \log_{10} G $ agrees with that of the required response to within $ 10^{-5} $ dB at every frequency from $ f_2 $ down to $ f_1/30 $ (band-pass) or to dc (low-pass) and from $ f_2 $ up to $ 30 f_2 $, including the stopband edges and the frequencies next to the finite transmission zeros.
 2. It has at most $ n + m $ inductors and capacitors (a canonical ladder).
 3. $ R_s/2 \le R_L \le 2R_s $.
+4. It has the fewest inductors of all ladders that satisfy 1 to 3. A specification usually has many such ladders, with different numbers of inductors; inductors are the lossy, bulky and costly parts, so a minimum-inductor ladder is required. An `L`, `series_LC` or `parallel_LC` arm contains one inductor.
 
 ## Output
 

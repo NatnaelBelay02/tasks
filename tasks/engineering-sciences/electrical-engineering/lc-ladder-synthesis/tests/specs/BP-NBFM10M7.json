@@ -1,0 +1,24 @@
+{
+ "id": "BP-NBFM10M7",
+ "description": "10.7 MHz narrow-band FM IF filter, 21.4 kHz bandwidth, stopbands below 10.67737 MHz and above 10.72207 MHz (adjacent channels; four and three zeros)",
+ "source_resistance_ohm": 50,
+ "passband_hz": [
+  10689310,
+  10710710
+ ],
+ "return_loss_db": 14,
+ "degree": 16,
+ "transmission_zeros": {
+  "dc": 1,
+  "stopbands": [
+   {
+    "edge_hz": 10677370,
+    "zeros": 4
+   },
+   {
+    "edge_hz": 10722070,
+    "zeros": 3
+   }
+  ]
+ }
+}

@@ -13,6 +13,8 @@ then applied to:
     zeros moved by 1e-7 relative, and the zeros of the starting guess (spaced out from the
     stopband edge but not equiripple);
   - the first ladder a depth-first search finds, without any choice of the realisation;
+  - a canonical ladder of the right response with an admissible load but one or more inductors
+    more than the minimum (must fail; the one with the fewest such inductors is used);
   - a canonical ladder of the right response whose load is outside [R_s / 2, 2 R_s];
   - format errors.
 It also reports, per specification, whether any ladder exists when zeros are shifted only
@@ -119,6 +121,16 @@ def main():
         first = SY.denormalise(spec, sols[0][1], sols[0][2])
         ok, why = verdict(spec, rec, first)
         tally.setdefault('first ladder found passes', []).append(ok)
+        more = [(p, R) for _, p, R in sols if SY.admissible(R) and SY.inductors(p) > rec['min_inductors']]
+        if more:
+            p_, R_ = min(more, key=lambda t: SY.inductors(t[0]))
+            rows.append((sid, 'admissible canonical ladder with %d inductors (minimum %d)'
+                         % (SY.inductors(p_), rec['min_inductors']), False)
+                        + verdict(spec, rec, SY.denormalise(spec, p_, R_)))
+        adm_first = next(((p, R) for _, p, R in sols if SY.admissible(R)), None)
+        if adm_first:
+            tally.setdefault('first admissible ladder of the search has the fewest inductors', []).append(
+                SY.inductors(adm_first[0]) == rec['min_inductors'])
         bad_load = [(p, R) for _, p, R in sols if not 0.5 <= R <= 2]
         if bad_load:
             p_, R_ = max(bad_load, key=lambda t: abs(mp.log(t[1])))

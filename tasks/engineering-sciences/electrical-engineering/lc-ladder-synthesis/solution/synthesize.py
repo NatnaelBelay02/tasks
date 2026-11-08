@@ -20,12 +20,14 @@ import math
 import sys
 
 import mpmath as mp
-from scipy.optimize import fsolve
+import warnings
+from scipy.optimize import brentq, fsolve, minimize_scalar
 
 mp.mp.dps = 100
 EPS = mp.mpf(10) ** -60          # relative size below which a coefficient is rounding noise
 TOL = {'div': mp.mpf(10) ** -40, 'dc': mp.mpf(10) ** -45, 'jw': mp.mpf(10) ** -30, 'newton': mp.mpf(10) ** -110}
 ADMISSIBLE_ONLY = False          # True: keep only ladders whose load lies in [R_s / 2, 2 R_s]
+BOUND = None                     # [k]: branch and bound, keep only ladders with fewer than k inductors
 
 
 def set_precision(spec):
@@ -315,10 +317,91 @@ class Approx:
                 res.append(self.logwf(self.stationary(lo2, hi2)) - edge)
         return res
 
+    # ---- double-precision start for the zero placement ----
+    def float_reflection_zeros(self, uz):
+        """The passband reflection zeros (in u) for the transmission zeros uz, from the closed form
+        of the generalized Chebyshev function: its phase sum_p w_p arccos(M_p(u)) is (k + 1/2) pi at
+        the k-th reflection zero, with M_p the Moebius map that takes [u1, 1] onto [-1, 1] and has
+        its pole at the transmission zero p (weight 1 per finite zero, a/2 at dc, the rest at
+        infinity).  Used only for the starting values of the zero search."""
+        u1 = float(self.u1)
+        poles = ([(0.0, self.a / 2.0)] if self.a else []) + [(float(z), 1.0) for z in uz]
+        winf = self.n / 2.0 - sum(w for _, w in poles)
+
+        def M(u, p):
+            if p is None:
+                return (2 * u - u1 - 1) / (1 - u1)
+            B = 2 / (1 / (1 - p) - 1 / (u1 - p))
+            return 1 - B / (1 - p) + B / (u - p)
+
+        def phase(u):
+            v = winf * math.acos(max(-1.0, min(1.0, M(u, None))))
+            for p, w in poles:
+                v += w * math.acos(max(-1.0, min(1.0, M(u, p))))
+            return v
+        return [brentq(lambda u: phase(u) - (k + 0.5) * math.pi, u1, 1.0, xtol=1e-300, rtol=1e-15, maxiter=400)
+                for k in range(self.d)]
+
+    def float_residual(self, p):
+        uz = [float(z) for z in self.zeros_from([mp.mpf(float(v)) for v in p])]
+        ur = self.float_reflection_zeros(uz)
+        g = lambda u: ((self.r - self.a) / 2.0 * math.log(u) + sum(math.log(abs(u - q)) for q in ur)
+                       - sum(math.log(abs(u - z)) for z in uz))
+        res, k = [], 0
+        for ue, m in self.bands:
+            ue = float(ue)
+            zs = sorted(uz[k:k + m])
+            k += m
+            if ue > 1:
+                segs = list(zip(zs, zs[1:])) + [(zs[-1], zs[-1] * 1e8)]
+            else:
+                segs = [(zs[0] * 1e-8, zs[0])] + list(zip(zs, zs[1:]))
+            edge = g(ue)
+            for lo, hi in segs:
+                L, H = math.log(lo), math.log(hi)
+                o = minimize_scalar(lambda t: g(math.exp(t)), bounds=(L + (H - L) * 1e-9, H - (H - L) * 1e-9),
+                                    method='bounded', options={'xatol': 1e-12, 'maxiter': 500})
+                res.append(o.fun - edge)
+        return res
+
+    def float_start(self):
+        """Zero parameters from the double-precision model; None if no start gives small residuals."""
+        best = None
+        for scale in (0.05, 0.02, 0.1, 0.01, 0.2, 0.005, 0.4, 0.002, 0.001):
+            p0 = []
+            for ue, m in self.bands:
+                s = abs(float(mp.log(ue)))
+                p0 += [math.log(scale * s)] + [math.log(min(2.0, 4 * scale) * s)] * (m - 1)
+
+            def fres(p):
+                try:
+                    return self.float_residual(p)
+                except (ValueError, ZeroDivisionError, OverflowError):
+                    return [1e3] * len(p)
+            try:
+                with warnings.catch_warnings():
+                    warnings.simplefilter('ignore')
+                    p1 = fsolve(fres, p0, xtol=1e-14)
+            except Exception:
+                continue
+            r = max(abs(v) for v in fres(p1))
+            if best is None or r < best[0]:
+                best = (r, list(p1))
+            if r < 1e-9:
+                break
+        return best[1] if best is not None and best[0] < 1e-7 else None
+
     def place_zeros(self):
         if not self.bands:
             self.solve_for([])
             return
+        p1 = self.float_start()
+        if p1 is not None:
+            try:
+                self.finish_zeros(p1)
+                return
+            except (ZeroDivisionError, ValueError):
+                pass
         p0 = []
         for ue, m in self.bands:
             s = abs(float(mp.log(ue)))
@@ -326,6 +409,10 @@ class Approx:
         with mp.workdps(30):
             p1 = fsolve(lambda p: [float(x) for x in self.stopband_residual([mp.mpf(float(v)) for v in p])], p0,
                         xtol=1e-13)
+        self.finish_zeros(p1)
+
+    def finish_zeros(self, p1):
+        """Newton's method at the working precision on the Remez-based stopband conditions."""
         p = mp.findroot(lambda *v: self.stopband_residual(list(v)), [mp.mpf(float(v)) for v in p1],
                         tol=TOL['newton'], maxsteps=30)
         p = [p] if not hasattr(p, 'rows') else [p[i] for i in range(p.rows)]
@@ -398,20 +485,40 @@ def is_zero_at0(p):
     return abs(p[0]) <= TOL['dc'] * max(abs(c) for c in p)
 
 
+def inductors(path):
+    """Number of inductors of a ladder: one per L, series_LC or parallel_LC arm."""
+    return sum(1 for e in path if 'L' in e[1])
+
+
 def search(N, D, zeros, path, out, limit):
     """N/D is the impedance looking into the rest of the ladder."""
     if len(out) >= limit:
         return
+    if BOUND is not None and inductors(path) + len(zeros) >= BOUND[0]:
+        return                      # every remaining finite zero needs a resonator, i.e. one inductor
     N, D = trim(N), trim(D)
     if deg(N) == 0 and deg(D) == 0:
         if not zeros:
             R = N[0] / D[0]
             if R > 0 and (not ADMISSIBLE_ONLY or admissible(R)):
                 out.append((list(path), R))
+                if BOUND is not None:
+                    BOUND[0] = inductors(path)
         return
+    moves = []
     for view in ('Z', 'Y'):
         num, den = (N, D) if view == 'Z' else (D, N)
         if deg(num) == deg(den) + 1:
+            moves.append((view, 'inf'))
+        if is_zero_at0(den) and not is_zero_at0(num):
+            moves.append((view, 'dc'))
+    if BOUND is not None:
+        # capacitors first (series C for a pole at 0, shunt C for a pole at infinity), so that a ladder
+        # with few inductors is found early and bounds the rest of the search
+        moves.sort(key=lambda mv: mv not in (('Z', 'dc'), ('Y', 'inf')))
+    for view, kind in moves:
+        num, den = (N, D) if view == 'Z' else (D, N)
+        if kind == 'inf':
             Lfull = lead(num) / lead(den)
             # full removal of the pole at infinity
             rest = trim(padd(num, pscale(pshift(den), -Lfull)))
@@ -448,7 +555,7 @@ def search(N, D, zeros, path, out, limit):
                 path.extend(els)
                 search(nxt[0], nxt[1], rem, path, out, limit)
                 del path[-2:]
-        if is_zero_at0(den) and not is_zero_at0(num):
+        else:
             den1 = trim(den)[1:]
             K0 = num[0] / den1[0]
             rest = trim(padd(num, pscale(den1, -K0)))
@@ -530,18 +637,20 @@ def choose(spec, sols):
     for sg, path, R in sols:
         if not admissible(R):
             continue
-        key = (sum(1 for e in path if 'L' in e[1]), abs(mp.log(R)))
+        key = (inductors(path), abs(mp.log(R)))
         if best is None or key < best[0]:
             best = (key, path, R)
     return best
 
 
 def main():
-    global ADMISSIBLE_ONLY
+    global ADMISSIBLE_ONLY, BOUND
     spec = json.load(open(sys.argv[1]))
-    # the first 40 ladders with an admissible load (from both signs of F) are enough to choose from
+    # branch and bound over the whole search tree (both signs of F): a ladder is kept only if it has
+    # fewer inductors than every ladder found before it, so the last one kept has the fewest
     ADMISSIBLE_ONLY = True
-    ap, sols = synthesize(spec, limit=40)
+    BOUND = [math.inf]
+    ap, sols = synthesize(spec)
     best = choose(spec, sols)
     if best is None:
         raise SystemExit('no ladder with an admissible load found')

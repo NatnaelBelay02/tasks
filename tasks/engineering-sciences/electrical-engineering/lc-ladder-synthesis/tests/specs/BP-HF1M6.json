@@ -1,0 +1,24 @@
+{
+ "id": "BP-HF1M6",
+ "description": "1.6-30 MHz HF receiver preselector, stopbands below 530 kHz (one zero) and above 54 MHz (VHF TV, six zeros)",
+ "source_resistance_ohm": 50,
+ "passband_hz": [
+  1600000,
+  30000000
+ ],
+ "return_loss_db": 20,
+ "degree": 16,
+ "transmission_zeros": {
+  "dc": 1,
+  "stopbands": [
+   {
+    "edge_hz": 530000,
+    "zeros": 1
+   },
+   {
+    "edge_hz": 54000000,
+    "zeros": 6
+   }
+  ]
+ }
+}

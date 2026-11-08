@@ -1,0 +1,24 @@
+{
+ "id": "BP-ROOF21M4",
+ "description": "21.4 MHz first-IF roofing filter, 42.8 kHz bandwidth, stopbands below 21.35546 MHz (one zero) and above 21.44532 MHz (six zeros)",
+ "source_resistance_ohm": 50,
+ "passband_hz": [
+  21378610,
+  21421410
+ ],
+ "return_loss_db": 20,
+ "degree": 16,
+ "transmission_zeros": {
+  "dc": 1,
+  "stopbands": [
+   {
+    "edge_hz": 21355460,
+    "zeros": 1
+   },
+   {
+    "edge_hz": 21445320,
+    "zeros": 6
+   }
+  ]
+ }
+}

@@ -1,0 +1,20 @@
+{
+ "id": "LP-ADC250",
+ "description": "anti-alias low-pass of a 250 MSPS ADC: 100 MHz passband, stopband from 150 MHz (aliased into the passband), seven zeros",
+ "source_resistance_ohm": 50,
+ "passband_hz": [
+  0,
+  100000000
+ ],
+ "return_loss_db": 20,
+ "degree": 16,
+ "transmission_zeros": {
+  "dc": 0,
+  "stopbands": [
+   {
+    "edge_hz": 150000000,
+    "zeros": 7
+   }
+  ]
+ }
+}

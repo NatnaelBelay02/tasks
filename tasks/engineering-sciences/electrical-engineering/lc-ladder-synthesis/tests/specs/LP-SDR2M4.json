@@ -1,0 +1,20 @@
+{
+ "id": "LP-SDR2M4",
+ "description": "anti-alias low-pass of a 2.4 MSPS SDR receiver: 1 MHz passband, stopband from 1.4 MHz (aliased into the passband), seven zeros",
+ "source_resistance_ohm": 50,
+ "passband_hz": [
+  0,
+  1000000
+ ],
+ "return_loss_db": 20,
+ "degree": 15,
+ "transmission_zeros": {
+  "dc": 0,
+  "stopbands": [
+   {
+    "edge_hz": 1400000,
+    "zeros": 7
+   }
+  ]
+ }
+}

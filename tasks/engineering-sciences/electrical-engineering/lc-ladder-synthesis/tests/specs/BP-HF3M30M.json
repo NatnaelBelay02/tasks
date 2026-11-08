@@ -1,0 +1,24 @@
+{
+ "id": "BP-HF3M30M",
+ "description": "3-30 MHz HF receiver front end, stopbands below 1.541635 MHz (medium-wave broadcast, one zero) and above 40.58231 MHz (six zeros)",
+ "source_resistance_ohm": 50,
+ "passband_hz": [
+  3000000,
+  30000000
+ ],
+ "return_loss_db": 20,
+ "degree": 16,
+ "transmission_zeros": {
+  "dc": 1,
+  "stopbands": [
+   {
+    "edge_hz": 1541635,
+    "zeros": 1
+   },
+   {
+    "edge_hz": 40582310,
+    "zeros": 6
+   }
+  ]
+ }
+}

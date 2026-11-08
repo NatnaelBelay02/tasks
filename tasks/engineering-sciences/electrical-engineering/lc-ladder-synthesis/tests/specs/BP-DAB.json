@@ -1,0 +1,24 @@
+{
+ "id": "BP-DAB",
+ "description": "DAB band III receiver preselector (75 ohm), 174-240 MHz, stopbands below 150 MHz (two zeros) and above 270 MHz (four zeros)",
+ "source_resistance_ohm": 75,
+ "passband_hz": [
+  174000000,
+  240000000
+ ],
+ "return_loss_db": 20,
+ "degree": 16,
+ "transmission_zeros": {
+  "dc": 3,
+  "stopbands": [
+   {
+    "edge_hz": 150000000,
+    "zeros": 2
+   },
+   {
+    "edge_hz": 270000000,
+    "zeros": 4
+   }
+  ]
+ }
+}

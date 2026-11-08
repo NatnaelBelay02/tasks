@@ -144,6 +144,33 @@ SPECS = [
     # the narrowest band: a 500 Hz CW filter at 455 kHz (0.11 %)
     ('hid', 'BP-CW455N', '455 kHz CW IF filter, 500 Hz bandwidth, stopbands below 454.25 kHz and above 455.75 kHz (two zeros)',
      50, (454.75 * K, 455.25 * K), 20, 14, 4, [(454.25 * K, 1), (455.75 * K, 2)]),
+    # full Cauer filters: as many finite zeros as the degree allows (version 4.2.0)
+    ('hid', 'LP-DAC30M', 'reconstruction filter of a 30.72 MSPS DAC: 10 MHz passband, stopband from 20.72 MHz (first image), six zeros',
+     50, (0, 10 * M), 20, 13, 0, [(20.72 * M, 6)]),
+    ('hid', 'LP-SDR2M4', 'anti-alias low-pass of a 2.4 MSPS SDR receiver: 1 MHz passband, stopband from 1.4 MHz (aliased into the passband), seven zeros',
+     50, (0, 1 * M), 20, 15, 0, [(1.4 * M, 7)]),
+    ('hid', 'LP-ADC250', 'anti-alias low-pass of a 250 MSPS ADC: 100 MHz passband, stopband from 150 MHz (aliased into the passband), seven zeros',
+     50, (0, 100 * M), 20, 16, 0, [(150 * M, 7)]),
+    ('hid', 'BP-NBFM10M7', '10.7 MHz narrow-band FM IF filter, 21.4 kHz bandwidth, stopbands below 10.67737 MHz and above 10.72207 MHz (adjacent channels; four and three zeros)',
+     50, (10.68931 * M, 10.71071 * M), 14, 16, 1, [(10.67737 * M, 4), (10.72207 * M, 3)]),
+    ('hid', 'BP-ROOF21M4', '21.4 MHz first-IF roofing filter, 42.8 kHz bandwidth, stopbands below 21.35546 MHz (one zero) and above 21.44532 MHz (six zeros)',
+     50, (21.37861 * M, 21.42141 * M), 20, 16, 1, [(21.35546 * M, 1), (21.44532 * M, 6)]),
+    ('hid', 'BP-BANDIII', 'TV band III preselector for the lower channels, 174-192.29 MHz, stopbands below 170.84 MHz (one zero) and above 194.62 MHz (six zeros)',
+     50, (174 * M, 192.2917 * M), 20, 16, 1, [(170.8412 * M, 1), (194.6164 * M, 6)]),
+    ('hid', 'BP-WLAN24', '2.4 GHz WLAN front-end filter, 2400-2483.5 MHz, stopbands below 2300 MHz (LTE band 40, two zeros) and above 2570 MHz (LTE band 38, five zeros)',
+     50, (2400 * M, 2483.5 * M), 20, 16, 1, [(2300 * M, 2), (2570 * M, 5)]),
+    ('hid', 'BP-DAB', 'DAB band III receiver preselector (75 ohm), 174-240 MHz, stopbands below 150 MHz (two zeros) and above 270 MHz (four zeros)',
+     75, (174 * M, 240 * M), 20, 16, 3, [(150 * M, 2), (270 * M, 4)]),
+    ('hid', 'BP-UHFTV', 'UHF TV tuner preselector (75 ohm), 470-862 MHz, stopbands below 400 MHz and above 960 MHz (aeronautical DME band; three zeros each)',
+     75, (470 * M, 862 * M), 20, 16, 3, [(400 * M, 3), (960 * M, 3)]),
+    ('hid', 'BP-VOICE', 'telephone voice-band filter (600 ohm), 300-3400 Hz, stopbands below 100 Hz (mains hum, two zeros) and above 5 kHz (five zeros)',
+     600, (300, 3400), 20, 16, 1, [(100, 2), (5000, 5)]),
+    ('hid', 'BP-HF1M6', '1.6-30 MHz HF receiver preselector, stopbands below 530 kHz (one zero) and above 54 MHz (VHF TV, six zeros)',
+     50, (1.6 * M, 30 * M), 20, 16, 1, [(0.53 * M, 1), (54 * M, 6)]),
+    ('hid', 'BP-HF3M30M', '3-30 MHz HF receiver front end, stopbands below 1.541635 MHz (medium-wave broadcast, one zero) and above 40.58231 MHz (six zeros)',
+     50, (3 * M, 30 * M), 20, 16, 1, [(1.541635 * M, 1), (40.58231 * M, 6)]),
+    ('hid', 'BP-LFMF', '100 kHz-3 MHz LF/MF receiver front end, stopbands below 40.8874 kHz (VLF transmitters, four zeros) and above 7.032252 MHz (two zeros)',
+     50, (100 * K, 3 * M), 26, 16, 3, [(40.8874 * K, 4), (7.032252 * M, 2)]),
 ]
 
 

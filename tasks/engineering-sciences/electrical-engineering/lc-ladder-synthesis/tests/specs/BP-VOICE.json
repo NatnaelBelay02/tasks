@@ -1,0 +1,24 @@
+{
+ "id": "BP-VOICE",
+ "description": "telephone voice-band filter (600 ohm), 300-3400 Hz, stopbands below 100 Hz (mains hum, two zeros) and above 5 kHz (five zeros)",
+ "source_resistance_ohm": 600,
+ "passband_hz": [
+  300,
+  3400
+ ],
+ "return_loss_db": 20,
+ "degree": 16,
+ "transmission_zeros": {
+  "dc": 1,
+  "stopbands": [
+   {
+    "edge_hz": 100,
+    "zeros": 2
+   },
+   {
+    "edge_hz": 5000,
+    "zeros": 5
+   }
+  ]
+ }
+}
