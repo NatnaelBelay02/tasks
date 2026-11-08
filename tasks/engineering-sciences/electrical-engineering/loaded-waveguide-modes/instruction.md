@@ -73,7 +73,7 @@ The program is run as `python3 modes.py <guide_file> <output_file>`:
 - The working directory is a fresh directory that holds only a copy of the program and that the program may write to, as well as `/tmp`, which is shared by the four simultaneous runs. `<output_file>` is the absolute path of `modes.json` in that directory, which the program must create.
 - Each run has a wall-clock limit of 3600 seconds and must exit with status 0. Processes that a run leaves behind are killed before its output is read.
 - The program runs as an unprivileged user (uid and gid 65534) with no network, an empty standard input, and exactly the environment variables `HOME=/tmp`, `PATH=/usr/local/bin:/usr/bin:/bin`, `LANG=C.UTF-8` and `OPENBLAS_NUM_THREADS`, `OMP_NUM_THREADS`, `MKL_NUM_THREADS`, `NUMEXPR_NUM_THREADS` all set to 1.
-- **Program size:** `/root/results/modes.py` must be a single regular file (not a symbolic link) of at most 50 000 000 bytes. A larger file, a symbolic link or a missing file is not run, and every test fails.
+- **Program size:** to run and to meet every requirement, `/root/results/modes.py` must exist as a regular file, not a symbolic link, of at most 50 000 000 bytes.
 - The program must run with Python 3.11, numpy 2.2.6, scipy 1.15.3, sympy 1.13.3, mpmath 1.3.0 and the standard library (the versions of this environment); no packages can be installed. The four guide files are processed by four runs started at the same time, which share 4 CPUs and 8 GB of memory.
 
 ## Output format
