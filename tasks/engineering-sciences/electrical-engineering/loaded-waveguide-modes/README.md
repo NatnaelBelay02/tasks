@@ -21,13 +21,14 @@ The agent derives the transverse problems itself: the LSE/LSM split and the inte
 - **v2.0 (lossy).** Every layer became a cited material at its real loss. The instruction still gave the two dispersion functions explicitly. GPT-6 solved it (see "Model runs") by complex root-finding on those functions, which shows that, with the equations given, the task reduced to numerics.
 - **v3.0.** The dispersion functions are no longer given, and four nonreciprocal ferrite guides are added (y-independent TE modes only). Calibration: GPT-6 failed, Opus 5.5 (low) passed.
 - **v4.0.** The hybrid families HYB$ _n $ of the gyrotropic guides, two magnetised-discharge guides, and the per-layer power split of every mode. Calibration: GPT-6 (max) and Opus 5.5 (low) both passed (see "Model runs").
-- **v5.0 (this version).** The v4.0 runs show how both models passed: each graded guide was in the agent's own input file, so a search with a box sized by the material constants could be checked guide by guide and patched by hand. GPT-6's first pass missed five LSM1 pairs; a contour audit on the visible guides found them, and they were added by hand. v5.0 grades a **program on held-out guides**, which must therefore be right without inspection, and the held-out guides lie in regimes that the example guides do not show and that a material-sized search misses:
+- **v5.0.** The v4.0 runs show how both models passed: each graded guide was in the agent's own input file, so a search with a box sized by the material constants could be checked guide by guide and patched by hand. GPT-6's first pass missed five LSM1 pairs; a contour audit on the visible guides found them, and they were added by hand. v5.0 grades a **program on held-out guides**, which must therefore be right without inspection, and the held-out guides lie in regimes that the example guides do not show and that a material-sized search misses:
   - **thin-film magnetostatic surface waves** (Damon–Eshbach waves of a 100 µm YIG film [21, 22]) at up to 178 $ k_0 $, in every family up to $ n = 12 $;
   - **one-way surface magnetoplasmons** of a magnetised low-pressure discharge, in 14 to 18 consecutive families, backward waves at one frequency;
   - **slow surface plasmons** of a low-pressure discharge behind thick quartz, at up to 12 $ k_0 $;
   - a **ceramic-loaded** guide with up to 7 families per spectrum, and a conventional C-band ferrite phase shifter.
 
-  The model, the output format, the tolerances and the guarantees are those of v4.0. What changes is the deliverable (a program, run four times at once under a wall-clock limit) and the guides it is graded on.
+  The model, the output format, the tolerances and the guarantees are those of v4.0. What changes is the deliverable (a program, run four times at once under a wall-clock limit) and the guides it is graded on. Calibration: GPT-6 (max) and Opus 5.5 (low) both failed (see "Model runs").
+- **v5.1 (this version).** No change to the guides, the reference values, the tests or the tolerances. The program-size limit of the verifier (50 000 000 bytes) is stated in the instruction as a bullet of its own, and the tolerances are calibrated against a third, double-precision implementation (`tests/truth_generator/dp_solver.py`, see "Why the tolerances are what they are").
 
 ## The held-out guides
 
@@ -208,12 +209,44 @@ A single wrong item in any held-out guide fails the task. The bullets after the 
 - **`test_propagation_constants`** (requirement 4): the reported $ \gamma $ pair one-to-one with the reference within $ |\gamma - \gamma^*| \le 10^{-7}|\gamma^*| $.
 - **`test_power_split`** (requirement 5): for each pair, every fraction satisfies $ |p_i - p_i^*| \le 10^{-6} \sum_k |p_k^*| $.
 
-**Why the tolerances are what they are** (unchanged from v4.0, rechecked on the held-out guides).
+**Why the tolerances are what they are** (unchanged from v4.0, rechecked on the held-out guides, and calibrated in v5.1 against a double-precision implementation).
 - **Correct solvers pass easily.** The two correct programs reproduce the certified values of the held-out guides to $ 10^{-14} $ in $ \gamma $ and $ 6\times10^{-16} $ in the fractions. Every $ \gamma $ scaled by $ 1 + 5\times10^{-8} $ passes; one off by $ 3 \times 10^{-7} $ fails.
 - **Pairing is unambiguous.** Modes of a family and direction are at least $ 10^{-4}|\gamma| $ apart (certified, stated in the instruction).
 - **Membership never depends on rounding.** No mode is within 2 % of the limit (certified, stated in the instruction).
 - **The power tolerance.** The certified fractions are enclosed to better than $ 10^{-9} $. Every fraction scaled by $ 1 + 3\times10^{-7} $ passes; one fraction off by $ 3\times10^{-6}\sum|p^*| $ fails. The instruction guarantees $ \sum|P_i| \le 30|P| $ (largest certified value on the held-out guides 15.6, H4).
 - **The wall-clock limit.** The reference program needs at most 186 s for a guide file and the second correct program 734 s, against 3600 s; the four runs share the 4 CPUs of the grading container.
+- **The tolerances need accurate numerics, not extended precision** (v5.1). `tests/truth_generator/dp_solver.py` is a third implementation in which every step is carried out in double precision (numpy and scipy). It takes the candidate zeros from the collocation of `alt_solver.py` and replaces its two mpmath stages:
+  - **polishing:** secant iteration on a determinant built from both walls. The two wall solutions are carried towards a matching interface in steps with $ |\kappa| h \le 2 $ and re-orthonormalised after every step, so the span of each set stays accurate in the direction in which it grows. The matching interface is the one at which the two sets are closest to dependent (for a surface wave, a face of the film it is bound to);
+  - **power split:** the null vector at the matching interface fixes the mode; its coefficients are carried back towards each wall through the stored triangular factors, and the flux is integrated step by step. The field is never carried across the film in the direction in which it decays, so the $ \delta\, e^{|\gamma| x} $ error of a one-sided shot (see "Difficulty") does not arise.
+
+  With the four held-out files run at once on 4 cores it passes all 20 tests (runs take 36 s, 895 s, 970 s and 1117 s). Its largest errors against the certified values, over all 208 modes:
+
+  | run | guides | $ \max |\gamma - \gamma^*| / |\gamma^*| $ | $ \max |p_i - p_i^*| / \sum_k |p_k^*| $ |
+  |---|---|---|---|
+  | run_a | H1 | $ 2.5 \times 10^{-12} $ | $ 1.4 \times 10^{-9} $ |
+  | run_b | H2 | $ 1.4 \times 10^{-12} $ | $ 4.7 \times 10^{-9} $ |
+  | run_c | H3, H4 | $ 7.6 \times 10^{-13} $ | $ 5.9 \times 10^{-13} $ |
+  | run_d | H5, H6 | $ 5.7 \times 10^{-13} $ | $ 1.7 \times 10^{-11} $ |
+  | tolerance | | $ 10^{-7} $ | $ 10^{-6} $ |
+
+  So a double-precision program clears the tolerances by a factor of 40 000 in $ \gamma $ and 200 in the power split.
+- **A collocation eigenproblem alone is not accurate enough, and refining its grid does not help.** The eigenvalues and null vectors of the multi-domain Chebyshev collocation of `alt_solver.py`, without its polishing, for the forward HYB3 modes of H1 at 2.75 GHz (the per-layer cap of 200 nodes lifted; scale $ s $ as in `alt_solver.py`, whose default is 2.5):
+
+  | $ s $ | nodes | $ \max |\gamma - \gamma^*| / |\gamma^*| $ | $ \max |p_i - p_i^*| / \sum_k |p_k^*| $ |
+  |---|---|---|---|
+  | 1.0 | 124 | $ 3.9 \times 10^{-9} $ | $ 1.0 \times 10^{-5} $ |
+  | 1.5 | 155 | $ 7.0 \times 10^{-10} $ | $ 1.7 \times 10^{-6} $ |
+  | 2.5 | 216 | $ 6.4 \times 10^{-9} $ | $ 1.6 \times 10^{-5} $ |
+  | 5.0 | 369 | $ 1.5 \times 10^{-8} $ | $ 1.6 \times 10^{-5} $ |
+  | 7.5 | 523 | $ 6.9 \times 10^{-8} $ | $ 9.7 \times 10^{-5} $ |
+
+  Beyond about 150 nodes the errors grow: the rounding error of the Chebyshev differentiation matrices grows with the number of nodes, and the slow waves have boundary layers of width $ 1/\beta \approx 0.1 $ mm in a 10.7 mm guide. The collocation therefore has an accuracy floor of about $ 10^{-9} $ to $ 10^{-7} $ in $ \gamma $ and $ 10^{-6} $ to $ 10^{-4} $ in the power split, at or above the tolerances. It locates the modes (both `alt_solver.py` and `dp_solver.py` use it for that), but its values have to be polished on the exact dispersion function and the fields recomputed, which `dp_solver.py` does in double precision.
+- **Calibration summary.**
+
+  | quantity | worst valid result | tolerance | nearest defective result | margin |
+  |---|---|---|---|---|
+  | $ \gamma $ (relative) | $ 10^{-14} $ (reference, `alt_solver.py`); $ 2.5 \times 10^{-12} $ (`dp_solver.py`) | $ 10^{-7} $ | $ 7 \times 10^{-8} $ to $ 2.5 \times 10^{-7} $ (unpolished collocation, above; the v5.0 Opus run); $ 3 \times 10^{-7} $ (ablation) | $ 4 \times 10^{4} $ above the double-precision program |
+  | power split (of $ \sum|p^*| $) | $ 6 \times 10^{-16} $ (reference, `alt_solver.py`); $ 4.7 \times 10^{-9} $ (`dp_solver.py`) | $ 10^{-6} $ | $ 1.7 \times 10^{-6} $ to $ 10^{-4} $ (collocation null vectors); $ 3 \times 10^{-6} $ (ablation); $ O(1) $ (one-sided shot from a double-precision $ \gamma $) | 200 above the double-precision program |
 
 **Where the held-out guides come from** (`tests/truth_generator/gen_heldout.py`). The script writes the four guide files exactly as shipped; its docstring repeats the sources above. The example file `environment/data/guides.json` is written by `gen_guides.py` (v4.0, unchanged).
 
@@ -228,7 +261,7 @@ A single wrong item in any held-out guide fails the task. The bullets after the 
 
 **Score of an independent correct submission.** `tests/truth_generator/alt_solver.py` shares no code or method with the reference program or the generator: multi-domain Chebyshev collocation [13] (isotropic: $ v'' + k_0^2\varepsilon v = qv $; $ n = 0 $: the TE problem as a quadratic eigenproblem; $ n \ge 1 $: all six curl equations as a linear pencil $ A_0 x + \gamma A_1 x = 0 $), eigenvalues kept if two grids agree, polished by secant iteration on determinants of matrix exponentials in mpmath, and the power split from the collocation fields by Clenshaw–Curtis quadrature. For v5.0 its grids are sized for a target $ |\beta| $ that starts at the quasi-static scale $ 3/d_{\min} $ and doubles while a zero lies beyond half of it (each layer gets $ 2s\sqrt{\beta_t d} + 16 $ points, which resolves the $ e^{-\beta x} $ boundary layers on Chebyshev nodes), and its polishing is judged by the step. Run as `/root/results/modes.py` through the real verifier it passes all 20 tests (all four runs at once finish within 734 s).
 
-**Ablations** (`tests/truth_generator/ablate5.py` for edited outputs; whole programs through the real verifier).
+**Ablations** (`tests/truth_generator/ablate.py` for edited outputs; whole programs through the real verifier).
 
 *Whole programs*, each run as `/root/results/modes.py` through the real verifier (20 tests):
 
@@ -260,14 +293,20 @@ The first versions of both v5.0 programs, which computed the power split from $ 
   - **GPT-6 failed** (reward 0). It missed one member of the close LSM1 pair of G03 at 16 GHz.
   - **Opus 5.5 (low) passed** (reward 1). It derived the LSE/LSM transfer equations and the nonreciprocal ferrite TE problem with the right sign of $ \kappa $, counted zeros with a tiled argument principle, checked the counts on boxes four times larger, and cross-checked with a finite-element solver.
   - What the passing run shows: every v3.0 answer was a zero of a scalar dispersion function that a careful agent can derive from textbook LSE/LSM and ferrite-slab theory, and the answer was only the list of zeros. v4.0 therefore adds the hybrid families (a coupled four-component problem with both off-diagonal tensor terms, no textbook closed form) and the magnetised-plasma guides, and asks for a field quantity, the power split, that is wrong unless the fields themselves are right.
-- **Calibration runs on v4.0:** pending.
 - **v4.0 calibration (run #7064700): both models passed** (reward 1, 4 of 4 tests).
   - **GPT-6 (max)**, 20 min. It wrote a 4 × 4 transfer-matrix solver for every family, located zeros from seeds on a grid of $ |\gamma| \le 5k_0 $ ($ 7k_0 $ for gyrotropic guides), and then audited the counts with the argument principle on boxes $ |\operatorname{Re}(\gamma/k_0)| \le 10 $, later 16. The audit found five LSM1 pairs that its search had missed (G08 at 4.4 GHz, G09 at 2.75 and 2.9 GHz, G12 at 5 and 5.15 GHz); it found them again by local searches and added them to the file by hand.
   - **Opus 5.5 (low)**, 36 min. It counted zeros with the argument principle over $ |\operatorname{Im}\gamma| \le 2k_0\sqrt{m} + 200 $ ($ m = \max|\varepsilon|\max|\mu| $), stopped in $ n $ after four empty families, and reran with a finer contour to check the counts. It did not check the hybrid modes or the power split independently.
   - What the passing runs show: the graded guides were the agent's own input, so a solver whose search box comes from the material constants could be audited and repaired guide by guide. v5.0 therefore grades a program on held-out guides, whose slow waves lie far outside such boxes (H1 and H2 up to 178 $ k_0 $, H4 12 $ k_0 $, H5 in up to 18 consecutive families). Both v4.0 search strategies, reimplemented on the reference program, fail the held-out guides (ablations above).
-- **Calibration runs on v5.0:** pending.
+- **v5.0 calibration: both models failed** (reward 0).
+  - **GPT-6 (max)**, 7 min of its 5 h. Its root search bounds $ \beta $ by a material wavenumber and stops the family index on a similar bound. It reported no family at all for the forward modes of H1 and H2 at 2.75 GHz (13 expected), 2 of the 16 forward families of H5 at 3.5 GHz, and only LSM3 of LSM1–LSM3 for H4 at 3.5 GHz: the slow waves the held-out guides were chosen for. Its power split, propagated in double precision across the guide, was also off (H3 at 3.6 GHz, forward LSM3: $ 4.8 \times 10^{-6} $ instead of $ 6.3 \times 10^{-11} $ in layer 3).
+  - **Opus 5.5 (low)**, 2 h 7 min; runs of 621–693 s. It solved a Chebyshev collocation of the Maxwell equations, which needs no search box, and found every family of every spectrum. It reported the collocation eigenvalues and the power split of the collocation eigenvectors without polishing either and without a convergence check. The first failing mode of each run: $ \gamma $ off by $ 2.5 \times $, $ 1.2 \times $ and $ 1.8 \times $ the tolerance (H1 HYB3, H2 HYB7, H5 HYB12), power fractions off by $ 2.6 \times 10^{-6} $, $ 6.8 \times 10^{-6} $ and $ 1.2 \times 10^{-6} $ of $ \sum|p^*| $ (H1 HYB2, H2 LSE0, H5 HYB7 at 3.5 GHz); run_c passed. The tests stop at the first failing mode of a run, so these are not necessarily its largest errors.
+  - What the Opus run shows: these errors are the accuracy floor of a collocation eigenproblem on these guides, which refining the grid does not lower (table under "Why the tolerances are what they are"). Polishing the eigenvalues on the exact dispersion function and recomputing the fields from both walls brings the same method to $ 2.5 \times 10^{-12} $ in $ \gamma $ and $ 4.7 \times 10^{-9} $ in the power split in double precision (`dp_solver.py`). The failure is a numerical-method error (unpolished values of an ill-conditioned discretisation, not checked for convergence), not a tolerance at the limit of double precision.
 
-**Harbor runs** (v5.0): pending; the authoring sandbox cannot run Docker. Run directly as root with the real verifier (`tests/test_modes.py`, sandboxed runs as uid 65534; Python 3.13 there instead of the image's 3.11, with numpy 2.2.6, scipy 1.15.3 and mpmath 1.3.0 as in the image), the reference program passes all 20 tests and no program fails all 20 (nop: all 20 tests fail; the second correct program passes all 20).
+**Verifier runs** (v5.1): the verifier image built from `tests/Dockerfile` (Python 3.11 with numpy 2.2.6, scipy 1.15.3, sympy 1.13.3, mpmath 1.3.0), run with `tests/test.sh` without network, on 4 CPUs and with 8 GB:
+- with the reference program as `/root/results/modes.py`: reward 1, 20/20 tests passed, 136 s;
+- with no program: reward 0, 20/20 tests failed.
+
+(Harbor itself could not build the images in the authoring sandbox, whose network proxy is not reachable from inside a Docker build; the image above was built from a copy of `tests/` with the proxy's certificate added.)
 
 ## References
 
