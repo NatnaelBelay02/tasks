@@ -5,7 +5,7 @@ artifacts = ["/root/results/modes.py"]
 [task]
 name = "turing/loaded-waveguide-modes"
 description = "A program that finds every mode with attenuation at most 200 dB/m of lossy, layer-loaded rectangular waveguides (microwave laminates and ceramics, argon discharges, magnetised YIG slabs and films, magnetised discharges), at each test frequency and in each direction, as alpha + j beta with its per-layer power split; graded on held-out guides (dispersion relations, fields and search bounds to be derived; nonreciprocal hybrid modes, slow magnetostatic and plasma surface waves, one-way magnetoplasmons, backward and evanescent waves)."
-version = "5.1.1"
+version = "5.1.2"
 authors = [{ name = "Abdrahim Temami", email = "abdrahim.t@turing.com" }]
 keywords = ["waveguides", "microwave-engineering", "lse-lsm-modes", "transverse-resonance", "lossy-waveguides", "plasma-loaded-waveguides", "ferrite-devices", "magnetoplasma", "hybrid-modes", "poynting-flux", "nonreciprocal-waveguides", "surface-waves", "magnetostatic-waves", "backward-waves", "complex-modes", "electromagnetics"]
 

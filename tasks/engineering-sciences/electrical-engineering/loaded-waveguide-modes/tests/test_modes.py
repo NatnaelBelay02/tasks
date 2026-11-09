@@ -11,8 +11,8 @@ reward 1.
 """
 import json
 import math
+import hashlib
 import os
-import random
 import re
 import shutil
 import signal
@@ -126,7 +126,8 @@ def _stage(program, run, root):
     directory holding only a copy of the program."""
     base = tempfile.mkdtemp(prefix='run_', dir=root)
     os.chmod(base, 0o755)
-    data_dir = os.path.join(base, 'input_' + ''.join(random.choice('abcdefghjkmnpqrstuvwxyz') for _ in range(8)))
+    # a name the program cannot know in advance: derived from the private temporary directory
+    data_dir = os.path.join(base, 'input_' + hashlib.sha256((base + run).encode()).hexdigest()[:8])
     os.mkdir(data_dir)
     shutil.copyfile(os.path.join(DATA, run, 'heldout_guides.json'), os.path.join(data_dir, 'guides.json'))
     os.chmod(os.path.join(data_dir, 'guides.json'), 0o444)
@@ -229,10 +230,8 @@ def runs():
                 for r in RUNS}
     root = tempfile.mkdtemp(prefix='wgm_')
     os.chmod(root, 0o755)
-    order = list(RUNS)
-    random.shuffle(order)
     procs = {}
-    for run in order:
+    for run in sorted(RUNS):                     # fixed launch order: the verdict does not depend on chance
         data_dir, work = _stage(program, run, root)
         _check_sandbox(data_dir, work)
         out = os.path.join(work, 'modes.json')
