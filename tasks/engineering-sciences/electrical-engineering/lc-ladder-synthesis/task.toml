@@ -5,7 +5,7 @@ artifacts = ["/root/results/synthesize.py"]
 [task]
 name = "turing/lc-ladder-synthesis"
 description = "Write an insertion-loss filter synthesis program: generalized elliptic (Cauer) approximation with equiripple passband and stopbands, the finite transmission zeros placed by the program (weighted Remez coupled with stopband equalization), Feldtkeller spectral factorization and Darlington ladder extraction with zero shifting at infinity and at dc, choosing, by an exhaustive branch-and-bound search, the canonical transformerless ladder with an admissible load and the fewest inductors (full Cauer filters with up to 7 finite zeros included), at a working precision adequate for narrow IF filters of degree up to 16; graded on held-out low-pass and band-pass specifications."
-version = "4.2.0"
+version = "4.2.1"
 authors = [{ name = "Abdrahim Temami", email = "abdrahim.t@turing.com" }]
 keywords = ["filter-synthesis", "network-synthesis", "darlington-synthesis", "lc-ladder", "generalized-chebyshev", "elliptic-filters", "remez-algorithm", "zero-shifting", "branch-and-bound", "rf-filters", "circuit-theory", "numerical-conditioning"]
 

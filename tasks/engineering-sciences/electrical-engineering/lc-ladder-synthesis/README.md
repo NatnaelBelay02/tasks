@@ -88,8 +88,9 @@ Each held-out specification is one test, and every condition must hold:
 - **Elements:** at most $ n + m $ elements, computed from the specification.
 - **Load:** $ R_s/2 \le R_L \le 2R_s $.
 - **Inductors:** at most `min_inductors`, the fewest of any canonical ladder of the specification with an admissible load (counted from the arm types: `L`, `series_LC` and `parallel_LC` contain one inductor each).
-- **Insertion loss:** within $ 10^{-5} $ dB of the reference at 1121 to 1270 frequencies:
+- **Insertion loss:** within $ 10^{-5} $ dB of the reference at 1122 to 1270 frequencies:
   - 1001 in the passband: 401 uniform, 400 spaced geometrically in $ f - f_1 $ and 200 in $ f_2 - f $, both from $ 10^{-8}(f_2 - f_1) $;
+  - for a low-pass filter, dc itself (the instruction names it). There every arm is a short circuit (L, parallel LC) or an open circuit (C, series LC), so the gain is evaluated exactly: $ 4R_sR_L/(R_s+R_L)^2 $ if no series arm is open and no shunt arm is shorted, otherwise 0. The stored witnesses and the reference outputs of the 36 low-pass specifications agree with the reference there to $ 2 \times 10^{-17} $ dB (since version 4.2.1; before, the lowest low-pass point was $ 10^{-4} f_2 $);
   - 120 above the passband, log-spaced from $ f_2 $ up to $ 30 f_2 $, and for band-pass filters 120 below it, log-spaced from $ f_1 $ down to $ f_1/30 $;
   - the stopband edges, always. An edge is checked even when it lies within $ w $ of a finite zero (below), as 55 of the 107 edges do; for BP-IF21M4N the edge is $ 2.5 \times 10^{-5} $ (relative) from a zero;
   - 4 next to each reference finite zero, at $ \pm 2w $ and $ \pm 6w $ (relative);
@@ -242,10 +243,15 @@ For the 13 full Cauer filters only the minimum is computed (6 to 11 inductors); 
   - the Opus program of the 4.1.0 run returns, for 39 of the 54 earlier specifications, a ladder with 1 to 4 more inductors than the minimum (it was not asked for the minimum then);
   - made exhaustive (keeping the admissible ladder with the fewest inductors, and returning the best one found after 280 s), that same depth-first search finds the minimum for the 54 earlier specifications and for the three full Cauer low-pass filters. For all ten full Cauer band-pass filters (6 or 7 finite zeros, degree 16) it has no admissible ladder after 280 s (seven of them) or not the minimal one (BP-DAB, BP-LFMF, BP-UHFTV). With the obvious bound added (cut a branch whose inductor count already reaches the best one) it runs past 300 s on all ten, and on four of the 54 earlier ones (BP-10K10M, BP-IF10M7N, BP-IF21M4, BP-IF70M2);
   - with both pruning steps of difficulty 3 (partial removals only of poles that exist, by less than their residue; branch and bound), the same program passes all 67 graded specifications, in at most 195 s per specification (on a 4-core machine with four jobs running). So the requirement is met by a complete, pruned search, which is what the reference does.
+- Version 4.2.1 changes only the grading of what the instruction already states, after review of 4.2.0:
+  - the verifier checks the insertion loss of every low-pass ladder at dc itself (requirement 1 names dc), evaluated exactly (see "Insertion loss" under Verification);
+  - the instruction no longer says that the program "reads no file other than `SPEC_PATH`", which no test can observe. It now states the condition the verifier does enforce: `SPEC_PATH` is the program's only input, and the held-out specifications and reference values are unreadable while it runs (`test.sh`).
 
-**Verifier runs (version 4.2.0):** the verifier image built from `tests/Dockerfile` (Python 3.11.18 with the pinned packages), run with `tests/test.sh` without network, on 1 CPU and with 4 GB:
+  The specifications, the reference values and the other checks are unchanged; the reference program and every stored witness pass.
 
-- with the reference program in `/root/results`: reward 1, 68/68 tests passed, 1822 s;
+**Verifier runs (version 4.2.1, with the dc check):** the verifier image built from `tests/Dockerfile` (Python 3.11.18 with the pinned packages), run with `tests/test.sh` without network, on 1 CPU and with 4 GB:
+
+- with the reference program in `/root/results`: reward 1, 68/68 tests passed, 1817 s;
 - with no program: reward 0, 68/68 tests failed.
 
 **Harbor runs (version 4.0.0):**

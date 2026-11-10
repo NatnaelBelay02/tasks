@@ -13,7 +13,7 @@ The program must work under the following conditions:
 - it is run from an empty working directory, as an unprivileged user, with no network access;
 - it handles one specification per run, within 300 s; it and every thread or process it starts run on a single CPU core, and each process has a 3 GB address-space (virtual memory) limit;
 - it uses only Python 3.11, the standard library, `numpy` 2.2.6, `scipy` 1.15.3, `sympy` 1.13.3 and `mpmath` 1.3.0;
-- it reads no file other than `SPEC_PATH`.
+- `SPEC_PATH` is its only input; the held-out specifications and the reference values are not readable while it runs.
 
 ## Specification
 

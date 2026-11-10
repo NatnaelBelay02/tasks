@@ -175,6 +175,17 @@ def gain_network(arms, Rs, RL, f):
     return 4 * Rs * RL / abs(den) ** 2
 
 
+def gain_network_dc(arms, Rs, RL):
+    """Transducer power gain of the ladder at f = 0 exactly: every arm is then a short circuit (L,
+    parallel_LC) or an open circuit (C, series_LC), so the ladder either passes dc straight through
+    (gain 4 Rs RL / (Rs + RL)^2) or blocks it (gain 0)."""
+    for pos, typ, _ in arms:
+        short = typ in ('L', 'parallel_LC')
+        if (pos == 'series') != short:       # a series open circuit or a shunt short circuit
+            return mp.mpf(0)
+    return 4 * mp.mpf(Rs) * mp.mpf(RL) / (mp.mpf(Rs) + mp.mpf(RL)) ** 2
+
+
 def gain_reference(rec, f):
     u = (mp.mpf(f) / mp.mpf(rec['f2_hz'])) ** 2
     k2 = mp.mpf(rec['c2']) * u ** rec['r'] / u ** rec['dc']
@@ -198,7 +209,8 @@ def near_zero_window(spec):
 
 
 def _frequencies(spec, rec):
-    """1001 passband points (401 uniform, 600 spaced geometrically towards f1 and f2); 120
+    """1001 passband points (401 uniform, 600 spaced geometrically towards f1 and f2), and dc itself
+    for a low-pass filter; 120
     log-spaced points from f2 up to 30 f2 and, for a band-pass filter, 120 from f1 down to f1 / 30;
     grid points within w of a reference zero omitted (w = 0.5 %, smaller for bands narrower than
     1.6 %, see near_zero_window); points 2 w and 6 w (1 % and 3 % when w = 0.5 %) on either side of
@@ -214,6 +226,7 @@ def _frequencies(spec, rec):
     fs += [f2 - (f2 - f1) * 10 ** (-8 + 7 * k / 200) for k in range(200)]
     if f1 == 0:
         fs[0] = f2 * 1e-4
+        fs.append(0.0)           # dc, a required frequency of a low-pass filter (evaluated exactly)
     else:
         fs += [f1 * 30 ** (-k / 120) for k in range(1, 121)]
     fs += [f2 * 30 ** (k / 120) for k in range(1, 121)]
@@ -240,7 +253,7 @@ def check_network(spec, rec, RL, arms):
     worst, where = 0.0, None
     with mp.workdps(40):
         for f in _frequencies(spec, rec):
-            g = gain_network(arms, Rs, RL, f)
+            g = gain_network_dc(arms, Rs, RL) if f == 0 else gain_network(arms, Rs, RL, f)
             g0 = gain_reference(rec, f)
             if not g > 0:
                 raise AssertionError('zero transmission at %.9g Hz' % f)
