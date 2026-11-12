@@ -7,10 +7,10 @@ recording.  The tests map to the numbered requirements of instruction.md and eve
 reward 1.  The reference values are the planted truth used to generate each recording; the tolerances are
 4 x the Cramer-Rao standard deviation of each quantity (heldout_tolerances.json of each recording)."""
 import decimal
+import hashlib
 import itertools
 import json
 import os
-import random
 import shutil
 import signal
 import stat
@@ -128,7 +128,8 @@ def _stage(program, name, root):
     holding only a copy of the program."""
     base = tempfile.mkdtemp(prefix="run_", dir=root)
     os.chmod(base, 0o755)
-    data_dir = os.path.join(base, "input_" + "".join(random.choice("abcdefghjkmnpqrstuvwxyz") for _ in range(8)))
+    # a name the program cannot know in advance: derived from the private temporary directory
+    data_dir = os.path.join(base, "input_" + hashlib.sha256((base + name).encode()).hexdigest()[:8])
     os.mkdir(data_dir)
     for f in ("pmu.csv", "network.json"):             # stored as heldout_<name>, staged under the contract name
         shutil.copyfile(os.path.join(DATA, name, "heldout_" + f), os.path.join(data_dir, f))
@@ -168,10 +169,8 @@ def runs():
         return {name: {"error": f"{PROGRAM} is missing, not a regular file, or a symlink"} for name in RECORDINGS}
     root = tempfile.mkdtemp(prefix="pgi_")
     os.chmod(root, 0o755)
-    order = list(RECORDINGS)
-    random.shuffle(order)
     procs = {}
-    for name in order:
+    for name in RECORDINGS:                  # fixed (sorted) launch order: the verdict does not depend on chance
         data_dir, work = _stage(program, name, root)
         _check_sandbox(data_dir, work)
         out = os.path.join(work, "identification.json")
